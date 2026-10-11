@@ -48,6 +48,21 @@ export function styleFor(realism: number, name: string): string {
 
 export const isWordCard = (d: Dials) => d.realism < 0.125;
 
+const CARD_WORDS: Record<string, string> = {
+  spiders: "spider",
+  dogs: "dog",
+  snakes: "snake",
+  needles: "needle",
+  birds: "bird",
+  bees: "wasp",
+  heights: "heights",
+};
+
+/** Rung 1 shows the everyday word for the fear, not the planner's precise species name. */
+export function cardWord(preset: string | undefined, name: string): string {
+  return CARD_WORDS[preset ?? ""] ?? name;
+}
+
 function distancePhrase(p: number, heights: boolean): string {
   if (heights) {
     if (p < 0.2) return "from well back, far from the edge";
@@ -135,7 +150,7 @@ export function rungPrompt(opts: {
 
   if (isWordCard(d)) {
     return [
-      `The single word "${subject.name}" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.`,
+      `The single word "${cardWord(preset, subject.name)}" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.`,
       "Nothing else in the image: no pictures, no drawings, no other text.",
       "Calm, even lighting. Square image.",
     ].join("\n");

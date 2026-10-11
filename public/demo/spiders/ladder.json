@@ -1,0 +1,1008 @@
+{
+  "id": "demo-spiders",
+  "createdAt": "2026-10-11T23:16:49.428Z",
+  "alias": "Demo",
+  "fear": "Spiders",
+  "preset": "spiders",
+  "description": "Large hairy spiders, worst when they move toward me or sit on a person. Tiny spiders far away are okay.",
+  "subject": {
+    "name": "Chilean rose tarantula",
+    "canonical": "Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen."
+  },
+  "rungs": [
+    {
+      "title": "Written Word Card",
+      "rationale": "Introduces semantic trigger with zero pictorial realism to establish a low-threat baseline.",
+      "targetSuds": 10,
+      "dials": {
+        "realism": 0,
+        "proximity": 0,
+        "size": 0.1,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "The word 'TARANTULA' printed in plain black lowercase letters on a clean white 3x5 index card resting flat on an empty wooden desk.",
+      "noticePrompts": [
+        "Notice the plain black typeface of the letters.",
+        "Observe the white empty space surrounding the word."
+      ],
+      "id": "r4809054b8fbb",
+      "index": 1,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "The single word \"spider\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 0,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 10046,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:23.930Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nThe only image is the candidate rung to review.\nThis rung is meant to be the word printed on a card.\nThe therapist planned this rung at about SUDS 10; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 1,
+            "mode": "identity"
+          },
+          "ms": 2058,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:17:26.097Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.8,
+            "intensity": 8,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A white card printed with the word 'spider' rests on a light wooden surface."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-1.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.8,
+        "intensity": 8,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A white card printed with the word 'spider' rests on a light wooden surface."
+      },
+      "prompt": "The single word \"spider\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Minimalist Line Drawing",
+      "rationale": "Transitions from text to stylized outline while keeping size tiny and detail abstract.",
+      "targetSuds": 20,
+      "dials": {
+        "realism": 0.25,
+        "proximity": 0.1,
+        "size": 0.1,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "A simple black ink outline drawing of a tarantula's shape centered on a white sheet of paper, showing eight basic legs and two rounded body segments.",
+      "noticePrompts": [
+        "Notice how the drawing uses simple geometric lines rather than texture.",
+        "Look at the symmetry of the four legs on each side."
+      ],
+      "id": "redb7a9f2a449",
+      "index": 2,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 14% of the frame, seen from far across a large room.\nSetting: A simple black ink outline drawing of a tarantula's shape centered on a white sheet of paper, showing eight basic legs and two rounded body segments. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12134,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:26.024Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 20; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6175,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:17:32.430Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.58,
+            "intensity": 32,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A minimalist line drawing showing a small tarantula contained inside a jar in an empty room."
+          }
+        },
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 14% of the frame, seen from far across a large room.\nSetting: A simple black ink outline drawing of a tarantula's shape centered on a white sheet of paper, showing eight basic legs and two rounded body segments. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13396,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:45.834Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 20; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6398,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:17:52.437Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.58,
+            "intensity": 32,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A minimalist line drawing showing a contained tarantula inside a jar in an empty room."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-2.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.58,
+        "intensity": 32,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A minimalist line drawing showing a contained tarantula inside a jar in an empty room."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 14% of the frame, seen from far across a large room.\nSetting: A simple black ink outline drawing of a tarantula's shape centered on a white sheet of paper, showing eight basic legs and two rounded body segments. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 0,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Stylized Color Illustration",
+      "rationale": "Adds soft color and gentle illustration texture without photographic fidelity or proximity.",
+      "targetSuds": 30,
+      "dials": {
+        "realism": 0.5,
+        "proximity": 0.1,
+        "size": 0.15,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A friendly natural-history book illustration of a rose tarantula resting peacefully on a pale beige background.",
+      "noticePrompts": [
+        "Notice the soft rosy-pink shading on the carapace.",
+        "Observe the rounded, pillowy appearance of the drawn abdomen."
+      ],
+      "id": "r3e5788514f17",
+      "index": 3,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 18% of the frame, seen from far across a large room.\nSetting: A friendly natural-history book illustration of a rose tarantula resting peacefully on a pale beige background. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 20321,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:34.219Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 30; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6600,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:17:40.968Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.72,
+            "intensity": 35,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A stylized, low-detail illustration depicts the tarantula contained safely inside a glass jar in a calm room setting."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-3.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.72,
+        "intensity": 35,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A stylized, low-detail illustration depicts the tarantula contained safely inside a glass jar in a calm room setting."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 18% of the frame, seen from far across a large room.\nSetting: A friendly natural-history book illustration of a rose tarantula resting peacefully on a pale beige background. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Distant Soft-Focus Photograph",
+      "rationale": "Introduces actual photographic realism but cushions the threat via soft focus and small frame size.",
+      "targetSuds": 40,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.1,
+        "size": 0.15,
+        "contact": 0,
+        "count": 1,
+        "clarity": 0.4,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A soft-focus photograph of a Chilean rose tarantula resting on smooth river stones in the far corner of a warm enclosure.",
+      "noticePrompts": [
+        "Notice the blurred, gentle edges where the tarantula meets the stones.",
+        "Look at how small it appears against the large surrounding stone surface."
+      ],
+      "id": "r6f3b44985275",
+      "index": 4,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 18% of the frame, seen from far across a large room.\nSetting: A soft-focus photograph of a Chilean rose tarantula resting on smooth river stones in the far corner of a warm enclosure. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12976,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:39.084Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6592,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:17:45.836Z",
+          "critique": {
+            "subjectPresent": false,
+            "identityMatch": 0.3,
+            "intensity": 25,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "The image is heavily blurred showing an indoor room where the tarantula cannot be clearly identified."
+          }
+        },
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 18% of the frame, seen from far across a large room.\nSetting: A soft-focus photograph of a Chilean rose tarantula resting on smooth river stones in the far corner of a warm enclosure. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13538,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:59.380Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 7057,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:06.605Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.55,
+            "intensity": 35,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "The image shows a heavily blurred room containing an enclosure where a tarantula is faintly visible inside."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-4.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.55,
+        "intensity": 35,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "The image shows a heavily blurred room containing an enclosure where a tarantula is faintly visible inside."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 18% of the frame, seen from far across a large room.\nSetting: A soft-focus photograph of a Chilean rose tarantula resting on smooth river stones in the far corner of a warm enclosure. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 8.4,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Sharp Photograph at Moderate Distance",
+      "rationale": "Sharpens the photographic image to full clarity while maintaining calm, stationary posture across a flat surface.",
+      "targetSuds": 50,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.3,
+        "size": 0.25,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A clear photograph of the tarantula sitting motionless on dry soil beside a piece of cork bark.",
+      "noticePrompts": [
+        "Notice the fine texture of the individual hairs along its front legs.",
+        "Observe the pale rings at the joints where its legs bend."
+      ],
+      "id": "r6c790d8acf9b",
+      "index": 5,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 26% of the frame, seen from across the room.\nSetting: A clear photograph of the tarantula sitting motionless on dry soil beside a piece of cork bark. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 15062,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:17:56.036Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 50; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6857,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:03.021Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.78,
+            "intensity": 52,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "The tarantula is contained within a clear glass jar in an indoor setting."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-5.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.78,
+        "intensity": 52,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "The tarantula is contained within a clear glass jar in an indoor setting."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 26% of the frame, seen from across the room.\nSetting: A clear photograph of the tarantula sitting motionless on dry soil beside a piece of cork bark. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Closer View of Characteristic Hairiness",
+      "rationale": "Increases proximity and frame occupancy to habituate the patient to the primary trigger of large size and dense hair.",
+      "targetSuds": 62,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.6,
+        "size": 0.5,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A stationary mid-range photo of the Chilean rose tarantula filling the center of the frame, showing dense pinkish and brown setae across its legs and back.",
+      "noticePrompts": [
+        "Observe the thick, velvety layer of rose-tinted hair across its carapace.",
+        "Notice the small pedipalps tucked neatly near the front."
+      ],
+      "id": "racc7ac0749f4",
+      "index": 6,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from about an arm's length away.\nSetting: A stationary mid-range photo of the Chilean rose tarantula filling the center of the frame, showing dense pinkish and brown setae across its legs and back. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 11873,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:18:04.319Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 62; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 7296,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:11.747Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 58,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A Chilean rose tarantula is shown contained inside a clear glass jar on a table."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-6.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 58,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A Chilean rose tarantula is shown contained inside a clear glass jar on a table."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from about an arm's length away.\nSetting: A stationary mid-range photo of the Chilean rose tarantula filling the center of the frame, showing dense pinkish and brown setae across its legs and back. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Approaching Motion Across Table",
+      "rationale": "Integrates the patient's specific movement trigger by depicting slow, direct motion toward the viewer.",
+      "targetSuds": 74,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.7,
+        "size": 0.65,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 1
+      },
+      "scene": "The tarantula walking calmly forward across a light wooden tabletop directly toward the camera, one front leg lifted mid-stride.",
+      "noticePrompts": [
+        "Notice the posture of the raised front leg taking a deliberate step.",
+        "Look at how the hairy legs evenly balance the spider's weight as it moves forward."
+      ],
+      "id": "rdc9f3ddfb9d6",
+      "index": 7,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 60% of the frame, seen from about an arm's length away.\nSetting: The tarantula walking calmly forward across a light wooden tabletop directly toward the camera, one front leg lifted mid-stride. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is moving toward the viewer, with a slight sense of motion.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13162,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:18:16.190Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 74; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2333,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:18.639Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 68,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A Chilean rose tarantula is shown clearly at close range inside a closed glass jar on a wooden surface."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-7.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 68,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A Chilean rose tarantula is shown clearly at close range inside a closed glass jar on a wooden surface."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 60% of the frame, seen from about an arm's length away.\nSetting: The tarantula walking calmly forward across a light wooden tabletop directly toward the camera, one front leg lifted mid-stride. There is exactly one Chilean rose tarantula. It is safely contained, inside a closed clear glass jar. It is moving toward the viewer, with a slight sense of motion.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Resting Near a Person's Forearm",
+      "rationale": "Introduces proximity to a human body, addressing the patient's trigger of spiders near or on people.",
+      "targetSuds": 84,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.8,
+        "size": 0.75,
+        "contact": 0.5,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0.5
+      },
+      "scene": "The tarantula crawling slowly across a wooden tabletop just two inches away from a person's relaxed, still forearm.",
+      "noticePrompts": [
+        "Compare the texture of the tarantula's setae with the smooth skin of the forearm.",
+        "Notice the calm, relaxed position of the person's resting arm."
+      ],
+      "id": "r4c53f50ee948",
+      "index": 8,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 69% of the frame, seen up close.\nSetting: The tarantula crawling slowly across a wooden tabletop just two inches away from a person's relaxed, still forearm. There is exactly one Chilean rose tarantula. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 11202,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:18:17.814Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 84; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 9177,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:27.115Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 75,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A Chilean rose tarantula rests on a wooden table directly adjacent to a person's arm without physical contact."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-8.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 75,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A Chilean rose tarantula rests on a wooden table directly adjacent to a person's arm without physical contact."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 69% of the frame, seen up close.\nSetting: The tarantula crawling slowly across a wooden tabletop just two inches away from a person's relaxed, still forearm. There is exactly one Chilean rose tarantula. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Calm Contact on an Open Hand",
+      "rationale": "Combines the patient's highest-intensity triggers: a large hairy spider in direct, calm contact on a human body.",
+      "targetSuds": 92,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.9,
+        "size": 0.85,
+        "contact": 1,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "The large hairy tarantula resting calmly across an outstretched, open human palm, with its legs gently wrapped around the fingers.",
+      "noticePrompts": [
+        "Observe how lightly the tips of the spider's feet rest on the skin.",
+        "Notice the steady, uncurled posture of the hand supporting the spider calmly."
+      ],
+      "id": "r75a01448d6a1",
+      "index": 9,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 77% of the frame, seen in a macro close-up.\nSetting: The large hairy tarantula resting calmly across an outstretched, open human palm, with its legs gently wrapped around the fingers. There is exactly one Chilean rose tarantula. It rests calmly on an open, relaxed palm; only the hand is visible, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 14144,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:18:25.898Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of Chilean rose tarantula. Subject: Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 92; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 5557,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:18:31.583Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 78,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A clear, close-up photograph depicts the tarantula resting calmly on an open human hand."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/spiders/rung-9.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 78,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A clear, close-up photograph depicts the tarantula resting calmly on an open human hand."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same Chilean rose tarantula (Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.).\nStyle: a realistic photograph. Framing: it fills about 77% of the frame, seen in a macro close-up.\nSetting: The large hairy tarantula resting calmly across an outstretched, open human palm, with its legs gently wrapped around the fingers. There is exactly one Chilean rose tarantula. It rests calmly on an open, relaxed palm; only the hand is visible, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    }
+  ],
+  "settings": {
+    "view": "hold",
+    "exposureSeconds": 120,
+    "mode": "expectancy"
+  },
+  "source": "demo",
+  "request": {
+    "preset": "spiders",
+    "description": "Large hairy spiders, worst when they move toward me or sit on a person. Tiny spiders far away are okay.",
+    "rungCount": 9,
+    "startWithWord": true
+  },
+  "status": "ready",
+  "plan": {
+    "subject": {
+      "name": "Chilean rose tarantula",
+      "canonical": "Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen."
+    },
+    "rungs": [
+      {
+        "title": "Written Word Card",
+        "rationale": "Introduces semantic trigger with zero pictorial realism to establish a low-threat baseline.",
+        "targetSuds": 10,
+        "dials": {
+          "realism": 0,
+          "proximity": 0,
+          "size": 0.1,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "The word 'TARANTULA' printed in plain black lowercase letters on a clean white 3x5 index card resting flat on an empty wooden desk.",
+        "noticePrompts": [
+          "Notice the plain black typeface of the letters.",
+          "Observe the white empty space surrounding the word."
+        ]
+      },
+      {
+        "title": "Minimalist Line Drawing",
+        "rationale": "Transitions from text to stylized outline while keeping size tiny and detail abstract.",
+        "targetSuds": 20,
+        "dials": {
+          "realism": 0.25,
+          "proximity": 0.1,
+          "size": 0.1,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "A simple black ink outline drawing of a tarantula's shape centered on a white sheet of paper, showing eight basic legs and two rounded body segments.",
+        "noticePrompts": [
+          "Notice how the drawing uses simple geometric lines rather than texture.",
+          "Look at the symmetry of the four legs on each side."
+        ]
+      },
+      {
+        "title": "Stylized Color Illustration",
+        "rationale": "Adds soft color and gentle illustration texture without photographic fidelity or proximity.",
+        "targetSuds": 30,
+        "dials": {
+          "realism": 0.5,
+          "proximity": 0.1,
+          "size": 0.15,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A friendly natural-history book illustration of a rose tarantula resting peacefully on a pale beige background.",
+        "noticePrompts": [
+          "Notice the soft rosy-pink shading on the carapace.",
+          "Observe the rounded, pillowy appearance of the drawn abdomen."
+        ]
+      },
+      {
+        "title": "Distant Soft-Focus Photograph",
+        "rationale": "Introduces actual photographic realism but cushions the threat via soft focus and small frame size.",
+        "targetSuds": 40,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.1,
+          "size": 0.15,
+          "contact": 0,
+          "count": 1,
+          "clarity": 0.4,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A soft-focus photograph of a Chilean rose tarantula resting on smooth river stones in the far corner of a warm enclosure.",
+        "noticePrompts": [
+          "Notice the blurred, gentle edges where the tarantula meets the stones.",
+          "Look at how small it appears against the large surrounding stone surface."
+        ]
+      },
+      {
+        "title": "Sharp Photograph at Moderate Distance",
+        "rationale": "Sharpens the photographic image to full clarity while maintaining calm, stationary posture across a flat surface.",
+        "targetSuds": 50,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.3,
+          "size": 0.25,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A clear photograph of the tarantula sitting motionless on dry soil beside a piece of cork bark.",
+        "noticePrompts": [
+          "Notice the fine texture of the individual hairs along its front legs.",
+          "Observe the pale rings at the joints where its legs bend."
+        ]
+      },
+      {
+        "title": "Closer View of Characteristic Hairiness",
+        "rationale": "Increases proximity and frame occupancy to habituate the patient to the primary trigger of large size and dense hair.",
+        "targetSuds": 62,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.6,
+          "size": 0.5,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A stationary mid-range photo of the Chilean rose tarantula filling the center of the frame, showing dense pinkish and brown setae across its legs and back.",
+        "noticePrompts": [
+          "Observe the thick, velvety layer of rose-tinted hair across its carapace.",
+          "Notice the small pedipalps tucked neatly near the front."
+        ]
+      },
+      {
+        "title": "Approaching Motion Across Table",
+        "rationale": "Integrates the patient's specific movement trigger by depicting slow, direct motion toward the viewer.",
+        "targetSuds": 74,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.7,
+          "size": 0.65,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 1
+        },
+        "scene": "The tarantula walking calmly forward across a light wooden tabletop directly toward the camera, one front leg lifted mid-stride.",
+        "noticePrompts": [
+          "Notice the posture of the raised front leg taking a deliberate step.",
+          "Look at how the hairy legs evenly balance the spider's weight as it moves forward."
+        ]
+      },
+      {
+        "title": "Resting Near a Person's Forearm",
+        "rationale": "Introduces proximity to a human body, addressing the patient's trigger of spiders near or on people.",
+        "targetSuds": 84,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.8,
+          "size": 0.75,
+          "contact": 0.5,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0.5
+        },
+        "scene": "The tarantula crawling slowly across a wooden tabletop just two inches away from a person's relaxed, still forearm.",
+        "noticePrompts": [
+          "Compare the texture of the tarantula's setae with the smooth skin of the forearm.",
+          "Notice the calm, relaxed position of the person's resting arm."
+        ]
+      },
+      {
+        "title": "Calm Contact on an Open Hand",
+        "rationale": "Combines the patient's highest-intensity triggers: a large hairy spider in direct, calm contact on a human body.",
+        "targetSuds": 92,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.9,
+          "size": 0.85,
+          "contact": 1,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "The large hairy tarantula resting calmly across an outstretched, open human palm, with its legs gently wrapped around the fingers.",
+        "noticePrompts": [
+          "Observe how lightly the tips of the spider's feet rest on the skin.",
+          "Notice the steady, uncurled posture of the hand supporting the spider calmly."
+        ]
+      }
+    ],
+    "warnings": [
+      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
+      "Rungs 6→7 change 3 dials (proximity, size, motion).",
+      "Rungs 7→8 change 4 dials (proximity, size, contact, motion).",
+      "Rungs 8→9 change 4 dials (proximity, size, contact, motion)."
+    ],
+    "retried": false
+  },
+  "planAttempts": [
+    {
+      "stage": "plan",
+      "prompt": "Fear preset: spiders\nPatient's fear, in the therapist's words: \"Large hairy spiders, worst when they move toward me or sit on a person. Tiny spiders far away are okay.\"\nN (number of rungs): 9\nstartWithWord: true",
+      "params": {
+        "model": "gemini-3.8-flash",
+        "rungCount": 9,
+        "startWithWord": true
+      },
+      "ms": 13246,
+      "ok": true,
+      "model": "gemini-3.8-flash",
+      "at": "2026-10-11T23:17:02.727Z"
+    }
+  ],
+  "anchorImage": "/demo/spiders/anchor.jpg",
+  "anchorSource": "generated",
+  "anchorAttempts": [
+    {
+      "stage": "anchor",
+      "prompt": "A realistic, neutral, evenly lit photograph of a single Chilean rose tarantula: Chilean rose tarantula (Grammostola rosea) with a dense velvety charcoal-brown body, pinkish-rose setae covering the carapace, thick hairy legs with pale articulation rings, and a rounded abdomen.. Centred on a plain light-grey seamless background, whole subject visible, no people, no text. Calm and neutral, documentary style. Square image.",
+      "params": {
+        "model": "gemini-nano-banana-2.1",
+        "aspect_ratio": "1:1",
+        "image_size": "1K"
+      },
+      "ms": 10956,
+      "ok": true,
+      "model": "gemini-nano-banana-2.1",
+      "at": "2026-10-11T23:17:13.749Z"
+    }
+  ]
+}

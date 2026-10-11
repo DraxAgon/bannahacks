@@ -27,14 +27,23 @@ export const SubjectSchema = z.object({
   canonical: z.string().min(10).max(500),
 });
 
-/** Raw planner output: either a refusal or a ladder. Hierarchy rules are checked separately. */
+/**
+ * Raw planner output: either a refusal or a ladder. Structured output only fills required
+ * fields, so every field is required in the JSON schema; a refusal returns an empty subject
+ * and rungs. When not refused, the strict schema below validates the ladder.
+ */
 export const PlannerOutputSchema = z.object({
   refused: z.boolean(),
   reason: z.string().nullish(),
-  subject: SubjectSchema.nullish(),
-  rungs: z.array(PlannedRungSchema).nullish(),
+  subject: z.object({ name: z.string(), canonical: z.string() }).nullish(),
+  rungs: z.array(z.unknown()).nullish(),
 });
 export type PlannerOutput = z.infer<typeof PlannerOutputSchema>;
+
+export const PlannedLadderSchema = z.object({
+  subject: SubjectSchema,
+  rungs: z.array(PlannedRungSchema).min(1),
+});
 
 export const CritiqueSchema = z.object({
   subjectPresent: z.boolean(),
@@ -78,7 +87,7 @@ export const PlannerJsonSchema = {
   type: "object",
   properties: {
     refused: { type: "boolean" },
-    reason: { type: "string", description: "Only when refused: one calm sentence explaining why." },
+    reason: { type: "string", description: "When refused: one calm sentence explaining why. Otherwise an empty string." },
     subject: {
       type: "object",
       properties: {
@@ -104,9 +113,10 @@ export const PlannerJsonSchema = {
         },
         required: ["title", "rationale", "targetSuds", "dials", "scene", "noticePrompts"],
       },
+      description: "Exactly N rungs, bottom (calmest) first. Empty only when refused.",
     },
   },
-  required: ["refused"],
+  required: ["refused", "reason", "subject", "rungs"],
 };
 
 export const CritiqueJsonSchema = {
@@ -116,7 +126,7 @@ export const CritiqueJsonSchema = {
     identityMatch: num(0, 1, "how closely the subject matches the reference identity"),
     intensity: { type: "integer", minimum: 0, maximum: 100, description: "estimated SUDS for this phobia" },
     unsafe: { type: "boolean" },
-    unsafeReason: { type: "string", nullable: true },
+    unsafeReason: { type: ["string", "null"] },
     note: { type: "string", description: "one short sentence for the clinician" },
   },
   required: ["subjectPresent", "identityMatch", "intensity", "unsafe", "unsafeReason", "note"],

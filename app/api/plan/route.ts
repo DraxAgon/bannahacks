@@ -2,7 +2,7 @@ import { generateJson, NoKeyError } from "@/lib/ai/client";
 import { errorResponse, json, readBody } from "@/lib/ai/http";
 import { hasKey, MODELS } from "@/lib/ai/models";
 import { PLANNER_SYSTEM, plannerPrompt, plannerRetryPrompt } from "@/lib/ai/prompts";
-import { PlannerJsonSchema, PlannerOutputSchema, PlanRequestSchema } from "@/lib/ai/schemas";
+import { PlannedLadderSchema, PlannerJsonSchema, PlannerOutputSchema, PlanRequestSchema } from "@/lib/ai/schemas";
 import { checkLadderQuota, clientIp } from "@/lib/guard";
 import { clampDials } from "@/lib/pipeline/dials";
 import { dialChangeWarnings, hierarchyProblems, respaceSuds } from "@/lib/pipeline/hierarchy";
@@ -47,8 +47,14 @@ export async function POST(req: Request) {
     const problemsOf = (r: typeof result): string | null => {
       if ("error" in r) return r.error;
       if (r.data.refused) return null;
-      if (!r.data.subject || !r.data.rungs) return "subject and rungs are required when refused is false.";
-      const p = hierarchyProblems(r.data.rungs, body.rungCount, body.startWithWord);
+      const strict = PlannedLadderSchema.safeParse(r.data);
+      if (!strict.success) {
+        return strict.error.issues
+          .slice(0, 12)
+          .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
+          .join("; ");
+      }
+      const p = hierarchyProblems(strict.data.rungs, body.rungCount, body.startWithWord);
       return p.length ? p.join("\n") : null;
     };
 
@@ -74,6 +80,9 @@ export async function POST(req: Request) {
       return json({ error: "invalid", message: "The planner's answer didn't validate twice.", detail: result.error, attempts }, 502);
     }
     const out = result.data;
+    if (!out.refused && problems && !PlannedLadderSchema.safeParse(out).success) {
+      return json({ error: "invalid", message: "The planner's answer didn't validate twice.", detail: problems, attempts }, 502);
+    }
     if (out.refused) {
       return json({
         refused: true,
@@ -83,12 +92,10 @@ export async function POST(req: Request) {
         attempts,
       });
     }
-    if (!out.subject || !out.rungs?.length) {
-      return json({ error: "invalid", message: "The planner returned no rungs.", attempts }, 502);
-    }
+    const ladder = PlannedLadderSchema.parse(out);
 
     const warnings: string[] = [];
-    let rungs = out.rungs.slice(0, body.rungCount).map((r) => ({
+    let rungs = ladder.rungs.slice(0, body.rungCount).map((r) => ({
       ...r,
       targetSuds: Math.round(r.targetSuds),
       dials: clampDials(r.dials),
@@ -107,7 +114,7 @@ export async function POST(req: Request) {
 
     return json({
       refused: false,
-      subject: out.subject,
+      subject: ladder.subject,
       rungs,
       warnings,
       retried,
