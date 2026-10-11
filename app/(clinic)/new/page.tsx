@@ -160,7 +160,7 @@ export default function BuilderPage() {
           >
             <input
               id="alias"
-              className={`${inputClass} max-w-[220px] font-mono uppercase`}
+              className={`${inputClass} max-w-[220px] font-mono uppercase placeholder:normal-case`}
               value={alias}
               maxLength={6}
               placeholder="e.g. J.M."
