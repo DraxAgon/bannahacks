@@ -59,8 +59,10 @@ export function DemoStrip() {
                       style={{ filter: open ? "none" : "blur(18px) saturate(0.6)", transform: open ? "scale(1)" : "scale(1.08)" }}
                     />
                     {!open && (
-                      <span className="absolute inset-0 grid place-items-center font-mono text-[11px] uppercase tracking-widest text-ink/70">
-                        Hover or tap
+                      <span className="absolute inset-0 grid place-items-center">
+                        <span className="rounded-full bg-surface/85 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-ink">
+                          Hover or tap
+                        </span>
                       </span>
                     )}
                     <AiLabel className="absolute bottom-1.5 left-1.5" />

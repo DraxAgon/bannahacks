@@ -1,0 +1,975 @@
+{
+  "id": "demo-needles",
+  "createdAt": "2026-10-11T23:48:14.227Z",
+  "alias": "Demo",
+  "fear": "Needles",
+  "preset": "needles",
+  "description": "Vaccination needles, worst when the needle is uncapped and close to my arm. A capped syringe in a photo is okay.",
+  "subject": {
+    "name": "vaccine syringe",
+    "canonical": "A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip."
+  },
+  "rungs": [
+    {
+      "title": "Printed Word on Card",
+      "rationale": "Introduces exposure with minimal distress using purely semantic stimulation.",
+      "targetSuds": 10,
+      "dials": {
+        "realism": 0,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "The word 'Syringe' printed in clean black sans-serif font centered on a plain white paper card lying flat on a wooden desk.",
+      "noticePrompts": [
+        "Notice the plain black ink of the lettering.",
+        "Observe the white neutral space surrounding the word."
+      ],
+      "id": "r9c4d25d15056",
+      "index": 1,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "The single word \"needle\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 0,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 11665,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:48:48.264Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nThe only image is the candidate rung to review.\nThis rung is meant to be the word printed on a card.\nThe therapist planned this rung at about SUDS 10; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 1,
+            "mode": "identity"
+          },
+          "ms": 10538,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:48:58.936Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 20,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "Text card showing the word needle in clear print on a wooden surface."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-1.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 20,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "Text card showing the word needle in clear print on a wooden surface."
+      },
+      "prompt": "The single word \"needle\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Minimal Line Drawing of Capped Syringe",
+      "rationale": "Transitions to iconic pictorial representation while keeping the protective cap on.",
+      "targetSuds": 20,
+      "dials": {
+        "realism": 0.25,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "A simple black-and-white minimalist line drawing of a capped plastic syringe resting on a plain white background.",
+      "noticePrompts": [
+        "Notice the outline showing the cap securely covering the tip.",
+        "Examine the simple horizontal tick marks drawn along the barrel."
+      ],
+      "id": "r61c71b7a6f72",
+      "index": 2,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A simple black-and-white minimalist line drawing of a capped plastic syringe resting on a plain white background. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 19183,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:48:55.788Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 20; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2519,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:48:58.581Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 20,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A simple black-and-white line drawing showing a capped syringe sealed inside sterile packaging on a white background."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-2.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 20,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A simple black-and-white line drawing showing a capped syringe sealed inside sterile packaging on a white background."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A simple black-and-white minimalist line drawing of a capped plastic syringe resting on a plain white background. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 0,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Soft Color Illustration of Capped Syringe",
+      "rationale": "Adds realistic color and friendly shading to desensitize the patient to medical equipment palettes.",
+      "targetSuds": 30,
+      "dials": {
+        "realism": 0.5,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A clean, friendly digital illustration of a capped syringe showing light-blue accents on the hub and black measurement marks on a pale desk surface.",
+      "noticePrompts": [
+        "Observe the soft blue hue of the needle hub.",
+        "Notice the neat black measurement lines along the clear barrel."
+      ],
+      "id": "r99d55610bd0b",
+      "index": 3,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A clean, friendly digital illustration of a capped syringe showing light-blue accents on the hub and black measurement marks on a pale desk surface. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 14526,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:48:51.139Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 30; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2784,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:48:54.081Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 25,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A soft, non-threatening illustration depicting a capped medical syringe sealed in packaging on an office desk."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-3.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 25,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A soft, non-threatening illustration depicting a capped medical syringe sealed in packaging on an office desk."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A clean, friendly digital illustration of a capped syringe showing light-blue accents on the hub and black measurement marks on a pale desk surface. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Distant Photo of Capped Syringe on Tray",
+      "rationale": "Introduces full photographic realism at a comfortable distance with the safety cap still intact.",
+      "targetSuds": 40,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 0.7,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A color photograph of a single capped 1 mL syringe lying across a stainless-steel clinic tray on a distant examination table.",
+      "noticePrompts": [
+        "Notice the semi-transparent cap firmly covering the needle.",
+        "Look at the light reflecting off the smooth stainless-steel tray."
+      ],
+      "id": "r15c0fe20ed0c",
+      "index": 4,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A color photograph of a single capped 1 mL syringe lying across a stainless-steel clinic tray on a distant examination table. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 21952,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:16.039Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2114,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:18.351Z",
+          "critique": {
+            "subjectPresent": false,
+            "identityMatch": 0,
+            "intensity": 15,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "The image shows a blurred, empty medical examination room with no syringe visible."
+          }
+        },
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A color photograph of a single capped 1 mL syringe lying across a stainless-steel clinic tray on a distant examination table. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": "stronger"
+          },
+          "ms": 14412,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:32.769Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2681,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:35.645Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 35,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A packaged syringe is visible on a metal tray in a blurred clinical examination room setting."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-4.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 35,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A packaged syringe is visible on a metal tray in a blurred clinical examination room setting."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A color photograph of a single capped 1 mL syringe lying across a stainless-steel clinic tray on a distant examination table. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+      "post": {
+        "blurSigma": 4.2,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Mid-Range Photo of Capped Syringe",
+      "rationale": "Increases visual clarity and closer proximity to the syringe while remaining safely capped.",
+      "targetSuds": 50,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.3,
+        "size": 0.4,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A sharp mid-range photograph of the capped 1 mL syringe resting stationary on a sterile white paper mat.",
+      "noticePrompts": [
+        "Examine the printed milliliter numbers along the barrel.",
+        "Notice the solid plastic construction of the protective cap."
+      ],
+      "id": "ra8f165448c7a",
+      "index": 5,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 39% of the frame, seen from across the room.\nSetting: A sharp mid-range photograph of the capped 1 mL syringe resting stationary on a sterile white paper mat. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12855,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:11.443Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 50; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 1770,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:13.332Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 50,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A sterile packaged vaccine syringe rests on a medical tray in an examination room setting."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-5.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 50,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A sterile packaged vaccine syringe rests on a medical tray in an examination room setting."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 39% of the frame, seen from across the room.\nSetting: A sharp mid-range photograph of the capped 1 mL syringe resting stationary on a sterile white paper mat. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Uncapped Syringe Resting on Tray",
+      "rationale": "Introduces the patient's primary trigger element (the exposed metal needle) in a neutral, stationary tabletop context.",
+      "targetSuds": 62,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.4,
+        "size": 0.4,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A still photograph of the 1 mL syringe lying stationary on a white medical tray, now uncapped, with the fine beveled needle visible in still air.",
+      "noticePrompts": [
+        "Notice the narrow gauge and silver sheen of the metal needle.",
+        "Observe the angle of the beveled opening at the needle tip."
+      ],
+      "id": "refd7eb4dfa83",
+      "index": 6,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 39% of the frame, seen from a few metres away.\nSetting: A still photograph of the 1 mL syringe lying stationary on a white medical tray, now uncapped, with the fine beveled needle visible in still air. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 15809,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:14.751Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 62; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2300,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:17.160Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.98,
+            "intensity": 60,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A clear, realistic photo of the matching syringe resting uncapped on a medical tray in an examination room."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-6.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.98,
+        "intensity": 60,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A clear, realistic photo of the matching syringe resting uncapped on a medical tray in an examination room."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 39% of the frame, seen from a few metres away.\nSetting: A still photograph of the 1 mL syringe lying stationary on a white medical tray, now uncapped, with the fine beveled needle visible in still air. There is exactly one vaccine syringe. It is safely contained, capped, inside its sealed packaging. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Gloved Hand Holding Uncapped Syringe",
+      "rationale": "Introduces a provider holding the uncapped syringe, signaling clinical readiness without proximity to a body.",
+      "targetSuds": 72,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.5,
+        "size": 0.5,
+        "contact": 0.5,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A gloved clinician's hand calmly holding the uncapped syringe upright against an out-of-focus clinic wall.",
+      "noticePrompts": [
+        "Look at the blue nitrile texture of the glove holding the barrel.",
+        "Observe the small clear droplet of saline visible at the beveled tip."
+      ],
+      "id": "r9c4356e1fa9f",
+      "index": 7,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from a few metres away.\nSetting: A gloved clinician's hand calmly holding the uncapped syringe upright against an out-of-focus clinic wall. There is exactly one vaccine syringe. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13817,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:27.156Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 72; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 1971,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:29.247Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 75,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A gloved healthcare provider holds the matching syringe upright in a clinical exam room setting."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-7.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 75,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A gloved healthcare provider holds the matching syringe upright in a clinical exam room setting."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from a few metres away.\nSetting: A gloved clinician's hand calmly holding the uncapped syringe upright against an out-of-focus clinic wall. There is exactly one vaccine syringe. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Uncapped Syringe Near Upper Arm",
+      "rationale": "Combines the uncapped needle with proximity to the patient's primary trigger location, an upper arm.",
+      "targetSuds": 82,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.7,
+        "size": 0.6,
+        "contact": 0.8,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A gloved hand holds the uncapped syringe a few inches away from a relaxed upper arm with healthy, unbroken skin, pointing parallel to the surface.",
+      "noticePrompts": [
+        "Notice the calm, relaxed contour of the deltoid muscle.",
+        "Notice the open space of air between the needle tip and the skin."
+      ],
+      "id": "r767fde47363d",
+      "index": 8,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 56% of the frame, seen from about an arm's length away.\nSetting: A gloved hand holds the uncapped syringe a few inches away from a relaxed upper arm with healthy, unbroken skin, pointing parallel to the surface. There is exactly one vaccine syringe. It is close to a calm person's relaxed hand or arm, no face visible. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 20384,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:37.550Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 82; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 5963,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:43.640Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 83,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A gloved hand holds the vaccine syringe poised directly beside a patient's upper arm without touching or puncturing the skin."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-8.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 83,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A gloved hand holds the vaccine syringe poised directly beside a patient's upper arm without touching or puncturing the skin."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 56% of the frame, seen from about an arm's length away.\nSetting: A gloved hand holds the uncapped syringe a few inches away from a relaxed upper arm with healthy, unbroken skin, pointing parallel to the surface. There is exactly one vaccine syringe. It is close to a calm person's relaxed hand or arm, no face visible. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Close-Up of Uncapped Syringe Beside Arm",
+      "rationale": "Reaches peak exposure criteria by presenting the uncapped needle held steadily right beside the arm without puncture.",
+      "targetSuds": 92,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.9,
+        "size": 0.8,
+        "contact": 1,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A sharp, close-up view of the uncapped needle held steadily less than an inch away from the surface of a relaxed upper arm, showing intact, calm skin with no puncture.",
+      "noticePrompts": [
+        "Observe the metallic reflection along the slender needle shaft.",
+        "Notice the steady, calm posture of the gloved fingers holding the barrel.",
+        "See the small gap of air separating the beveled tip from the intact skin surface."
+      ],
+      "id": "r9966b5dd1fcf",
+      "index": 9,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 73% of the frame, seen in a macro close-up.\nSetting: A sharp, close-up view of the uncapped needle held steadily less than an inch away from the surface of a relaxed upper arm, showing intact, calm skin with no puncture. There is exactly one vaccine syringe. The uncapped needle is held close to a relaxed bare upper arm, not touching the skin; only the arm and a gloved hand are visible. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 9535,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:49:38.788Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of vaccine syringe. Subject: vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 92; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 1961,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:49:40.866Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 88,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A gloved hand holds the vaccine syringe poised directly above bare skin without yet puncturing it."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/needles/rung-9.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 88,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A gloved hand holds the vaccine syringe poised directly above bare skin without yet puncturing it."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same vaccine syringe (A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.).\nStyle: a realistic photograph. Framing: it fills about 73% of the frame, seen in a macro close-up.\nSetting: A sharp, close-up view of the uncapped needle held steadily less than an inch away from the surface of a relaxed upper arm, showing intact, calm skin with no puncture. There is exactly one vaccine syringe. The uncapped needle is held close to a relaxed bare upper arm, not touching the skin; only the arm and a gloved hand are visible. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    }
+  ],
+  "settings": {
+    "view": "hold",
+    "exposureSeconds": 120,
+    "mode": "expectancy"
+  },
+  "source": "demo",
+  "request": {
+    "preset": "needles",
+    "description": "Vaccination needles, worst when the needle is uncapped and close to my arm. A capped syringe in a photo is okay.",
+    "rungCount": 9,
+    "startWithWord": true
+  },
+  "status": "ready",
+  "plan": {
+    "subject": {
+      "name": "vaccine syringe",
+      "canonical": "A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip."
+    },
+    "rungs": [
+      {
+        "title": "Printed Word on Card",
+        "rationale": "Introduces exposure with minimal distress using purely semantic stimulation.",
+        "targetSuds": 10,
+        "dials": {
+          "realism": 0,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "The word 'Syringe' printed in clean black sans-serif font centered on a plain white paper card lying flat on a wooden desk.",
+        "noticePrompts": [
+          "Notice the plain black ink of the lettering.",
+          "Observe the white neutral space surrounding the word."
+        ]
+      },
+      {
+        "title": "Minimal Line Drawing of Capped Syringe",
+        "rationale": "Transitions to iconic pictorial representation while keeping the protective cap on.",
+        "targetSuds": 20,
+        "dials": {
+          "realism": 0.25,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "A simple black-and-white minimalist line drawing of a capped plastic syringe resting on a plain white background.",
+        "noticePrompts": [
+          "Notice the outline showing the cap securely covering the tip.",
+          "Examine the simple horizontal tick marks drawn along the barrel."
+        ]
+      },
+      {
+        "title": "Soft Color Illustration of Capped Syringe",
+        "rationale": "Adds realistic color and friendly shading to desensitize the patient to medical equipment palettes.",
+        "targetSuds": 30,
+        "dials": {
+          "realism": 0.5,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A clean, friendly digital illustration of a capped syringe showing light-blue accents on the hub and black measurement marks on a pale desk surface.",
+        "noticePrompts": [
+          "Observe the soft blue hue of the needle hub.",
+          "Notice the neat black measurement lines along the clear barrel."
+        ]
+      },
+      {
+        "title": "Distant Photo of Capped Syringe on Tray",
+        "rationale": "Introduces full photographic realism at a comfortable distance with the safety cap still intact.",
+        "targetSuds": 40,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 0.7,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A color photograph of a single capped 1 mL syringe lying across a stainless-steel clinic tray on a distant examination table.",
+        "noticePrompts": [
+          "Notice the semi-transparent cap firmly covering the needle.",
+          "Look at the light reflecting off the smooth stainless-steel tray."
+        ]
+      },
+      {
+        "title": "Mid-Range Photo of Capped Syringe",
+        "rationale": "Increases visual clarity and closer proximity to the syringe while remaining safely capped.",
+        "targetSuds": 50,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.3,
+          "size": 0.4,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A sharp mid-range photograph of the capped 1 mL syringe resting stationary on a sterile white paper mat.",
+        "noticePrompts": [
+          "Examine the printed milliliter numbers along the barrel.",
+          "Notice the solid plastic construction of the protective cap."
+        ]
+      },
+      {
+        "title": "Uncapped Syringe Resting on Tray",
+        "rationale": "Introduces the patient's primary trigger element (the exposed metal needle) in a neutral, stationary tabletop context.",
+        "targetSuds": 62,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.4,
+          "size": 0.4,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A still photograph of the 1 mL syringe lying stationary on a white medical tray, now uncapped, with the fine beveled needle visible in still air.",
+        "noticePrompts": [
+          "Notice the narrow gauge and silver sheen of the metal needle.",
+          "Observe the angle of the beveled opening at the needle tip."
+        ]
+      },
+      {
+        "title": "Gloved Hand Holding Uncapped Syringe",
+        "rationale": "Introduces a provider holding the uncapped syringe, signaling clinical readiness without proximity to a body.",
+        "targetSuds": 72,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.5,
+          "size": 0.5,
+          "contact": 0.5,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A gloved clinician's hand calmly holding the uncapped syringe upright against an out-of-focus clinic wall.",
+        "noticePrompts": [
+          "Look at the blue nitrile texture of the glove holding the barrel.",
+          "Observe the small clear droplet of saline visible at the beveled tip."
+        ]
+      },
+      {
+        "title": "Uncapped Syringe Near Upper Arm",
+        "rationale": "Combines the uncapped needle with proximity to the patient's primary trigger location, an upper arm.",
+        "targetSuds": 82,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.7,
+          "size": 0.6,
+          "contact": 0.8,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A gloved hand holds the uncapped syringe a few inches away from a relaxed upper arm with healthy, unbroken skin, pointing parallel to the surface.",
+        "noticePrompts": [
+          "Notice the calm, relaxed contour of the deltoid muscle.",
+          "Notice the open space of air between the needle tip and the skin."
+        ]
+      },
+      {
+        "title": "Close-Up of Uncapped Syringe Beside Arm",
+        "rationale": "Reaches peak exposure criteria by presenting the uncapped needle held steadily right beside the arm without puncture.",
+        "targetSuds": 92,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.9,
+          "size": 0.8,
+          "contact": 1,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A sharp, close-up view of the uncapped needle held steadily less than an inch away from the surface of a relaxed upper arm, showing intact, calm skin with no puncture.",
+        "noticePrompts": [
+          "Observe the metallic reflection along the slender needle shaft.",
+          "Notice the steady, calm posture of the gloved fingers holding the barrel.",
+          "See the small gap of air separating the beveled tip from the intact skin surface."
+        ]
+      }
+    ],
+    "warnings": [
+      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
+      "Rungs 6→7 change 3 dials (proximity, size, contact).",
+      "Rungs 7→8 change 3 dials (proximity, size, contact).",
+      "Rungs 8→9 change 3 dials (proximity, size, contact)."
+    ],
+    "retried": false
+  },
+  "planAttempts": [
+    {
+      "stage": "plan",
+      "prompt": "Fear preset: needles\nPatient's fear, in the therapist's words: \"Vaccination needles, worst when the needle is uncapped and close to my arm. A capped syringe in a photo is okay.\"\nN (number of rungs): 9\nstartWithWord: true\nThis is a blood-injection-injury fear. Never show blood, skin puncture or injury. contact 1 means an uncapped needle held close to a relaxed upper arm, not piercing. count is the number of syringes.",
+      "params": {
+        "model": "gemini-3.8-flash",
+        "rungCount": 9,
+        "startWithWord": true
+      },
+      "ms": 10330,
+      "ok": true,
+      "model": "gemini-3.8-flash",
+      "at": "2026-10-11T23:48:24.564Z"
+    }
+  ],
+  "anchorImage": "/demo/needles/anchor.jpg",
+  "anchorSource": "generated",
+  "anchorAttempts": [
+    {
+      "stage": "anchor",
+      "prompt": "A realistic, neutral, evenly lit photograph of a single vaccine syringe: A standard medical 1 mL vaccination syringe with a clear plastic cylindrical barrel, black milliliter measurement markings, a translucent light-blue plastic hub, and a fine 25-gauge stainless-steel needle with a beveled tip.. Centred on a plain light-grey seamless background, whole subject visible, no people, no text. Calm and neutral, documentary style. Square image.",
+      "params": {
+        "model": "gemini-nano-banana-2.1",
+        "aspect_ratio": "1:1",
+        "image_size": "1K"
+      },
+      "ms": 11935,
+      "ok": true,
+      "model": "gemini-nano-banana-2.1",
+      "at": "2026-10-11T23:48:36.507Z"
+    }
+  ]
+}

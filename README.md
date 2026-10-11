@@ -22,6 +22,14 @@
    - A per-patient ridge regression learns which dials drive this patient's fear (the **fear fingerprint**).
 6. **Report.** SUDS curves, peak vs end, expectancy change, looking time and releases, notes on what the patient learned, and the fingerprint radar. Print-ready.
 
+## Screenshots
+
+| Ladder (therapist) | Exposure (patient) | Report |
+|---|---|---|
+| ![Ladder view](docs/screenshots/ladder-1440.png) | ![Hold-to-view exposure](docs/screenshots/session-expose-1440.png) | ![Clinician report](docs/screenshots/report-1440.png) |
+
+All screens at 1440px and 390px are in [`docs/screenshots/`](docs/screenshots).
+
 ## Features
 
 | Screen | Highlights |

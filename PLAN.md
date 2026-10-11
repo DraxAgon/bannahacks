@@ -29,11 +29,13 @@ scripts/seed-demo.ts · tests/golden.spec.ts · docs/screenshots/
 - Use the Interactions API (the `generateContent` route is labelled legacy and can't return JPEG with an API key).
 - `cacheComponents` turned **off**: the app is client-heavy (IndexedDB), so PPR adds no value and forces Suspense around `useParams`.
 - **Repo:** this session is scoped to `DraxAgon/bannahacks` on branch `claude/fear-ladder-web-app-fo4jiq`, so code ships there (not a new `fear-ladder` repo).
-- **Key:** cloud container → key comes from env (environment settings or Vercel env), never chat. The seed script can run against a deployed URL (`SEED_BASE_URL`) so the key never needs to be local.
+- **Key:** stored only in gitignored `.env.local` and as an encrypted Vercel env var. The seed script can also run against a deployed URL (`SEED_BASE_URL`).
+- **Structured output fills only required fields**, so the planner schema requires every field (empty on refusal) and a strict zod schema validates the ladder.
+- **Deploy:** Vercel project `fear-ladder`, production alias https://fear-ladder-beta.vercel.app (deployed from the session branch).
 - Orchestration runs in the browser (and in the seed script via the same module), one model call per route, `maxDuration = 60`.
 
 ## Open risks
-- No key yet → demo ladders can't be seeded until one is available. Demo mode never shows placeholder art; until seeded, demo buttons explain that.
+- Demo ladders are seeded through the real pipeline (spiders, dogs, needles); re-run `npm run seed` to refresh.
 - Image-model rate limits → concurrency 3 + backoff; critic falls back to lite model.
 - Vercel body limit (4.5 MB) → images travel as 1K JPEG q85 (~150–300 KB).
 - Next 16 is newer than training data → read `node_modules/next/dist/docs` before using APIs.

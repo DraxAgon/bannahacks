@@ -1,0 +1,1009 @@
+{
+  "id": "demo-dogs",
+  "createdAt": "2026-10-11T23:46:32.292Z",
+  "alias": "Demo",
+  "fear": "Dogs",
+  "preset": "dogs",
+  "description": "Big dogs, especially barking or jumping up. Small calm dogs on a leash across the street are fine.",
+  "subject": {
+    "name": "German Shepherd",
+    "canonical": "An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build."
+  },
+  "rungs": [
+    {
+      "title": "Printed Word on Card",
+      "rationale": "Initiates cognitive processing of the phobic subject with zero pictorial realism to establish a safe baseline.",
+      "targetSuds": 10,
+      "dials": {
+        "realism": 0,
+        "proximity": 0,
+        "size": 0.1,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "The word 'GERMAN SHEPHERD' printed in clean black sans-serif font across a plain white card.",
+      "noticePrompts": [
+        "Notice the plain black lettering against the white card.",
+        "Observe the quiet, static nature of the printed text."
+      ],
+      "id": "r9544bce2ca24",
+      "index": 1,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "The single word \"dog\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 0,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12267,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:09.325Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nThe only image is the candidate rung to review.\nThis rung is meant to be the word printed on a card.\nThe therapist planned this rung at about SUDS 10; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 1,
+            "mode": "identity"
+          },
+          "ms": 3701,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:13.264Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.8,
+            "intensity": 8,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A simple white card displaying the word 'dog' printed clearly in lowercase on a light wood surface."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-1.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.8,
+        "intensity": 8,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A simple white card displaying the word 'dog' printed clearly in lowercase on a light wood surface."
+      },
+      "prompt": "The single word \"dog\" in plain black sans-serif type, centred on a plain white index card lying flat on a light wooden table.\nNothing else in the image: no pictures, no drawings, no other text.\nCalm, even lighting. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Minimal Line Sketch",
+      "rationale": "Introduces basic subject morphology at a very low level of visual realism.",
+      "targetSuds": 20,
+      "dials": {
+        "realism": 0.25,
+        "proximity": 0,
+        "size": 0.1,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 0,
+        "motion": 0
+      },
+      "scene": "A simple black line drawing of an adult German Shepherd seated quietly, centered on a neutral off-white paper.",
+      "noticePrompts": [
+        "Notice the outline of the tall, pointed ears.",
+        "Observe how sparse and non-threatening the thin pencil lines appear."
+      ],
+      "id": "r3adeb487e4aa",
+      "index": 2,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 14% of the frame, seen from far across a large room.\nSetting: A simple black line drawing of an adult German Shepherd seated quietly, centered on a neutral off-white paper. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13786,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:10.854Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 20; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2174,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:13.405Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 18,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A minimalist black and white line drawing depicting a distant German Shepherd sitting leashed inside an enclosure in an open room."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-2.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 18,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A minimalist black and white line drawing depicting a distant German Shepherd sitting leashed inside an enclosure in an open room."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a simple black ink line drawing on white paper. Framing: it fills about 14% of the frame, seen from far across a large room.\nSetting: A simple black line drawing of an adult German Shepherd seated quietly, centered on a neutral off-white paper. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 0,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Distant Soft Illustration",
+      "rationale": "Adds natural coloration and gentle texture while keeping distance high and realism stylized.",
+      "targetSuds": 30,
+      "dials": {
+        "realism": 0.5,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A friendly watercolor illustration of a calm German Shepherd sitting peacefully on a green lawn behind a low wooden picket fence.",
+      "noticePrompts": [
+        "Notice the blend of black and warm tan colors on the coat.",
+        "Observe the relaxed posture and closed mouth in the drawing."
+      ],
+      "id": "r8589e1d330d6",
+      "index": 3,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A friendly watercolor illustration of a calm German Shepherd sitting peacefully on a green lawn behind a low wooden picket fence. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12779,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:09.862Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 30; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2981,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:13.290Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.9,
+            "intensity": 22,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A gentle watercolor illustration depicting a calm German Shepherd sitting tethered to a fence in a garden."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-3.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.9,
+        "intensity": 22,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A gentle watercolor illustration depicting a calm German Shepherd sitting tethered to a fence in a garden."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a soft, friendly flat illustration with rounded shapes and gentle colours. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A friendly watercolor illustration of a calm German Shepherd sitting peacefully on a green lawn behind a low wooden picket fence. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Blurred Distant Photograph",
+      "rationale": "Transitions to photographic realism while heavily buffering emotional impact with optical blur and high containment.",
+      "targetSuds": 40,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.1,
+        "size": 0.2,
+        "contact": 0,
+        "count": 1,
+        "clarity": 0.3,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A soft, out-of-focus photograph of a German Shepherd on a leash behind a garden fence in the far distance on grass.",
+      "noticePrompts": [
+        "Notice the softened, blurry edges of the dog's black saddle markings.",
+        "Observe how the fence physically separates the dog from the foreground."
+      ],
+      "id": "rcfedc25c8851",
+      "index": 4,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A soft, out-of-focus photograph of a German Shepherd on a leash behind a garden fence in the far distance on grass. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 13916,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:27.190Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2242,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:29.632Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.5,
+            "intensity": 15,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "The dog is extremely small in the frame, heavily blurred, and seen at a significant distance across a garden."
+          }
+        },
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A soft, out-of-focus photograph of a German Shepherd on a leash behind a garden fence in the far distance on grass. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": "stronger"
+          },
+          "ms": 13917,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:43.556Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 40; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2091,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:46.273Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.85,
+            "intensity": 25,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A German Shepherd is standing in a grassy yard behind a low fence, depicted with heavy blur that significantly softens details."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-4.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.85,
+        "intensity": 25,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A German Shepherd is standing in a grassy yard behind a low fence, depicted with heavy blur that significantly softens details."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 22% of the frame, seen from far across a large room.\nSetting: A soft, out-of-focus photograph of a German Shepherd on a leash behind a garden fence in the far distance on grass. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+      "post": {
+        "blurSigma": 9.8,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Sharp Distant Photograph",
+      "rationale": "Resolves photographic detail while retaining low proximity and containment behind a fence.",
+      "targetSuds": 50,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.2,
+        "size": 0.3,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A crisp, clear full-color photo of the German Shepherd sitting calmly on a leash behind a chain-link fence in a park.",
+      "noticePrompts": [
+        "Notice the sharp detail of the erect ears against the sky.",
+        "Observe the calm, neutral expression around the eyes and snout."
+      ],
+      "id": "re03a24b575ad",
+      "index": 5,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 31% of the frame, seen from across the room.\nSetting: A crisp, clear full-color photo of the German Shepherd sitting calmly on a leash behind a chain-link fence in a park. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 11509,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:24.808Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 50; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2400,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:27.583Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 50,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A German Shepherd matching the reference dog sits calmly on a leash outdoors next to a fence."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-5.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 50,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A German Shepherd matching the reference dog sits calmly on a leash outdoors next to a fence."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 31% of the frame, seen from across the room.\nSetting: A crisp, clear full-color photo of the German Shepherd sitting calmly on a leash behind a chain-link fence in a park. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": true
+      }
+    },
+    {
+      "title": "Mid-Shot Standing Alert",
+      "rationale": "Increases visual scale and presence by showing the large dog standing upright in clearer view.",
+      "targetSuds": 62,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.4,
+        "size": 0.5,
+        "contact": 0,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "A clear photograph of the German Shepherd standing on all fours on a leash behind a wooden fence, alert and looking forward.",
+      "noticePrompts": [
+        "Notice the sturdy, deep-chested build and posture.",
+        "Look at the dark facial mask and the glossy texture of its fur."
+      ],
+      "id": "r49dc1fcab863",
+      "index": 6,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from a few metres away.\nSetting: A clear photograph of the German Shepherd standing on all fours on a leash behind a wooden fence, alert and looking forward. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 21593,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:35.009Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 62; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2640,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:37.877Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 60,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A German Shepherd standing calmly behind a low wooden fence, on a leash outdoors."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-6.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 60,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A German Shepherd standing calmly behind a low wooden fence, on a leash outdoors."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 48% of the frame, seen from a few metres away.\nSetting: A clear photograph of the German Shepherd standing on all fours on a leash behind a wooden fence, alert and looking forward. There is exactly one German Shepherd. It is safely contained, on a leash behind a low garden fence. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Open Mouth with Handler",
+      "rationale": "Introduces vocalization cues (barking posture) within a safe context alongside a calm handler.",
+      "targetSuds": 74,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.5,
+        "size": 0.6,
+        "contact": 0.5,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0
+      },
+      "scene": "The German Shepherd standing beside a person holding its leash in a yard, mouth open in a mid-bark alert expression, without aggression or snarl.",
+      "noticePrompts": [
+        "Notice the pink tongue and open mouth without any curled lips or bared teeth.",
+        "Observe the handler's steady hand resting lightly on the leash."
+      ],
+      "id": "r3ae3e2b7ccd3",
+      "index": 7,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 56% of the frame, seen from a few metres away.\nSetting: The German Shepherd standing beside a person holding its leash in a yard, mouth open in a mid-bark alert expression, without aggression or snarl. There is exactly one German Shepherd. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12023,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:39.616Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 74; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 4313,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:44.191Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 65,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A clear, realistic photo of a German Shepherd on a leash held by a person in a yard."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-7.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 65,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A clear, realistic photo of a German Shepherd on a leash held by a person in a yard."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 56% of the frame, seen from a few metres away.\nSetting: The German Shepherd standing beside a person holding its leash in a yard, mouth open in a mid-bark alert expression, without aggression or snarl. There is exactly one German Shepherd. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It is completely still.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Frontal Approach",
+      "rationale": "Introduces directional motion toward the viewer to target the patient's sensitivity to approaching dogs.",
+      "targetSuds": 84,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.6,
+        "size": 0.7,
+        "contact": 0.5,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0.5
+      },
+      "scene": "The German Shepherd trotting forward on a loose leash along a grassy trail with its handler walking alongside.",
+      "noticePrompts": [
+        "Notice the forward stride of the front paws as it trots.",
+        "Observe the relaxed curve of the tail as it moves."
+      ],
+      "id": "rdd4234c197b1",
+      "index": 8,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 65% of the frame, seen from about an arm's length away.\nSetting: The German Shepherd trotting forward on a loose leash along a grassy trail with its handler walking alongside. There is exactly one German Shepherd. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 10936,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:48.822Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 84; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6734,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:55.820Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.78,
+            "intensity": 62,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A German Shepherd walks calmly on a leash outdoors, matching the breed characteristics of the reference."
+          }
+        },
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 65% of the frame, seen from about an arm's length away.\nSetting: The German Shepherd trotting forward on a loose leash along a grassy trail with its handler walking alongside. There is exactly one German Shepherd. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": "stronger"
+          },
+          "ms": 11905,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:48:07.737Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 84; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 6232,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:48:14.215Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.82,
+            "intensity": 68,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A German Shepherd walks forward on a leash held by a person out of frame."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-8.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.82,
+        "intensity": 68,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A German Shepherd walks forward on a leash held by a person out of frame."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 65% of the frame, seen from about an arm's length away.\nSetting: The German Shepherd trotting forward on a loose leash along a grassy trail with its handler walking alongside. There is exactly one German Shepherd. It is near a person; only a calm hand or forearm is visible at the edge of the frame, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.\nMake the subject a little more noticeable and detailed, still calm.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    },
+    {
+      "title": "Upright Front Paws Up",
+      "rationale": "Exposes the patient to the primary trigger of jumping up, showing large scale and vertical body posture in a non-aggressive context.",
+      "targetSuds": 92,
+      "dials": {
+        "realism": 1,
+        "proximity": 0.7,
+        "size": 0.85,
+        "contact": 1,
+        "count": 1,
+        "clarity": 1,
+        "color": 1,
+        "motion": 0.5
+      },
+      "scene": "The German Shepherd rearing up playfully with front paws resting on a handler's padded jacket, mouth open in a happy pant.",
+      "noticePrompts": [
+        "Notice the full height of the dog's body while up on its hind legs.",
+        "Observe the soft, gentle placement of the front paws against the jacket."
+      ],
+      "id": "r6144ef07d3a9",
+      "index": 9,
+      "attempts": [
+        {
+          "stage": "rung",
+          "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 77% of the frame, seen from about an arm's length away.\nSetting: The German Shepherd rearing up playfully with front paws resting on a handler's padded jacket, mouth open in a happy pant. There is exactly one German Shepherd. A relaxed hand gently rests on its back; only the hand is visible, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+          "params": {
+            "model": "gemini-nano-banana-2.1",
+            "references": 1,
+            "safetyBoost": false,
+            "intensityHint": null
+          },
+          "ms": 12177,
+          "ok": true,
+          "model": "gemini-nano-banana-2.1",
+          "at": "2026-10-11T23:47:56.387Z"
+        },
+        {
+          "stage": "critique",
+          "prompt": "Phobia: fear of German Shepherd. Subject: German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nImage 1 is the identity reference. Image 2 is the candidate rung to review.\nThe therapist planned this rung at about SUDS 92; estimate intensity independently.",
+          "params": {
+            "model": "gemini-3.8-flash",
+            "images": 2,
+            "mode": "identity"
+          },
+          "ms": 2098,
+          "ok": true,
+          "model": "gemini-3.8-flash",
+          "at": "2026-10-11T23:47:58.689Z",
+          "critique": {
+            "subjectPresent": true,
+            "identityMatch": 0.95,
+            "intensity": 88,
+            "unsafe": false,
+            "unsafeReason": null,
+            "note": "A close photograph showing the German Shepherd leaning warmly against a person whose face is cropped out."
+          }
+        }
+      ],
+      "status": "ready",
+      "kind": "planned",
+      "image": "/demo/dogs/rung-9.jpg",
+      "critique": {
+        "subjectPresent": true,
+        "identityMatch": 0.95,
+        "intensity": 88,
+        "unsafe": false,
+        "unsafeReason": null,
+        "note": "A close photograph showing the German Shepherd leaning warmly against a person whose face is cropped out."
+      },
+      "prompt": "Use the reference image only to keep the subject's identity: the exact same German Shepherd (An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.).\nStyle: a realistic photograph. Framing: it fills about 77% of the frame, seen from about an arm's length away.\nSetting: The German Shepherd rearing up playfully with front paws resting on a handler's padded jacket, mouth open in a happy pant. There is exactly one German Shepherd. A relaxed hand gently rests on its back; only the hand is visible, no face. It appears to be moving slowly, mid-step.\nCalm, even lighting. No text unless asked. No blood, injury, aggression or human faces. Square image.",
+      "post": {
+        "blurSigma": 0,
+        "saturation": 1,
+        "vignette": false
+      }
+    }
+  ],
+  "settings": {
+    "view": "hold",
+    "exposureSeconds": 120,
+    "mode": "expectancy"
+  },
+  "source": "demo",
+  "request": {
+    "preset": "dogs",
+    "description": "Big dogs, especially barking or jumping up. Small calm dogs on a leash across the street are fine.",
+    "rungCount": 9,
+    "startWithWord": true
+  },
+  "status": "ready",
+  "plan": {
+    "subject": {
+      "name": "German Shepherd",
+      "canonical": "An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build."
+    },
+    "rungs": [
+      {
+        "title": "Printed Word on Card",
+        "rationale": "Initiates cognitive processing of the phobic subject with zero pictorial realism to establish a safe baseline.",
+        "targetSuds": 10,
+        "dials": {
+          "realism": 0,
+          "proximity": 0,
+          "size": 0.1,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "The word 'GERMAN SHEPHERD' printed in clean black sans-serif font across a plain white card.",
+        "noticePrompts": [
+          "Notice the plain black lettering against the white card.",
+          "Observe the quiet, static nature of the printed text."
+        ]
+      },
+      {
+        "title": "Minimal Line Sketch",
+        "rationale": "Introduces basic subject morphology at a very low level of visual realism.",
+        "targetSuds": 20,
+        "dials": {
+          "realism": 0.25,
+          "proximity": 0,
+          "size": 0.1,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 0,
+          "motion": 0
+        },
+        "scene": "A simple black line drawing of an adult German Shepherd seated quietly, centered on a neutral off-white paper.",
+        "noticePrompts": [
+          "Notice the outline of the tall, pointed ears.",
+          "Observe how sparse and non-threatening the thin pencil lines appear."
+        ]
+      },
+      {
+        "title": "Distant Soft Illustration",
+        "rationale": "Adds natural coloration and gentle texture while keeping distance high and realism stylized.",
+        "targetSuds": 30,
+        "dials": {
+          "realism": 0.5,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A friendly watercolor illustration of a calm German Shepherd sitting peacefully on a green lawn behind a low wooden picket fence.",
+        "noticePrompts": [
+          "Notice the blend of black and warm tan colors on the coat.",
+          "Observe the relaxed posture and closed mouth in the drawing."
+        ]
+      },
+      {
+        "title": "Blurred Distant Photograph",
+        "rationale": "Transitions to photographic realism while heavily buffering emotional impact with optical blur and high containment.",
+        "targetSuds": 40,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.1,
+          "size": 0.2,
+          "contact": 0,
+          "count": 1,
+          "clarity": 0.3,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A soft, out-of-focus photograph of a German Shepherd on a leash behind a garden fence in the far distance on grass.",
+        "noticePrompts": [
+          "Notice the softened, blurry edges of the dog's black saddle markings.",
+          "Observe how the fence physically separates the dog from the foreground."
+        ]
+      },
+      {
+        "title": "Sharp Distant Photograph",
+        "rationale": "Resolves photographic detail while retaining low proximity and containment behind a fence.",
+        "targetSuds": 50,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.2,
+          "size": 0.3,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A crisp, clear full-color photo of the German Shepherd sitting calmly on a leash behind a chain-link fence in a park.",
+        "noticePrompts": [
+          "Notice the sharp detail of the erect ears against the sky.",
+          "Observe the calm, neutral expression around the eyes and snout."
+        ]
+      },
+      {
+        "title": "Mid-Shot Standing Alert",
+        "rationale": "Increases visual scale and presence by showing the large dog standing upright in clearer view.",
+        "targetSuds": 62,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.4,
+          "size": 0.5,
+          "contact": 0,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "A clear photograph of the German Shepherd standing on all fours on a leash behind a wooden fence, alert and looking forward.",
+        "noticePrompts": [
+          "Notice the sturdy, deep-chested build and posture.",
+          "Look at the dark facial mask and the glossy texture of its fur."
+        ]
+      },
+      {
+        "title": "Open Mouth with Handler",
+        "rationale": "Introduces vocalization cues (barking posture) within a safe context alongside a calm handler.",
+        "targetSuds": 74,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.5,
+          "size": 0.6,
+          "contact": 0.5,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0
+        },
+        "scene": "The German Shepherd standing beside a person holding its leash in a yard, mouth open in a mid-bark alert expression, without aggression or snarl.",
+        "noticePrompts": [
+          "Notice the pink tongue and open mouth without any curled lips or bared teeth.",
+          "Observe the handler's steady hand resting lightly on the leash."
+        ]
+      },
+      {
+        "title": "Frontal Approach",
+        "rationale": "Introduces directional motion toward the viewer to target the patient's sensitivity to approaching dogs.",
+        "targetSuds": 84,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.6,
+          "size": 0.7,
+          "contact": 0.5,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0.5
+        },
+        "scene": "The German Shepherd trotting forward on a loose leash along a grassy trail with its handler walking alongside.",
+        "noticePrompts": [
+          "Notice the forward stride of the front paws as it trots.",
+          "Observe the relaxed curve of the tail as it moves."
+        ]
+      },
+      {
+        "title": "Upright Front Paws Up",
+        "rationale": "Exposes the patient to the primary trigger of jumping up, showing large scale and vertical body posture in a non-aggressive context.",
+        "targetSuds": 92,
+        "dials": {
+          "realism": 1,
+          "proximity": 0.7,
+          "size": 0.85,
+          "contact": 1,
+          "count": 1,
+          "clarity": 1,
+          "color": 1,
+          "motion": 0.5
+        },
+        "scene": "The German Shepherd rearing up playfully with front paws resting on a handler's padded jacket, mouth open in a happy pant.",
+        "noticePrompts": [
+          "Notice the full height of the dog's body while up on its hind legs.",
+          "Observe the soft, gentle placement of the front paws against the jacket."
+        ]
+      }
+    ],
+    "warnings": [
+      "Rungs 2→3 change 4 dials (realism, proximity, size, color).",
+      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
+      "Rungs 6→7 change 3 dials (proximity, size, contact).",
+      "Rungs 7→8 change 3 dials (proximity, size, motion).",
+      "Rungs 8→9 change 3 dials (proximity, size, contact)."
+    ],
+    "retried": false
+  },
+  "planAttempts": [
+    {
+      "stage": "plan",
+      "prompt": "Fear preset: dogs\nPatient's fear, in the therapist's words: \"Big dogs, especially barking or jumping up. Small calm dogs on a leash across the street are fine.\"\nN (number of rungs): 9\nstartWithWord: true\nContained (contact 0) means on a leash behind a fence. Motion means trotting toward the viewer; never snarling or bared teeth.",
+      "params": {
+        "model": "gemini-3.8-flash",
+        "rungCount": 9,
+        "startWithWord": true
+      },
+      "ms": 13263,
+      "ok": true,
+      "model": "gemini-3.8-flash",
+      "at": "2026-10-11T23:46:45.689Z"
+    }
+  ],
+  "anchorImage": "/demo/dogs/anchor.jpg",
+  "anchorSource": "generated",
+  "anchorAttempts": [
+    {
+      "stage": "anchor",
+      "prompt": "A realistic, neutral, evenly lit photograph of a single German Shepherd: An adult German Shepherd with a black and tan dense double coat, pointed erect ears, a black facial mask, dark brown eyes, and a sturdy, deep-chested build.. Centred on a plain light-grey seamless background, whole subject visible, no people, no text. Calm and neutral, documentary style. Square image.",
+      "params": {
+        "model": "gemini-nano-banana-2.1",
+        "aspect_ratio": "1:1",
+        "image_size": "1K"
+      },
+      "ms": 11101,
+      "ok": true,
+      "model": "gemini-nano-banana-2.1",
+      "at": "2026-10-11T23:46:56.877Z"
+    }
+  ]
+}
