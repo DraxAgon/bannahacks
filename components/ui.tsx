@@ -57,12 +57,14 @@ export function Pill({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-export function AiLabel({ className = "" }: { className?: string }) {
+export function AiLabel({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   return (
     <span
-      className={`pointer-events-none rounded-full bg-[rgb(18_22_20/0.62)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#EDE7DA] ${className}`}
+      title="AI-generated image"
+      className={`pointer-events-none whitespace-nowrap rounded-full bg-[rgb(18_22_20/0.62)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#EDE7DA] ${className}`}
     >
-      AI-generated
+      {compact ? "AI" : "AI-generated"}
+      {compact && <span className="sr-only">-generated</span>}
     </span>
   );
 }
