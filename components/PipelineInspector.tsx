@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PLANNER_SYSTEM } from "@/lib/ai/prompts";
+import { SERIES_A, SERIES_B } from "@/lib/chartColors";
 import { fmtMs } from "@/lib/format";
 import { mainRungs } from "@/lib/pipeline/buildLadder";
 import type { Attempt, Ladder, Rung } from "@/lib/types";
@@ -58,8 +59,8 @@ function IntensityChart({ rungs }: { rungs: Rung[] }) {
           <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: "var(--muted)" }} stroke="var(--line)" />
           <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, fontSize: 13 }} />
           <Legend wrapperStyle={{ fontSize: 13 }} />
-          <Line type="monotone" dataKey="target" name="Target SUDS" stroke="#8DB9A7" strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3 }} />
-          <Line type="monotone" dataKey="estimated" name="Critic estimate" stroke="#3E6656" strokeWidth={2.5} dot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="target" name="Target SUDS" stroke={SERIES_B} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 4 }} />
+          <Line type="monotone" dataKey="estimated" name="Critic estimate" stroke={SERIES_A} strokeWidth={2} dot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>

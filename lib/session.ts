@@ -1,0 +1,82 @@
+import { mainRungs } from "./pipeline/buildLadder";
+import type { Exposure, Ladder, ProgressMode, Rung, Session } from "./types";
+
+export type NextAction = "climb" | "repeat" | "variation" | "halfstep" | "end";
+
+export type NextStep = {
+  primary: NextAction;
+  reason: string;
+  criterionMet: boolean;
+  offerHalfStep: boolean;
+  nextRung?: Rung;
+};
+
+/** Progress rule for the chosen mode (therapist setting). */
+export function criterionMet(e: Exposure, mode: ProgressMode): boolean {
+  if (mode === "habituation") return e.endSuds <= e.peakSuds / 2 || e.endSuds <= 30;
+  return e.happened !== "yes";
+}
+
+/** Half-step trigger: peak 70 or more and end SUDS still above 50. */
+export const stuck = (e: Exposure) => e.peakSuds >= 70 && e.endSuds > 50;
+
+export function nextStep(ladder: Ladder, rung: Rung, e: Exposure): NextStep {
+  const main = mainRungs(ladder).filter((r) => r.status === "ready");
+  const anchorId = rung.kind === "variation" ? rung.parentId : rung.id;
+  const pos = main.findIndex((r) => r.id === anchorId);
+  const nextRung = pos >= 0 ? main[pos + 1] : undefined;
+  const met = criterionMet(e, ladder.settings.mode);
+  const offerHalfStep = stuck(e);
+
+  if (offerHalfStep) {
+    return {
+      primary: "halfstep",
+      reason: `Distress peaked at ${e.peakSuds} and was still ${e.endSuds} at the end. A smaller step in between can help.`,
+      criterionMet: met,
+      offerHalfStep,
+      nextRung,
+    };
+  }
+  if (met) {
+    const why =
+      ladder.settings.mode === "expectancy"
+        ? e.happened === "no"
+          ? "What you predicted didn't happen."
+          : "What you predicted only partly happened."
+        : `Distress came down to ${e.endSuds}${e.endSuds <= 30 ? "" : `, half of its peak of ${e.peakSuds}`}.`;
+    return {
+      primary: nextRung ? "climb" : "variation",
+      reason: nextRung ? `${why} If you're willing, the next rung is ready.` : `${why} You've reached the top rung.`,
+      criterionMet: met,
+      offerHalfStep,
+      nextRung,
+    };
+  }
+  return {
+    primary: "repeat",
+    reason:
+      ladder.settings.mode === "expectancy"
+        ? "What you predicted happened this time. Staying on this rung a little longer helps it lose its power."
+        : "Distress hasn't come down by half yet. Another look at this rung usually helps.",
+    criterionMet: met,
+    offerHalfStep,
+    nextRung,
+  };
+}
+
+/** Suggested starting rung: the lowest ready rung whose criterion hasn't been met yet. */
+export function suggestedStart(ladder: Ladder, sessions: Session[]): Rung | undefined {
+  const main = mainRungs(ladder).filter((r) => r.status === "ready" && r.image);
+  const done = new Set(
+    sessions.flatMap((s) => s.exposures.filter((e) => criterionMet(e, ladder.settings.mode)).map((e) => e.rungId)),
+  );
+  return main.find((r) => !done.has(r.id)) ?? main[0];
+}
+
+export function summarize(exposures: Exposure[]) {
+  const rungs = new Set(exposures.map((e) => e.rungId)).size;
+  const lookMs = exposures.reduce((t, e) => t + e.lookMs, 0);
+  const biggestDrop = exposures.reduce((m, e) => Math.max(m, e.peakSuds - e.endSuds), 0);
+  const releases = exposures.reduce((t, e) => t + e.releases, 0);
+  return { rungs, lookMs, biggestDrop, releases };
+}
