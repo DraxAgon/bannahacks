@@ -342,6 +342,8 @@ export default function SessionPage() {
   }
 
   const newRung = newRungId ? ladder.rungs.find((r) => r.id === newRungId) : undefined;
+  // Rung numbers shift when a half-step is inserted, so always read the next rung from the live ladder.
+  const nextRung = last?.step.nextRung ? ladder.rungs.find((r) => r.id === last.step.nextRung!.id) : undefined;
   const exposuresSoFar = session?.exposures ?? [];
   const reachedTarget = lookMs >= ladder.settings.exposureSeconds * 1000;
 
@@ -626,13 +628,13 @@ export default function SessionPage() {
                       sub={live ? "Generate a gentler rung between this one and the one below." : "Needs live generation, which is off on this deployment."}
                     />
                   )}
-                  {last.step.nextRung && (
+                  {nextRung && (
                     <NextButton
                       primary={last.step.primary === "climb"}
                       icon={ArrowUp}
-                      onClick={() => beginRung(last.step.nextRung!.id)}
-                      title={`Climb to rung ${last.step.nextRung.index}`}
-                      sub={last.step.nextRung.title}
+                      onClick={() => beginRung(nextRung.id)}
+                      title={`Climb to rung ${nextRung.index}`}
+                      sub={nextRung.title}
                     />
                   )}
                   {last.step.criterionMet && rung.kind !== "half-step" && (
