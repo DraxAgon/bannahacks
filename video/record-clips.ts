@@ -294,10 +294,9 @@ const CLIPS: Record<string, (b: Browser) => Promise<void>> = {
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForTimeout(1500);
       mark("report");
-      await smoothScroll(page, 900, 2600);
-      await page.waitForTimeout(1500);
-      await smoothScroll(page, 900, 2600);
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(1800);
+      await smoothScroll(page, 760, 5000);
+      await page.waitForTimeout(3200);
       mark("end");
     }),
 };
