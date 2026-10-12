@@ -537,7 +537,7 @@
       }
     },
     {
-      "title": "Walking toward you",
+      "title": "Facing you",
       "rationale": "Integrates the patient's specific movement trigger by depicting slow, direct motion toward the viewer.",
       "targetSuds": 74,
       "dials": {

@@ -75,7 +75,7 @@ export function RungImage({
           }`}
           aria-hidden
         >
-          <span className="rounded-full bg-bg/70 px-3 py-1 text-[13px] font-medium text-ink backdrop-blur-md">
+          <span className="rounded-full bg-bg/70 px-3 py-1 text-[13px] font-medium text-ink backdrop-blur-md [@media(hover:hover)]:hidden">
             {hint}
           </span>
         </div>

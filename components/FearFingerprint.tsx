@@ -62,7 +62,7 @@ export function FearFingerprint({ model }: { model: FearModel }) {
     <div>
       <p className="max-w-[36ch] text-[20px] leading-[1.35] tracking-[-0.01em] text-ink">{fingerprintSentence(model, DIAL_LABELS)}</p>
       <p className="tabular mt-2 text-[14px] text-muted">
-        Based on {model.n} rating{model.n === 1 ? "" : "s"} · exploratory
+        Based on {model.n} rating{model.n === 1 ? "" : "s"}
       </p>
 
       <figure
@@ -94,7 +94,9 @@ export function FearFingerprint({ model }: { model: FearModel }) {
         )}
       </figure>
 
-      <table className="sr-only">
+      <div className="sr-only">
+
+        <table>
         <caption>What drives the fear: points of distress each feature adds from its low to its high setting</caption>
         <thead>
           <tr>
@@ -112,7 +114,9 @@ export function FearFingerprint({ model }: { model: FearModel }) {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+
+      </div>
     </div>
   );
 }

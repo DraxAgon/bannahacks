@@ -9,7 +9,7 @@ const MORE = [
 
 export default function LandingPage() {
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 pb-16 sm:px-8">
+    <div className="mx-auto w-full max-w-[1100px] px-4 pb-16 sm:px-8">
       <section className="flex flex-col items-center pt-12 text-center md:pt-[88px]">
         <h1 className="max-w-[16ch] text-balance text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink sm:max-w-none sm:text-[48px]">
           Face your fear, one step at a time.

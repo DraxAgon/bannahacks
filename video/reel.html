@@ -95,8 +95,8 @@
 
 <script>
 const FPS = 30;
-const S = { s1: [0, 5.0], s2: [5.0, 12.5], s3: [12.5, 24.5], s4: [24.5, 30.5], s5: [30.5, 41.0], s6: [41.0, 49.0], s7: [49.0, 56.0], s8: [56.0, 62.0], s9: [62.0, 68.0] };
-const DURATION = 68.0;
+const S = { s1: [0, 5.5], s2: [5.5, 15.0], s3: [15.0, 29.5], s4: [29.5, 37.5], s5: [37.5, 49.5], s6: [49.5, 58.5], s7: [58.5, 68.5], s8: [68.5, 75.0], s9: [75.0, 81.5] };
+const DURATION = 81.5;
 const FADE = 0.5;
 const $ = (id) => document.getElementById(id);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -173,13 +173,13 @@ window.renderAt = async function (t) {
     const a = S.s2[0], lt = t - a, m = mk("builder");
     kinetic("s2a", t, a + 0.1); fadeIn("s2b", t, a + 0.7);
     phoneIn("s2p", t, a);
-    setSrc($("s2i"), frame("builder", mapClip([[0, 7.5, m.start - 0.3, m.planning]], lt)));
+    setSrc($("s2i"), frame("builder", mapClip([[0, 9.5, m.start - 0.3, Math.min(m.planning, m.start + 9.2)]], lt)));
   }
 
   if (sceneAlpha("s3", t) > 0) {
     const a = S.s3[0];
     kinetic("s3a", t, a + 0.1); fadeIn("s3b", t, a + 0.7);
-    const lt = t - a - 0.6, per = 1.25;
+    const lt = t - a - 0.6, per = 1.5;
     const k = clamp(Math.floor(Math.max(0, lt) / per), 0, 8);
     const local = Math.max(0, lt) - k * per;
     setSrc($("s3i"), `/public/demo/spiders/rung-${k + 1}.jpg`);
@@ -190,7 +190,7 @@ window.renderAt = async function (t) {
     $("s3card").style.opacity = card;
     $("s3card").style.transform = `translateY(${(1 - card) * 60}px)`;
     $("s3n").textContent = `Step ${k + 1}`;
-    const titles = ["The word", "A drawing", "An illustration", "A blurry photo", "A clear photo", "Closer", "Walking toward you", "Next to an arm", "On an open hand"];
+    const titles = ["The word", "A line drawing", "A friendly drawing", "A blurry photo", "A clear photo", "Closer up", "Facing you", "Next to an arm", "On an open hand"];
     $("s3t").textContent = titles[k];
     const dots = $("s3dots");
     if (!dots.childElementCount) for (let i = 0; i < 9; i++) { const d = document.createElement("div"); d.style.cssText = "flex:1;height:8px;border-radius:8px;background:#27272a"; dots.appendChild(d); }
@@ -201,13 +201,13 @@ window.renderAt = async function (t) {
     const a = S.s4[0], lt = t - a, m = mk("ladder");
     kinetic("s4a", t, a + 0.1); fadeIn("s4b", t, a + 0.7);
     phoneIn("s4p", t, a);
-    setSrc($("s4i"), frame("ladder", mapClip([[0, 6.4, m.start, m.end - 0.3]], lt)));
+    setSrc($("s4i"), frame("ladder", mapClip([[0, 8.0, m.start - 0.2, Math.min(m.end, m.start + 7.8)]], lt)));
   }
 
   if (sceneAlpha("s5", t) > 0) {
     const a = S.s5[0], lt = t - a, m = mk("hold");
     kinetic("s5a", t, a + 0.1);
-    const src = mapClip([[0, 2.2, m.guess - 0.2, m.look - 0.1], [2.2, 10.9, m.look - 0.1, m.look + 8.6]], lt);
+    const src = mapClip([[0, 2.6, m.guess - 0.2, m.look - 0.1], [2.6, 12.0, m.look - 0.1, m.look + 9.3]], lt);
     const holding = (src >= m.hold1 && src < m.release1) || (src >= m.hold2 && src < m.release2);
     const released = src >= m.release1 && !holding;
     $("s5b").textContent = holding ? "Hold to see it." : released ? "Let go, and it blurs again." : "Guess first. Then look.";
@@ -220,7 +220,7 @@ window.renderAt = async function (t) {
     const a = S.s6[0], lt = t - a, m = mk("halfstep");
     kinetic("s6a", t, a + 0.1); fadeIn("s6b", t, a + 0.8);
     phoneIn("s6p", t, a);
-    const src = mapClip([[0, 2.4, m.after - 0.2, m.drawing + 1.2], [2.4, 4.2, m.drawing + 1.2, m.ready - 0.3], [4.2, 8.4, m.ready - 0.3, m.ready + 3.6]], lt);
+    const src = mapClip([[0, 2.8, m.after - 0.2, m.drawing + 1.4], [2.8, 4.6, m.drawing + 1.4, m.ready - 0.3], [4.6, 9.0, m.ready - 0.3, m.ready + 4.1]], lt);
     setSrc($("s6i"), frame("halfstep", src));
   }
 
@@ -228,7 +228,7 @@ window.renderAt = async function (t) {
     const a = S.s7[0], lt = t - a, m = mk("report");
     kinetic("s7a", t, a + 0.1); fadeIn("s7b", t, a + 0.7);
     phoneIn("s7p", t, a);
-    setSrc($("s7i"), frame("report", mapClip([[0, 7.4, m.report - 0.2, m.end - 0.3]], lt)));
+    setSrc($("s7i"), frame("report", mapClip([[0, 10.0, m.report - 0.2, Math.min(m.end - 0.3, m.report + 9.8)]], lt)));
   }
 
   if (sceneAlpha("s8", t) > 0) {
@@ -255,7 +255,7 @@ window.renderAt = async function (t) {
     [...rows.children].forEach((row, r) => {
       const strip = row.querySelector(".strip");
       const total = 9 * 360 - 1080 + 160;
-      const p = clamp(lt / 6.6);
+      const p = clamp(lt / 7.2);
       const x = r % 2 ? 80 - total + total * p : 80 - total * p;
       strip.style.transform = `translateX(${x}px)`;
       row.style.opacity = out(prog(t, a + 0.2 + r * 0.18, a + 1.0 + r * 0.18));

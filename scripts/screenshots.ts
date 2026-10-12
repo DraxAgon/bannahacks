@@ -43,6 +43,7 @@ async function seedRatings(page: Page) {
     const open = (name: string) =>
       new Promise<IDBDatabase>((res, rej) => {
         const r = indexedDB.open(name);
+        r.onupgradeneeded = () => r.result.createObjectStore("sessions"); // same layout idb-keyval creates
         r.onsuccess = () => res(r.result);
         r.onerror = () => rej(r.error);
       });

@@ -9,11 +9,10 @@ import { BreathePause } from "@/components/BreathePause";
 import { HoldToView } from "@/components/HoldToView";
 import { SudsSlider } from "@/components/SudsSlider";
 import { AiLabel, Button, LinkButton } from "@/components/ui";
-import { fmtDuration } from "@/lib/format";
 import { runnerFor, useHealth, useLadder } from "@/lib/live";
 import { fitFearModel, halfStepDials } from "@/lib/model/fearModel";
 import { mainRungs, newId } from "@/lib/pipeline/buildLadder";
-import { nextStep, suggestedStart, summarize, type NextStep } from "@/lib/session";
+import { nextStep, suggestedStart, type NextStep } from "@/lib/session";
 import { listSessions, saveSession } from "@/lib/store";
 import type { Exposure, Ladder, Rung, Session } from "@/lib/types";
 
@@ -106,9 +105,7 @@ export default function SessionPage() {
 
   // look
   const [suds, setSuds] = useState(50);
-  const [lookMs, setLookMs] = useState(0);
   const [pulse, setPulse] = useState(false);
-  const [promptIdx, setPromptIdx] = useState(0);
   const lookRef = useRef(0);
   const visibleRef = useRef(false);
   const everVisible = useRef(false);
@@ -144,7 +141,6 @@ export default function SessionPage() {
       const now = performance.now();
       if (visibleRef.current) {
         lookRef.current += now - prev;
-        setLookMs(lookRef.current);
       }
       prev = now;
     }, 200);
@@ -165,14 +161,6 @@ export default function SessionPage() {
       clearTimeout(off);
     };
   }, [phase, paused]);
-
-  // One notice prompt at a time, rotating every 12 s.
-  useEffect(() => {
-    if (phase !== "look" || !rung || rung.noticePrompts.length < 2) return;
-    const n = rung.noticePrompts.length;
-    const t = setInterval(() => setPromptIdx((i) => (i + 1) % n), 12_000);
-    return () => clearInterval(t);
-  }, [phase, rung]);
 
   const changeSuds = useCallback((v: number) => {
     setSuds(v);
@@ -244,9 +232,7 @@ export default function SessionPage() {
     startedAtRef.current = Date.now();
     sudsRef.current = guess;
     setSuds(guess);
-    setLookMs(0);
     setPulse(false);
-    setPromptIdx(0);
     go("look");
   }
 
@@ -370,7 +356,7 @@ export default function SessionPage() {
 
   return (
     <>
-      <TopBar ladderId={id} label={label} onPause={phase === "summary" ? undefined : () => setPaused(true)} />
+      <TopBar ladderId={id} label={label} onPause={phase === "start" || phase === "summary" ? undefined : () => setPaused(true)} />
       {paused && <BreathePause onReturn={() => setPaused(false)} onEnd={endSession} />}
 
       <AnimatePresence mode="wait" initial={false}>
@@ -386,7 +372,7 @@ export default function SessionPage() {
             <>
               <Centered>
                 <h1 className={titleClass}>Ready when you are.</h1>
-                <p className="mt-4 text-[16px] text-muted">You choose when to look. You can stop any time.</p>
+                <p className="mt-4 text-balance text-[16px] text-muted">You choose when to look. You can stop any time.</p>
                 {ladder.preset === "needles" && (
                   <p className="mt-2 text-[16px] text-muted">Sit down first. If you feel faint, tense your arm and leg muscles.</p>
                 )}
@@ -426,29 +412,11 @@ export default function SessionPage() {
                   active={!paused}
                   onVisibleChange={onVisibleChange}
                 />
-                <div className="mt-5 flex min-h-[44px] max-w-md items-start justify-center" aria-live="polite">
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.p
-                      key={promptIdx}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="text-center text-[15px] text-muted"
-                    >
-                      {rung.noticePrompts[promptIdx % Math.max(1, rung.noticePrompts.length)]}
-                    </motion.p>
-                  </AnimatePresence>
-                </div>
               </div>
               <div className="mt-2 w-full max-w-md">
                 <SudsSlider value={suds} onChange={changeSuds} pulse={pulse} label="How do you feel right now?" />
-                <div className="mt-3 flex items-center justify-between gap-4 pl-4">
-                  <span className="tabular text-[13px] text-faint">
-                    <span className="sr-only">Looked for </span>
-                    {fmtDuration(lookMs)}
-                  </span>
-                  <Button className="min-w-32" onClick={() => finishLook(rung)}>
+                <div className="mt-4 flex justify-center">
+                  <Button className="w-full max-w-xs" onClick={() => finishLook(rung)}>
                     Done
                   </Button>
                 </div>
@@ -458,7 +426,7 @@ export default function SessionPage() {
 
           {phase === "after" && rung && session && shown && (
             <Centered>
-              <h1 className={`${titleClass} tabular`}>
+              <h1 className={titleClass}>
                 {shown.peakSuds === shown.endSuds
                   ? `It stayed at ${shown.endSuds}.`
                   : `Peak ${shown.peakSuds}. Now ${shown.endSuds}.`}
@@ -472,7 +440,7 @@ export default function SessionPage() {
                     transition={{ duration: 0.15 }}
                   >
                     <p id="ask" className="mt-10 text-[17px] text-ink">
-                      Was it as bad as you expected?
+                      Easier or worse than you expected?
                     </p>
                     <div className="mt-5 flex flex-wrap justify-center gap-2" role="group" aria-labelledby="ask">
                       {ANSWERS.map((a) => (
@@ -605,24 +573,10 @@ function Summary({ exposures, ladderId }: { exposures: Exposure[]; ladderId: str
       </Centered>
     );
   }
-  const s = summarize(exposures);
-  const stats: [string, string][] = [
-    ["Steps faced", String(s.rungs)],
-    ["Time looking", fmtDuration(s.lookMs)],
-    ["Biggest drop", String(s.biggestDrop)],
-  ];
   return (
     <Centered>
       <h1 className={titleClass}>Nice work.</h1>
-      <dl className="mt-12 grid w-full grid-cols-3 gap-2">
-        {stats.map(([k, v]) => (
-          <div key={k} className="flex flex-col-reverse items-center gap-1">
-            <dt className="text-[13px] text-muted">{k}</dt>
-            <dd className="tabular text-[32px] font-semibold leading-none tracking-tight sm:text-[40px]">{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <div className="mt-12 flex w-full max-w-xs flex-col gap-2">
+      <div className="mt-10 flex w-full max-w-xs flex-col gap-2">
         <LinkButton href={`/ladder/${ladderId}/report`}>See report</LinkButton>
         <LinkButton variant="secondary" href={`/ladder/${ladderId}`}>
           Back to ladder

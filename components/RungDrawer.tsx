@@ -6,19 +6,7 @@ import type { Ladder, Rung } from "@/lib/types";
 import { RungImage } from "./RungImage";
 import { Button } from "./ui";
 
-function metaLine(r: Rung) {
-  const parts = [`Planned intensity ${Math.round(r.targetSuds)}`];
-  if (r.critique) {
-    parts.push(`AI critic ${Math.round(r.critique.intensity)}`);
-    // Identity match means nothing for the word-card step.
-    if (r.dials.realism >= 0.125) {
-      parts.push(`${r.kind === "variation" ? "Same kind" : "Same subject"} ${Math.round(r.critique.identityMatch * 100)}%`);
-    }
-  }
-  return parts.join(" · ");
-}
-
-/** Lightbox content for one step: the image, what it shows, and (when live) redraw or add a variation. */
+/** Lightbox content for one step: the image and, when live, redraw or add a variation. */
 export function RungDrawer({
   ladder,
   rung,
@@ -82,8 +70,6 @@ export function RungDrawer({
           {sel.kind === "variation" && " · Variation"}
         </p>
         <h2 className="mt-1 text-[22px] font-semibold leading-tight tracking-tight text-ink">{rung.title}</h2>
-        {sel.scene && <p className="mt-2 text-[15px] leading-relaxed text-muted">{sel.scene}</p>}
-        <p className="tabular mt-3 text-[13px] text-faint">{metaLine(sel)}</p>
         {sel.status === "error" && <p className="mt-3 text-[14px] text-muted">Couldn&rsquo;t draw this one.</p>}
 
         {live && (

@@ -8,7 +8,6 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { FearFingerprint } from "@/components/FearFingerprint";
 import { Button, LinkButton } from "@/components/ui";
 import { SERIES_A, SERIES_B } from "@/lib/chartColors";
-import { fmtDuration } from "@/lib/format";
 import { useLadder } from "@/lib/live";
 import { fitFearModel } from "@/lib/model/fearModel";
 import { listSessions } from "@/lib/store";
@@ -159,20 +158,11 @@ export default function ReportPage() {
   const fear = ladder.fear || ladder.subject.name || "Your";
   const hasLooks = exposures.length > 0;
 
-  const lookMs = exposures.reduce((t, e) => t + e.lookMs, 0);
-  const stepsFaced = new Set(exposures.map((e) => e.rungId)).size;
-  const biggestDrop = Math.max(0, ...exposures.map((e) => e.peakSuds - e.endSuds));
   const sessionCount = sessions.filter((s) => s.exposures.length > 0).length;
   const latest = exposures.reduce((m, e) => {
     const at = e.endedAt ?? e.startedAt;
     return at > m ? at : m;
   }, "");
-
-  const stats = [
-    { label: "Steps faced", value: String(stepsFaced) },
-    { label: "Time looking", value: fmtDuration(lookMs) },
-    { label: "Biggest drop", value: String(biggestDrop), unit: "pts" },
-  ];
 
   return (
     <div className={wrap}>
@@ -211,17 +201,6 @@ export default function ReportPage() {
             {latest && ` · ${fmtDay(latest)}`}
           </p>
 
-          <dl className="mt-12 grid grid-cols-3 gap-4 sm:mt-14 sm:gap-10">
-            {stats.map((s) => (
-              <div key={s.label} className="flex min-w-0 flex-col-reverse">
-                <dt className="mt-2 text-[14px] text-muted">{s.label}</dt>
-                <dd className="tabular whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.03em] text-ink">
-                  {s.value}
-                  {s.unit && <span className="ml-1 text-[15px] font-medium tracking-normal text-muted">{s.unit}</span>}
-                </dd>
-              </div>
-            ))}
-          </dl>
 
           <Section
             title="Distress per step"
@@ -269,7 +248,8 @@ export default function ReportPage() {
                 </BarChart>
               </ResponsiveContainer>
             </figure>
-            <table className="sr-only">
+            <div className="sr-only">
+              <table>
               <caption>Distress per step, 0 to 100, from the latest look at each step</caption>
               <thead>
                 <tr>
@@ -290,7 +270,8 @@ export default function ReportPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </Section>
 
           {model && (
@@ -299,7 +280,7 @@ export default function ReportPage() {
             </Section>
           )}
 
-          <p className="mt-16 text-[12px] text-faint sm:mt-20">Exploratory, not a diagnosis. Best reviewed with a therapist.</p>
+          <p className="mt-16 hidden text-[12px] text-faint print:block sm:mt-20">Exploratory, not a diagnosis. Best reviewed with a therapist.</p>
         </motion.div>
       )}
     </div>

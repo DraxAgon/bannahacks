@@ -156,7 +156,7 @@ export default function BuilderPage() {
                 {submitting ? "Starting…" : "Build my ladder"}
               </Button>
               <p className="mt-3 text-[13px] text-faint">
-                Takes about a minute. Nothing leaves your browser except the request to draw.
+                Takes about a minute.
               </p>
             </>
           )}

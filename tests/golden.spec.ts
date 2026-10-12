@@ -17,7 +17,7 @@ async function faceStep(page: Page) {
   for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowUp");
   await page.getByRole("button", { name: "Done", exact: true }).click();
 
-  await expect(page.getByText("Was it as bad as you expected?")).toBeVisible();
+  await expect(page.getByText("Easier or worse than you expected?")).toBeVisible();
   await page.getByRole("button", { name: "Easier", exact: true }).click();
 }
 
@@ -42,5 +42,4 @@ test("golden path on the demo spider ladder", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/report$/);
   await expect(page.getByText(/Based on 3 ratings/).first()).toBeVisible();
-  await expect(page.getByText("Steps faced").first()).toBeVisible();
 });

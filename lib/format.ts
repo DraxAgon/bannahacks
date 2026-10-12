@@ -31,8 +31,8 @@ export const pct = (v: number) => `${Math.round(v * 100)}%`;
  * Gentle steps (the word, a drawing) stay readable; stronger steps get a heavier veil.
  */
 export function veilFor(targetSuds: number): number {
-  if (targetSuds <= 25) return 0;
-  return Math.round(Math.min(24, 5 + ((targetSuds - 25) / 70) * 19));
+  if (targetSuds <= 30) return 0;
+  return Math.round(Math.min(24, 6 + ((targetSuds - 30) / 62) * 18));
 }
 
 /** "Closer View Of Its Hairy Legs" -> "Closer view of its hairy legs". */

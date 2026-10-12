@@ -15,7 +15,7 @@ const listClass = [
   "pt-[calc(var(--step)*8)]",
   "-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:-mx-8 sm:scroll-px-8 sm:px-8",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-  "md:mx-auto md:grid md:max-w-[1200px] md:grid-cols-9 md:gap-2 md:overflow-visible md:px-0 md:pb-0 lg:gap-3",
+  "md:mx-auto md:grid md:max-w-[1064px] md:grid-cols-9 md:gap-2 md:overflow-visible md:px-0 md:pb-0 lg:gap-3",
 ].join(" ");
 
 const tileClass = "w-[132px] shrink-0 snap-start translate-y-[calc(var(--i)*var(--step)*-1)] md:w-auto md:min-w-0";

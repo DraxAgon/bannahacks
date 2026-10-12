@@ -63,11 +63,3 @@ export function suggestedStart(ladder: Ladder, sessions: Session[]): Rung | unde
   );
   return main.find((r) => !done.has(r.id)) ?? main[0];
 }
-
-export function summarize(exposures: Exposure[]) {
-  const rungs = new Set(exposures.map((e) => e.rungId)).size;
-  const lookMs = exposures.reduce((t, e) => t + e.lookMs, 0);
-  const biggestDrop = exposures.reduce((m, e) => Math.max(m, e.peakSuds - e.endSuds), 0);
-  const releases = exposures.reduce((t, e) => t + e.releases, 0);
-  return { rungs, lookMs, biggestDrop, releases };
-}

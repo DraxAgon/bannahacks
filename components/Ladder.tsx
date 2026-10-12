@@ -81,16 +81,9 @@ function Tile({
           )}
         </span>
         <span className="mt-0.5 block truncate text-[15px] font-medium tracking-[-0.01em] text-ink">{rung.title}</span>
-        <span className="mt-2.5 block h-[2px] w-full overflow-hidden rounded-full bg-subtle" aria-hidden>
-          <span
-            className="block h-full rounded-full bg-ink/30 transition-[width] duration-500 ease-out"
-            style={{ width: `${Math.max(2, Math.min(100, rung.targetSuds))}%` }}
-          />
-        </span>
-        <span className="sr-only">Planned intensity {rung.targetSuds} out of 100.</span>
       </button>
 
-      {lookable && (
+      {lookable && veilFor(rung.targetSuds) > 0 && (
         // Covers the image while it is blurred. Once revealed it lets clicks through to open the step.
         <button
           type="button"

@@ -34,8 +34,13 @@ type Marks = Record<string, number>;
  * Records via Chrome's screencast (CDP): each frame arrives with a timestamp, and ffmpeg
  * turns the timed frames into a constant-30fps video.
  */
-async function record(browser: Browser, name: string, run: (page: Page, mark: (k: string) => void) => Promise<void>) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+async function record(
+  browser: Browser,
+  name: string,
+  run: (page: Page, mark: (k: string) => void) => Promise<void>,
+  touch = false,
+) {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: touch });
   await ctx.addInitScript(touchScript);
   const page = await ctx.newPage();
   const dir = `${OUT}/${name}-frames`;
@@ -55,13 +60,14 @@ async function record(browser: Browser, name: string, run: (page: Page, mark: (k
   await run(page, mark);
   mark("end");
   await page.waitForTimeout(300);
+  const stopAt = Date.now() / 1000; // the screencast only sends frames on change, so hold the last one until here
   await cdp.send("Page.stopScreencast").catch(() => {});
   await ctx.close();
   // Concat list with real per-frame durations; times are relative to the first frame.
   const start = frames[0]?.ts ?? t0;
   const lines: string[] = [];
   frames.forEach((f, i) => {
-    const next = frames[i + 1]?.ts ?? f.ts + 0.5;
+    const next = frames[i + 1]?.ts ?? Math.max(f.ts + 0.5, stopAt);
     lines.push(`file '${f.file.split("/").pop()}'`, `duration ${Math.max(0.001, next - f.ts).toFixed(4)}`);
   });
   lines.push(`file '${frames[frames.length - 1].file.split("/").pop()}'`);
@@ -88,6 +94,15 @@ async function tap(page: Page, locator: ReturnType<Page["locator"]>, hold = 120)
   await page.mouse.up();
 }
 
+/** A finger tap (pointerType "touch"), so tiles reveal instead of reacting to hover. */
+async function touchTap(page: Page, locator: ReturnType<Page["locator"]>) {
+  await locator.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(350);
+  const b = await locator.boundingBox();
+  if (!b) throw new Error("no box");
+  await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2);
+}
+
 async function smoothScroll(page: Page, dy: number, ms: number) {
   const steps = Math.max(1, Math.round(ms / 16));
   for (let i = 0; i < steps; i++) {
@@ -106,6 +121,7 @@ async function primeSessions(page: Page, doneSteps: number) {
     const open = (name: string) =>
       new Promise<IDBDatabase>((res, rej) => {
         const r = indexedDB.open(name);
+        r.onupgradeneeded = () => r.result.createObjectStore("sessions"); // same layout idb-keyval creates
         r.onsuccess = () => res(r.result);
         r.onerror = () => rej(r.error);
       });
@@ -174,17 +190,14 @@ const CLIPS: Record<string, (b: Browser) => Promise<void>> = {
       await page.locator("img").first().waitFor();
       await page.waitForTimeout(1200);
       mark("start");
-      const reveals = page.getByRole("button", { name: /reveal|look/i });
-      const count = Math.min(await reveals.count(), 9);
-      for (const i of [0, 2, 4, 6, 8].filter((x) => x < count)) {
-        await tap(page, reveals.nth(i));
-        await page.waitForTimeout(1100);
+      for (const n of [4, 6, 9]) {
+        await touchTap(page, page.getByRole("button", { name: `Look at step ${n}` }));
+        await page.waitForTimeout(1900);
       }
       mark("revealed");
-      await smoothScroll(page, -3000, 1200);
       await page.waitForTimeout(600);
       mark("end");
-    }),
+    }, true),
 
   // Session on the top step: guess, hold to look, let go, rate.
   hold: (b) =>
@@ -260,14 +273,16 @@ const CLIPS: Record<string, (b: Browser) => Promise<void>> = {
     record(b, "report", async (page, mark) => {
       await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
       await page.getByRole("button", { name: "Begin" }).click();
-      const peaks = [6, 8, 9];
+      const peaks = [0.45, 0.66, 0.82];
+      const ends = [0.28, 0.34, 0.46];
       for (let n = 0; n < 3; n++) {
         await page.getByRole("button", { name: "Look" }).click();
         await page.waitForTimeout(500);
         await page.keyboard.down("Space");
-        await page.waitForTimeout(800);
-        for (let i = 0; i < peaks[n]; i++) await page.keyboard.press("ArrowUp");
-        for (let i = 0; i < 5 + n * 2; i++) await page.keyboard.press("ArrowDown");
+        await page.waitForTimeout(600);
+        await dragSlider(page, "input[type=range]", 0.5, peaks[n], 10);
+        await page.waitForTimeout(1300); // ratings within a second collapse into one sample
+        await dragSlider(page, "input[type=range]", peaks[n], ends[n], 10);
         await page.keyboard.up("Space");
         await page.getByRole("button", { name: "Done" }).click();
         await page.getByRole("button", { name: "Easier" }).click();

@@ -18,7 +18,7 @@ The ladder is a grid of the nine steps, blurred until you choose to look. Tap on
 
 A session takes you up the ladder. Before each step you guess how anxious you'll feel. To look, you press and hold (or hold Space), and the image blurs again the moment you let go. After that you rate how you feel and say whether it was easier, the same or worse than you expected. If your distress stays high, the app draws a smaller step on the spot and slides it in between this step and the next. Pause opens a breathing screen if you need a minute.
 
-At the end, the report shows how many steps you faced, how long you looked, your biggest drop in distress, and a chart of peak vs end distress for each step. It also has a radar of what drives your fear, from a small model trained on your own ratings.
+At the end, the report charts peak and end distress for each step, plus a radar of what drives your fear, from a small model trained on your own ratings.
 
 ## How it works
 
