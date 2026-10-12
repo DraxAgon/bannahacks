@@ -3,7 +3,7 @@
 import { ArrowRight, Cpu, Download, FileBarChart, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Segmented } from "@/components/controls";
 import { Ladder } from "@/components/Ladder";
 import { PipelineInspector } from "@/components/PipelineInspector";
@@ -11,6 +11,7 @@ import { RungDrawer } from "@/components/RungDrawer";
 import { Sheet } from "@/components/Sheet";
 import { Button, Eyebrow, LinkButton, buttonClass } from "@/components/ui";
 import { DEMOS, demoId } from "@/lib/demo";
+import { preloadImages } from "@/lib/images";
 import { commitLadder, runnerFor, useHealth, useLadder } from "@/lib/live";
 import { ensureDataUrl, mainRungs } from "@/lib/pipeline/buildLadder";
 import type { Dials, Ladder as LadderT } from "@/lib/types";
@@ -55,6 +56,11 @@ export default function LadderPage() {
   const closeInspector = useCallback(() => setInspector(false), []);
 
   const openRung = useMemo(() => ladder?.rungs.find((r) => r.id === openId), [ladder, openId]);
+
+  // Cards only load thumbnails; fetch the full-size images the drawer and session need in the background, rung 1 first.
+  useEffect(() => {
+    if (ladder) preloadImages([...mainRungs(ladder).map((r) => r.image), ladder.anchorImage]);
+  }, [ladder]);
 
   if (ladder === undefined) {
     return (
