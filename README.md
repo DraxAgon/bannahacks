@@ -6,6 +6,7 @@
 
 - **Live demo:** https://fear-ladder-beta.vercel.app (demo ladders work with no API key)
 - **Built for:** [Banana Hacks 2026](https://bananahacks.tech): generative AI and image creation
+- **Promo reel (9:16, 46 s):** [`docs/fear-ladder-reel.mp4`](docs/fear-ladder-reel.mp4), real app footage and real pipeline output, rendered by `video/render-reel.ts`
 
 > Designed for use with a licensed therapist. Not a medical device. Not for emergencies.
 > If you are in crisis, call or text 988 (US and Canada) or your local emergency number.
