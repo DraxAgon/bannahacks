@@ -37,7 +37,7 @@ export function AiLabel({ className = "", compact = false }: { className?: strin
   return (
     <span
       title="AI-generated image"
-      className={`pointer-events-none whitespace-nowrap rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm ${className}`}
+      className={`pointer-events-none whitespace-nowrap rounded-full bg-black/40 px-1.5 py-px text-[10px] font-medium text-white/90 backdrop-blur-sm ${className}`}
     >
       {compact ? "AI" : "AI image"}
       {compact && <span className="sr-only">-generated</span>}

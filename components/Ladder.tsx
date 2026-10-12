@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { mainRungs, variationsOf } from "@/lib/pipeline/buildLadder";
 import type { Ladder as LadderT, Rung } from "@/lib/types";
+import { veilFor } from "@/lib/format";
 import { RungImage } from "./RungImage";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -66,7 +67,7 @@ function Tile({
         {errored ? (
           <div className="aspect-square w-full rounded-2xl bg-subtle" />
         ) : (
-          <RungImage rung={rung} revealed={shown} hint={lookable ? "Tap to look" : undefined} />
+          <RungImage rung={rung} revealed={shown} veil={veilFor(rung.targetSuds)} hint={lookable && veilFor(rung.targetSuds) > 0 ? "Tap to look" : undefined} />
         )}
         <span className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-faint">
           <span className="tabular">Step {rung.index}</span>

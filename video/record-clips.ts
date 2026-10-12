@@ -101,6 +101,7 @@ async function primeSessions(page: Page, doneSteps: number) {
   await page.goto(`${BASE}/ladder/demo-spiders`, { waitUntil: "load" });
   await page.locator("img").first().waitFor();
   await page.waitForTimeout(800);
+  await page.evaluate("globalThis.__name = (f) => f"); // tsx adds __name() calls inside evaluated functions
   await page.evaluate(async (n) => {
     const open = (name: string) =>
       new Promise<IDBDatabase>((res, rej) => {
@@ -108,11 +109,7 @@ async function primeSessions(page: Page, doneSteps: number) {
         r.onsuccess = () => res(r.result);
         r.onerror = () => rej(r.error);
       });
-    const ladders = await open("fear-ladder");
-    const ladder = await new Promise<{ rungs: { id: string; kind: string }[] }>((res) => {
-      const g = ladders.transaction("ladders").objectStore("ladders").get("demo-spiders");
-      g.onsuccess = () => res(g.result);
-    });
+    const ladder = (await (await fetch("/demo/spiders/ladder.json")).json()) as { rungs: { id: string; kind: string }[] };
     const main = ladder.rungs.filter((r) => r.kind !== "variation").slice(0, n);
     const now = new Date(Date.now() - 86400000).toISOString();
     const session = {

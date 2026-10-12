@@ -11,7 +11,7 @@
   },
   "rungs": [
     {
-      "title": "Written Word Card",
+      "title": "The word",
       "rationale": "Introduces semantic trigger with zero pictorial realism to establish a low-threat baseline.",
       "targetSuds": 10,
       "dials": {
@@ -87,7 +87,7 @@
       }
     },
     {
-      "title": "Minimalist Line Drawing",
+      "title": "A line drawing",
       "rationale": "Transitions from text to stylized outline while keeping size tiny and detail abstract.",
       "targetSuds": 20,
       "dials": {
@@ -198,7 +198,7 @@
       }
     },
     {
-      "title": "Stylized Color Illustration",
+      "title": "A friendly drawing",
       "rationale": "Adds soft color and gentle illustration texture without photographic fidelity or proximity.",
       "targetSuds": 30,
       "dials": {
@@ -274,7 +274,7 @@
       }
     },
     {
-      "title": "Distant Soft-Focus Photograph",
+      "title": "A blurry photo",
       "rationale": "Introduces actual photographic realism but cushions the threat via soft focus and small frame size.",
       "targetSuds": 40,
       "dials": {
@@ -385,7 +385,7 @@
       }
     },
     {
-      "title": "Sharp Photograph at Moderate Distance",
+      "title": "A clear photo",
       "rationale": "Sharpens the photographic image to full clarity while maintaining calm, stationary posture across a flat surface.",
       "targetSuds": 50,
       "dials": {
@@ -461,7 +461,7 @@
       }
     },
     {
-      "title": "Closer View of Characteristic Hairiness",
+      "title": "Closer up",
       "rationale": "Increases proximity and frame occupancy to habituate the patient to the primary trigger of large size and dense hair.",
       "targetSuds": 62,
       "dials": {
@@ -537,7 +537,7 @@
       }
     },
     {
-      "title": "Approaching Motion Across Table",
+      "title": "Walking toward you",
       "rationale": "Integrates the patient's specific movement trigger by depicting slow, direct motion toward the viewer.",
       "targetSuds": 74,
       "dials": {
@@ -613,7 +613,7 @@
       }
     },
     {
-      "title": "Resting Near a Person's Forearm",
+      "title": "Next to an arm",
       "rationale": "Introduces proximity to a human body, addressing the patient's trigger of spiders near or on people.",
       "targetSuds": 84,
       "dials": {
@@ -689,7 +689,7 @@
       }
     },
     {
-      "title": "Calm Contact on an Open Hand",
+      "title": "On an open hand",
       "rationale": "Combines the patient's highest-intensity triggers: a large hairy spider in direct, calm contact on a human body.",
       "targetSuds": 92,
       "dials": {
@@ -966,10 +966,10 @@
       }
     ],
     "warnings": [
-      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
-      "Rungs 6→7 change 3 dials (proximity, size, motion).",
-      "Rungs 7→8 change 4 dials (proximity, size, contact, motion).",
-      "Rungs 8→9 change 4 dials (proximity, size, contact, motion)."
+      "Rungs 4\u21925 change 3 dials (proximity, size, clarity).",
+      "Rungs 6\u21927 change 3 dials (proximity, size, motion).",
+      "Rungs 7\u21928 change 4 dials (proximity, size, contact, motion).",
+      "Rungs 8\u21929 change 4 dials (proximity, size, contact, motion)."
     ],
     "retried": false
   },

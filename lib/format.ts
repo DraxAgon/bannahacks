@@ -25,3 +25,22 @@ export function fmtMs(ms: number): string {
 }
 
 export const pct = (v: number) => `${Math.round(v * 100)}%`;
+
+/**
+ * How much to blur a step before someone chooses to look, from its planned intensity.
+ * Gentle steps (the word, a drawing) stay readable; stronger steps get a heavier veil.
+ */
+export function veilFor(targetSuds: number): number {
+  if (targetSuds <= 25) return 0;
+  return Math.round(Math.min(24, 5 + ((targetSuds - 25) / 70) * 19));
+}
+
+/** "Closer View Of Its Hairy Legs" -> "Closer view of its hairy legs". */
+export function sentenceCase(title: string): string {
+  const t = title.trim();
+  if (!t) return t;
+  const words = t.split(/\s+/);
+  const titled = words.filter((w) => /^[A-Z][a-z]/.test(w)).length >= Math.ceil(words.length / 2);
+  if (!titled) return t.charAt(0).toUpperCase() + t.slice(1);
+  return words.map((w, i) => (i === 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : /^[A-Z]{2,}$/.test(w) ? w : w.toLowerCase())).join(" ");
+}

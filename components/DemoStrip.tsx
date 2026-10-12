@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { fetchDemoLadder } from "@/lib/demo";
 import type { Ladder, Rung } from "@/lib/types";
+import { veilFor } from "@/lib/format";
 import { AiLabel } from "./ui";
 
 const STEPS = 9;
@@ -14,10 +15,10 @@ const listClass = [
   "pt-[calc(var(--step)*8)]",
   "-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:-mx-8 sm:scroll-px-8 sm:px-8",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-  "md:mx-auto md:grid md:max-w-[1064px] md:grid-cols-9 md:gap-2 md:overflow-visible md:px-0 md:pb-0 lg:gap-3",
+  "md:mx-auto md:grid md:max-w-[1200px] md:grid-cols-9 md:gap-2 md:overflow-visible md:px-0 md:pb-0 lg:gap-3",
 ].join(" ");
 
-const tileClass = "w-[112px] shrink-0 snap-start translate-y-[calc(var(--i)*var(--step)*-1)] md:w-auto md:min-w-0";
+const tileClass = "w-[132px] shrink-0 snap-start translate-y-[calc(var(--i)*var(--step)*-1)] md:w-auto md:min-w-0";
 
 const climb = (i: number) => ({ "--i": i }) as CSSProperties;
 
@@ -132,12 +133,12 @@ function Step({
             onLoad={() => setLoaded(true)}
             className="h-full w-full select-none object-cover transition-[filter,transform] duration-500 ease-out"
             style={{
-              filter: open ? "none" : "blur(14px) saturate(0.85)",
-              transform: open ? "scale(1)" : "scale(1.12)",
+              filter: open || veilFor(rung.targetSuds) === 0 ? "none" : `blur(${Math.round(veilFor(rung.targetSuds) * 0.6)}px) saturate(0.9)`,
+              transform: open || veilFor(rung.targetSuds) === 0 ? "scale(1)" : "scale(1.1)",
             }}
           />
         </span>
-        <AiLabel compact className="absolute bottom-1.5 left-1.5" />
+        <AiLabel compact className="absolute bottom-1.5 left-1.5 opacity-80" />
       </button>
       <p aria-hidden className="tabular mt-2 text-[12px] leading-[18px] text-faint">
         {n}

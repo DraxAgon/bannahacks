@@ -11,7 +11,7 @@
   },
   "rungs": [
     {
-      "title": "Printed Word on Card",
+      "title": "The word",
       "rationale": "Initiates cognitive processing of the phobic subject with zero pictorial realism to establish a safe baseline.",
       "targetSuds": 10,
       "dials": {
@@ -87,7 +87,7 @@
       }
     },
     {
-      "title": "Minimal Line Sketch",
+      "title": "A quick sketch",
       "rationale": "Introduces basic subject morphology at a very low level of visual realism.",
       "targetSuds": 20,
       "dials": {
@@ -163,7 +163,7 @@
       }
     },
     {
-      "title": "Distant Soft Illustration",
+      "title": "A friendly drawing",
       "rationale": "Adds natural coloration and gentle texture while keeping distance high and realism stylized.",
       "targetSuds": 30,
       "dials": {
@@ -239,7 +239,7 @@
       }
     },
     {
-      "title": "Blurred Distant Photograph",
+      "title": "A blurry photo",
       "rationale": "Transitions to photographic realism while heavily buffering emotional impact with optical blur and high containment.",
       "targetSuds": 40,
       "dials": {
@@ -350,7 +350,7 @@
       }
     },
     {
-      "title": "Sharp Distant Photograph",
+      "title": "Across the yard",
       "rationale": "Resolves photographic detail while retaining low proximity and containment behind a fence.",
       "targetSuds": 50,
       "dials": {
@@ -426,7 +426,7 @@
       }
     },
     {
-      "title": "Mid-Shot Standing Alert",
+      "title": "Standing, alert",
       "rationale": "Increases visual scale and presence by showing the large dog standing upright in clearer view.",
       "targetSuds": 62,
       "dials": {
@@ -502,7 +502,7 @@
       }
     },
     {
-      "title": "Open Mouth with Handler",
+      "title": "Mouth open, on a leash",
       "rationale": "Introduces vocalization cues (barking posture) within a safe context alongside a calm handler.",
       "targetSuds": 74,
       "dials": {
@@ -578,7 +578,7 @@
       }
     },
     {
-      "title": "Frontal Approach",
+      "title": "Coming toward you",
       "rationale": "Introduces directional motion toward the viewer to target the patient's sensitivity to approaching dogs.",
       "targetSuds": 84,
       "dials": {
@@ -689,7 +689,7 @@
       }
     },
     {
-      "title": "Upright Front Paws Up",
+      "title": "Paws up on you",
       "rationale": "Exposes the patient to the primary trigger of jumping up, showing large scale and vertical body posture in a non-aggressive context.",
       "targetSuds": 92,
       "dials": {
@@ -966,11 +966,11 @@
       }
     ],
     "warnings": [
-      "Rungs 2→3 change 4 dials (realism, proximity, size, color).",
-      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
-      "Rungs 6→7 change 3 dials (proximity, size, contact).",
-      "Rungs 7→8 change 3 dials (proximity, size, motion).",
-      "Rungs 8→9 change 3 dials (proximity, size, contact)."
+      "Rungs 2\u21923 change 4 dials (realism, proximity, size, color).",
+      "Rungs 4\u21925 change 3 dials (proximity, size, clarity).",
+      "Rungs 6\u21927 change 3 dials (proximity, size, contact).",
+      "Rungs 7\u21928 change 3 dials (proximity, size, motion).",
+      "Rungs 8\u21929 change 3 dials (proximity, size, contact)."
     ],
     "retried": false
   },

@@ -9,6 +9,7 @@ export const PLANNER_SYSTEM = `You help a licensed therapist design a graded exp
 (5) Never depict blood, injury, aggression, attacks, death, children in danger, or identifiable real people. Contact rungs show calm contact only.
 (6) Give each rung a one-sentence clinician-facing rationale and 2 to 3 noticePrompts that direct attention to visible details.
 (7) If the request is not a specific phobia suitable for image exposure (trauma memories, self-harm, eating, real people, sexual content), return { "refused": true, "reason": "..." }.
+(8) Titles are 2 to 5 plain words in sentence case, like "A line drawing" or "Next to an arm".
 Otherwise return refused: false with subject and rungs.`;
 
 const PRESET_NOTES: Record<string, string> = {

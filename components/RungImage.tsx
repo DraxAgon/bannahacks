@@ -19,9 +19,12 @@ export function RungImage({
   rounded = "rounded-2xl",
   labelClassName = "absolute bottom-2 left-2",
   className = "",
+  veil = 22,
 }: {
   rung: ImageRung;
   revealed?: boolean;
+  /** Blur in px while not revealed (0 shows the image as is). */
+  veil?: number;
   /** Small pill centered on the blurred image, e.g. "Tap to look". */
   hint?: string;
   label?: "compact" | "full" | "none";
@@ -50,8 +53,8 @@ export function RungImage({
       <div
         className="absolute inset-0 transition-[filter,transform] duration-500 ease-out"
         style={{
-          filter: revealed ? "none" : "blur(22px) saturate(0.85)",
-          transform: revealed ? "scale(1)" : "scale(1.14)",
+          filter: revealed || veil === 0 ? "none" : `blur(${veil}px) saturate(0.85)`,
+          transform: revealed || veil === 0 ? "scale(1)" : `scale(${1 + Math.min(0.14, veil / 160)})`,
         }}
       >
         <img

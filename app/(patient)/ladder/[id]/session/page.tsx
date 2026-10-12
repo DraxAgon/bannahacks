@@ -26,7 +26,7 @@ const ANSWERS: { happened: Happened; label: string }[] = [
   { happened: "yes", label: "Worse" },
 ];
 
-const titleClass = "text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[48px]";
+const titleClass = "text-balance text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[48px]";
 const secondsSince = (start: number) => Math.round((Date.now() - start) / 1000);
 
 /** "Step 3 of 9" among the planned steps; inserted half-steps are simply "Smaller step". */
@@ -84,7 +84,7 @@ function BlurredPreview({ src, className = "" }: { src: string; className?: stri
 function Centered({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 pb-16 text-center">
-      <div className="flex w-full max-w-md flex-col items-center">{children}</div>
+      <div className="flex w-full max-w-lg flex-col items-center">{children}</div>
     </div>
   );
 }

@@ -57,7 +57,7 @@ The three seeded demos (spiders, dogs and needles) each came out with all 9 step
 
 | Ladder | Looking at a step | Report |
 |---|---|---|
-| ![The nine-step ladder](docs/screenshots/ladder-1440.png) | ![Press and hold to look](docs/screenshots/session-expose-1440.png) | ![Session report](docs/screenshots/report-1440.png) |
+| ![The nine-step ladder](docs/screenshots/ladder-1440.png) | ![Press and hold to look](docs/screenshots/session-look-1440.png) | ![Session report](docs/screenshots/report-1440.png) |
 
 The rest are in [`docs/screenshots/`](docs/screenshots).
 

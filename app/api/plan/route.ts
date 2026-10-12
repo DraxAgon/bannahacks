@@ -4,6 +4,7 @@ import { hasKey, MODELS } from "@/lib/ai/models";
 import { PLANNER_SYSTEM, plannerPrompt, plannerRetryPrompt } from "@/lib/ai/prompts";
 import { PlannedLadderSchema, PlannerJsonSchema, PlannerOutputSchema, PlanRequestSchema } from "@/lib/ai/schemas";
 import { checkLadderQuota, clientIp } from "@/lib/guard";
+import { sentenceCase } from "@/lib/format";
 import { clampDials } from "@/lib/pipeline/dials";
 import { dialChangeWarnings, hierarchyProblems, respaceSuds } from "@/lib/pipeline/hierarchy";
 import type { Attempt } from "@/lib/types";
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
     const warnings: string[] = [];
     let rungs = ladder.rungs.slice(0, body.rungCount).map((r) => ({
       ...r,
+      title: sentenceCase(r.title),
       targetSuds: Math.round(r.targetSuds),
       dials: clampDials(r.dials),
       noticePrompts: r.noticePrompts.slice(0, 3),

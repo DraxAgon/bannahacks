@@ -11,7 +11,7 @@
   },
   "rungs": [
     {
-      "title": "Printed Word on Card",
+      "title": "The word",
       "rationale": "Introduces exposure with minimal distress using purely semantic stimulation.",
       "targetSuds": 10,
       "dials": {
@@ -87,7 +87,7 @@
       }
     },
     {
-      "title": "Minimal Line Drawing of Capped Syringe",
+      "title": "A simple drawing",
       "rationale": "Transitions to iconic pictorial representation while keeping the protective cap on.",
       "targetSuds": 20,
       "dials": {
@@ -163,7 +163,7 @@
       }
     },
     {
-      "title": "Soft Color Illustration of Capped Syringe",
+      "title": "A soft drawing",
       "rationale": "Adds realistic color and friendly shading to desensitize the patient to medical equipment palettes.",
       "targetSuds": 30,
       "dials": {
@@ -239,7 +239,7 @@
       }
     },
     {
-      "title": "Distant Photo of Capped Syringe on Tray",
+      "title": "A photo, far away",
       "rationale": "Introduces full photographic realism at a comfortable distance with the safety cap still intact.",
       "targetSuds": 40,
       "dials": {
@@ -350,7 +350,7 @@
       }
     },
     {
-      "title": "Mid-Range Photo of Capped Syringe",
+      "title": "A capped syringe",
       "rationale": "Increases visual clarity and closer proximity to the syringe while remaining safely capped.",
       "targetSuds": 50,
       "dials": {
@@ -426,7 +426,7 @@
       }
     },
     {
-      "title": "Uncapped Syringe Resting on Tray",
+      "title": "Uncapped on a tray",
       "rationale": "Introduces the patient's primary trigger element (the exposed metal needle) in a neutral, stationary tabletop context.",
       "targetSuds": 62,
       "dials": {
@@ -502,7 +502,7 @@
       }
     },
     {
-      "title": "Gloved Hand Holding Uncapped Syringe",
+      "title": "In a gloved hand",
       "rationale": "Introduces a provider holding the uncapped syringe, signaling clinical readiness without proximity to a body.",
       "targetSuds": 72,
       "dials": {
@@ -578,7 +578,7 @@
       }
     },
     {
-      "title": "Uncapped Syringe Near Upper Arm",
+      "title": "Near an arm",
       "rationale": "Combines the uncapped needle with proximity to the patient's primary trigger location, an upper arm.",
       "targetSuds": 82,
       "dials": {
@@ -654,7 +654,7 @@
       }
     },
     {
-      "title": "Close-Up of Uncapped Syringe Beside Arm",
+      "title": "Right beside the arm",
       "rationale": "Reaches peak exposure criteria by presenting the uncapped needle held steadily right beside the arm without puncture.",
       "targetSuds": 92,
       "dials": {
@@ -933,10 +933,10 @@
       }
     ],
     "warnings": [
-      "Rungs 4→5 change 3 dials (proximity, size, clarity).",
-      "Rungs 6→7 change 3 dials (proximity, size, contact).",
-      "Rungs 7→8 change 3 dials (proximity, size, contact).",
-      "Rungs 8→9 change 3 dials (proximity, size, contact)."
+      "Rungs 4\u21925 change 3 dials (proximity, size, clarity).",
+      "Rungs 6\u21927 change 3 dials (proximity, size, contact).",
+      "Rungs 7\u21928 change 3 dials (proximity, size, contact).",
+      "Rungs 8\u21929 change 3 dials (proximity, size, contact)."
     ],
     "retried": false
   },

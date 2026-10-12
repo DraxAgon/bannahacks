@@ -11,13 +11,68 @@ const OUT = "docs/screenshots";
 type Shot = { name: string; path: string; prepare?: (page: Page) => Promise<void> };
 
 const SHOTS: Shot[] = [
-  { name: "landing", path: "/" },
+  { name: "landing", path: "/", prepare: (p) => p.waitForTimeout(2500) },
   { name: "builder", path: "/new" },
   { name: "ladder", path: "/ladder/demo-spiders", prepare: (p) => p.waitForTimeout(2500) },
   { name: "session", path: "/ladder/demo-spiders/session", prepare: (p) => p.waitForTimeout(1500) },
-  { name: "report", path: "/ladder/demo-spiders/report", prepare: (p) => p.waitForTimeout(2500) },
+  {
+    name: "session-look",
+    path: "/ladder/demo-spiders/session",
+    prepare: async (p) => {
+      await p.getByRole("button", { name: "Begin" }).click();
+      await p.getByRole("button", { name: /^look$/i }).click();
+      await p.waitForTimeout(1500);
+    },
+  },
+  {
+    name: "report",
+    path: "/ladder/demo-spiders/report",
+    prepare: async (p) => {
+      await seedRatings(p);
+      await p.reload({ waitUntil: "load" });
+      await p.waitForTimeout(2500);
+    },
+  },
   { name: "ladders", path: "/ladders", prepare: (p) => p.waitForTimeout(1000) },
 ];
+
+/** Writes one finished session (six rated looks) so the report has something to show. */
+async function seedRatings(page: Page) {
+  await page.evaluate("globalThis.__name = (f) => f"); // tsx adds __name() calls inside evaluated functions
+  await page.evaluate(async () => {
+    const open = (name: string) =>
+      new Promise<IDBDatabase>((res, rej) => {
+        const r = indexedDB.open(name);
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+    const ladder = (await (await fetch("/demo/spiders/ladder.json")).json()) as { rungs: { id: string; kind: string }[] };
+    const peaks = [12, 20, 34, 46, 58, 72];
+    const ends = [4, 8, 15, 22, 30, 44];
+    const at = new Date(Date.now() - 3600000).toISOString();
+    const session = {
+      id: "s-screenshot",
+      ladderId: "demo-spiders",
+      startedAt: at,
+      endedAt: at,
+      exposures: ladder.rungs
+        .filter((r) => r.kind !== "variation")
+        .slice(0, peaks.length)
+        .map((r, i) => ({
+          rungId: r.id, startedAt: at, endedAt: at, lookMs: 45000 + i * 9000, releases: i > 3 ? 2 : 0,
+          samples: [{ t: 0, suds: peaks[i] }, { t: 40, suds: ends[i] }],
+          prediction: "", likelihood: 0, expectedSuds: peaks[i] + 10, peakSuds: peaks[i], endSuds: ends[i],
+          happened: "no", surprise: 0, learned: "", feelings: [],
+        })),
+    };
+    const sdb = await open("fear-ladder-sessions");
+    await new Promise<void>((res) => {
+      const tx = sdb.transaction("sessions", "readwrite");
+      tx.objectStore("sessions").put(session, session.id);
+      tx.oncomplete = () => res();
+    });
+  });
+}
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
