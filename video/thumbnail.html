@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Fear Ladder thumbnail</title>
+<link rel="stylesheet" href="/video/out/fonts.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; background: #fff; }
+  body { font-family: "Schibsted Grotesk", sans-serif; color: #0a0a0a; -webkit-font-smoothing: antialiased; position: relative; }
+  .brand { position: absolute; left: 72px; top: 84px; }
+  .row { display: flex; align-items: center; gap: 22px; }
+  h1 { font-weight: 600; font-size: 128px; letter-spacing: -0.05em; line-height: 1; }
+  p { margin-top: 26px; font-size: 46px; line-height: 1.2; letter-spacing: -0.02em; color: #62626b; }
+  .tile { position: absolute; width: 146px; height: 146px; border-radius: 22px; object-fit: cover; box-shadow: 0 18px 40px -22px rgba(0,0,0,.45); }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <div class="row">
+      <svg viewBox="0 0 24 24" width="104" height="104" fill="none" aria-hidden="true">
+        <path d="M7 2.5v19M17 2.5v19M7 18h10M7 13.5h10M7 9h10M7 4.5h10" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <h1>Fear Ladder</h1>
+    </div>
+    <p>Face your fear, one step at a time.</p>
+  </div>
+  <div id="tiles"></div>
+  <script>
+    // Nine AI-drawn steps of the demo spider ladder, climbing left to right.
+    const box = document.getElementById("tiles");
+    for (let i = 0; i < 9; i++) {
+      const im = document.createElement("img");
+      im.className = "tile";
+      im.src = `/public/demo/spiders/rung-${i + 1}.jpg`;
+      im.style.left = `${72 + i * 156}px`;
+      im.style.top = `${1000 - 72 - 146 - i * 50}px`;
+      box.appendChild(im);
+    }
+  </script>
+</body>
+</html>
