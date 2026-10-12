@@ -1,27 +1,24 @@
 # Fear Ladder
 
-Step 1 is the word "spider" on a card. Step 9 is a tarantula on an open palm. Fear Ladder has AI draw all nine, the same spider each time and a little closer, so people with a phobia can practice on their own. Try it at https://fear-ladder-beta.vercel.app, no account needed.
-
 ## Inspiration
-
-In [one study](https://doi.org/10.1016/j.jbtep.2014.12.003), eight stages of spider pictures online reduced fear. But only [about 11%](https://www.nimh.nih.gov/sites/default/files/documents/health/statistics/prevalence/file_12.pdf) of people with a specific phobia get minimally adequate treatment, and as few as [7% of therapists and patients](https://pmc.ncbi.nlm.nih.gov/articles/PMC9975163/) report using exposure. We wanted an image model to draw that ladder for other phobias.
+In [one study](https://doi.org/10.1016/j.jbtep.2014.12.003), an online program that showed eight stages of spider pictures reduced fear of spiders. Most people with a phobia never get help like that, though. Only [about 11%](https://www.nimh.nih.gov/sites/default/files/documents/health/statistics/prevalence/file_12.pdf) get minimally adequate treatment. We wanted an image model to draw those stages for any common phobia.
 
 ## What it does
-
-Pick a fear like spiders, dogs or needles and press "Build my ladder". Nine images appear one by one over about a minute and a half, blurred until you look. "Try the demo" opens a finished spider ladder. You can redraw any step or get a variation at the same intensity with a different animal or setting.
-
-In a session you guess how anxious you'll feel, then press and hold to see the step. Let go and it blurs again. You rate your distress and move on when you're ready. If your distress stays high, the app draws a smaller step just below that one and slides it in. A report charts your distress per step and which settings seem to drive it. The app only takes specific phobias and never shows blood or injury. Your ratings stay in your browser.
+Pick a fear like spiders, dogs or needles, and Fear Ladder draws it nine ways, from the word on a card to the real thing. The gentle steps show right away, and the scary ones stay blurred until you choose to look. In a session you hold to see a step, let go to blur it, then rate how you feel. If a step is too much, the app draws a smaller one in between, live. A short report shows what drives your fear most, like closeness or realism.
 
 ## How we built it
+It's a Next.js app on Vercel with one Gemini API key behind it. Gemini 3.8 Flash plans the nine steps as JSON, each with eight visual settings like distance and realism. Nano Banana 2.1 draws one anchor image and edits it for every step, so it's the same spider all the way up. Sharp then sets the exact blur for each step, and a vision critic checks every image for safety and likeness before anyone sees it. The smaller step comes from a tiny regression model trained on your own ratings, right in the browser.
 
-A planner (gemini-3.8-flash) writes nine steps as JSON, each one eight visual settings like distance and realism plus a short scene. Nano Banana 2.1 draws one anchor image and edits it for each step with a prompt built in code from those settings. Then sharp applies exact blur and saturation, so early steps stay soft whatever the model drew. A vision critic scores identity, distress and safety, and unsafe drafts are redrawn and never shown. For the smaller step, a ridge regression on your own ratings picks settings it predicts will land halfway.
+## Challenges we ran into
+Keeping the subject identical across nine images was the hardest part. Editing one anchor image, instead of generating each step from scratch, fixed it. Getting the fear to climb evenly is still tricky: the critic landed within 10 points of the plan on most steps but rated the top step 78 when we planned 92. Our first version also had too many screens, so we cut it down to look, rate, next.
 
-## Challenges
+## Accomplishments that we're proud of
+The same Chilean rose tarantula shows up on all nine spider steps, and the ladder can grow a new step mid-session in about half a minute. Every image in the demos came straight from the same pipeline the live app uses. There are no accounts, and your ratings never leave your browser.
 
-The hardest part was keeping one subject the same across nine steps. With the anchor, the spider ladder kept the same Chilean rose tarantula on every one. Getting the fear to climb evenly is harder. The critic's estimates landed within 10 points of target on most steps, though it rated the top steps low (spiders: 92 planned, 78 estimated).
+## What we learned
+Image models hold onto a subject much better when they edit one picture than when they draw from scratch each time. They also drift on intensity, so we stopped trusting the model for blur and set it in code. Structured output only fills required fields, which we found out when the planner kept sending back ladders with no steps.
 
-## What's next
+## What's next for Fear Ladder
+We want to fix the critic's low scores at the top of the ladder, then test snakes, birds and heights the way we tested spiders, dogs and needles. After that, we'd like to put it in front of a therapist and see if they'd use it with clients.
 
-We'll fix that critic bias, then test snakes, birds and heights like we tested spiders, dogs and needles.
-
-*Made with Gemini (gemini-3.8-flash, gemini-nano-banana-2.1, gemini-3.5-flash-lite) and Claude Code. Library credits are in the README. Not a medical device.*
+*Try it at https://fear-ladder-beta.vercel.app. Made with Gemini, Nano Banana, Gemini TTS, Lyria and Claude Code. Not a medical device.*
