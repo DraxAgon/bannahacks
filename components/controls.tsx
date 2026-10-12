@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+/** iOS-style segmented control: gray track, the chosen option sits on a white thumb. */
 export function Segmented<T extends string | number>({
   label,
   value,
@@ -18,23 +19,17 @@ export function Segmented<T extends string | number>({
   return (
     <fieldset>
       <legend className="mb-2 text-[14px] font-medium text-ink">{label}</legend>
-      <div className="inline-flex flex-wrap gap-1 rounded-full border border-line bg-surface p-1">
+      <div className="inline-flex flex-wrap gap-0.5 rounded-full bg-subtle p-1">
         {options.map((o) => {
           const active = o.value === value;
           return (
             <label
               key={String(o.value)}
-              className={`relative flex min-h-10 min-w-11 cursor-pointer items-center justify-center rounded-full px-4 text-[14px] transition-colors duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary ${
-                active ? "bg-primary text-surface" : "text-muted hover:text-ink"
+              className={`relative flex h-9 min-w-11 cursor-pointer select-none items-center justify-center rounded-full px-4 text-[14px] font-medium transition-[background-color,color,box-shadow] duration-150 ease-out has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink ${
+                active ? "bg-bg text-ink shadow-[0_1px_3px_rgb(0_0_0/0.1)]" : "text-muted hover:text-ink"
               }`}
             >
-              <input
-                type="radio"
-                className="sr-only"
-                name={name}
-                checked={active}
-                onChange={() => onChange(o.value)}
-              />
+              <input type="radio" className="sr-only" name={name} checked={active} onChange={() => onChange(o.value)} />
               {o.label}
             </label>
           );
@@ -56,12 +51,12 @@ export function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex min-h-11 cursor-pointer items-start justify-between gap-6">
+    <label className="flex min-h-11 cursor-pointer items-center justify-between gap-6">
       <span>
         <span className="block text-[15px] font-medium text-ink">{label}</span>
         {description && <span className="mt-0.5 block text-[14px] text-muted">{description}</span>}
       </span>
-      <span className="relative mt-0.5 inline-flex shrink-0">
+      <span className="relative inline-flex shrink-0">
         <input
           type="checkbox"
           role="switch"
@@ -69,8 +64,8 @@ export function Toggle({
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <span className="h-7 w-12 rounded-full bg-line transition-colors duration-200 peer-checked:bg-primary peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary" />
-        <span className="absolute left-1 top-1 h-5 w-5 rounded-full bg-surface shadow transition-transform duration-200 peer-checked:translate-x-5" />
+        <span className="h-7 w-12 rounded-full bg-line transition-colors duration-150 ease-out peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-ink peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg" />
+        <span className="absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-[0_1px_2px_rgb(0_0_0/0.2)] transition-[transform,background-color] duration-150 ease-out peer-checked:translate-x-5 peer-checked:bg-on-primary" />
       </span>
     </label>
   );
@@ -89,17 +84,21 @@ export function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="block text-[14px] font-medium text-ink">
+      <label htmlFor={htmlFor} className="block text-[15px] font-medium text-ink">
         {label}
       </label>
-      {hint && <p className="mt-0.5 text-[13px] text-muted">{hint}</p>}
+      {hint && <p className="mt-0.5 text-[14px] text-muted">{hint}</p>}
       <div className="mt-2">{children}</div>
     </div>
   );
 }
 
+/**
+ * Soft filled input. The `!` modifiers beat the global `:focus-visible` rule in globals.css,
+ * which is unlayered and would otherwise square the corners and add an outline on every click.
+ */
 export const inputClass =
-  "w-full rounded-[10px] border border-line bg-surface px-4 py-3 text-[16px] text-ink placeholder:text-muted/70 focus:border-primary focus:outline-none focus-visible:outline-2 focus-visible:outline-primary";
+  "block w-full rounded-2xl! border-0 bg-subtle px-4 py-3.5 text-[16px] leading-normal text-ink outline-none! placeholder:text-faint transition-[background-color,box-shadow] duration-150 ease-out focus:bg-bg focus:shadow-[inset_0_0_0_1.5px_var(--ink)]";
 
 /** Slider with a filled track; arrow keys work natively. */
 export function Range({
@@ -123,7 +122,7 @@ export function Range({
   valueText?: string;
   className?: string;
 }) {
-  const fill = ((value - min) / (max - min)) * 100;
+  const fill = max === min ? 0 : ((value - min) / (max - min)) * 100;
   return (
     <input
       id={id}

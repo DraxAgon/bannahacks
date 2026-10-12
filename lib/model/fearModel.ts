@@ -105,12 +105,12 @@ export function fingerprintSentence(model: FearModel, labels: Record<DialKey, { 
   const fp = fingerprint(model)
     .filter((f) => f.raw > 0.5)
     .sort((a, b) => b.raw - a.raw);
-  if (fp.length < 2) return "Not enough signal yet to say which visual features drive this patient's fear.";
+  if (fp.length < 2) return "Not enough ratings yet to say what drives your fear.";
   const [a, b] = fp;
   const ratio = a.raw / Math.max(b.raw, 1e-6);
   const times =
     ratio >= 2.6 ? `about ${Math.round(ratio)} times as much as` : ratio >= 1.6 ? "about twice as much as" : ratio >= 1.15 ? "a little more than" : "about as much as";
-  return `${labels[a.key].label} drives this patient's fear ${times} ${labels[b.key].label.toLowerCase()}.`;
+  return `${labels[a.key].label} drives your fear ${times} ${labels[b.key].label.toLowerCase()}.`;
 }
 
 /** Choose half-step dials on the line between two rungs where the model predicts the midpoint SUDS. */

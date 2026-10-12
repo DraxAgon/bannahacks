@@ -48,7 +48,7 @@ export const PRESETS: PresetInfo[] = [
   {
     id: "other",
     label: "Other",
-    example: "Describe the specific thing the patient fears, what makes it worse, and what is already manageable.",
+    example: "What it is, what makes it worse, and what you can already handle.",
   },
 ];
 

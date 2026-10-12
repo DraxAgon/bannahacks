@@ -1,15 +1,14 @@
 "use client";
 
-import { ArrowUp, Layers, Loader2, Pause, Repeat, Sprout } from "lucide-react";
+import { Pause, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BreathePause } from "@/components/BreathePause";
-import { Range } from "@/components/controls";
 import { HoldToView } from "@/components/HoldToView";
-import { LadderMark } from "@/components/LadderMark";
 import { SudsSlider } from "@/components/SudsSlider";
+import { AiLabel, Button, LinkButton } from "@/components/ui";
 import { fmtDuration } from "@/lib/format";
 import { runnerFor, useHealth, useLadder } from "@/lib/live";
 import { fitFearModel, halfStepDials } from "@/lib/model/fearModel";
@@ -18,86 +17,94 @@ import { nextStep, suggestedStart, summarize, type NextStep } from "@/lib/sessio
 import { listSessions, saveSession } from "@/lib/store";
 import type { Exposure, Ladder, Rung, Session } from "@/lib/types";
 
-type Phase = "welcome" | "predict" | "expose" | "reflect" | "next" | "summary";
+type Phase = "start" | "guess" | "look" | "after" | "smaller" | "summary";
+type Happened = Exposure["happened"];
 
-const PREDICTIONS = [
-  "I'll panic",
-  "I won't be able to keep looking",
-  "I'll feel sick",
-  "It will feel unbearable",
-  "The feeling will never fade",
+const ANSWERS: { happened: Happened; label: string }[] = [
+  { happened: "no", label: "Easier" },
+  { happened: "partly", label: "About the same" },
+  { happened: "yes", label: "Worse" },
 ];
-const FEELINGS = ["scared", "disgusted", "tense", "okay"];
 
-function Chip({ on, children, onClick }: { on: boolean; children: React.ReactNode; onClick: () => void }) {
+const titleClass = "text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[48px]";
+const secondsSince = (start: number) => Math.round((Date.now() - start) / 1000);
+
+/** "Step 3 of 9" among the planned steps; inserted half-steps are simply "Smaller step". */
+function stepLabel(ladder: Ladder, rung: Rung | undefined): string | null {
+  if (!rung) return null;
+  if (rung.kind === "half-step") return "Smaller step";
+  const planned = mainRungs(ladder).filter((r) => r.kind !== "half-step");
+  const anchor = rung.kind === "variation" ? rung.parentId : rung.id;
+  const i = planned.findIndex((r) => r.id === anchor);
+  return i >= 0 ? `Step ${i + 1} of ${planned.length}` : null;
+}
+
+function TopBar({ ladderId, label, onPause }: { ladderId: string; label?: string | null; onPause?: () => void }) {
   return (
-    <button
-      type="button"
-      aria-pressed={on}
-      onClick={onClick}
-      className={`min-h-11 rounded-full border px-4 text-[15px] transition-colors duration-200 ${
-        on ? "border-primary bg-primary-soft text-ink" : "border-line text-muted hover:border-primary/60 hover:text-ink"
-      }`}
-    >
-      {children}
-    </button>
+    <header className="flex h-16 shrink-0 items-center justify-between gap-3 px-3 sm:px-5">
+      <div className="flex min-w-0 items-center gap-2">
+        <Link
+          href={`/ladder/${ladderId}`}
+          aria-label="Leave session"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition-colors duration-150 ease-out hover:bg-subtle hover:text-ink"
+        >
+          <X className="h-5 w-5" aria-hidden />
+        </Link>
+        {label && <span className="tabular truncate text-[14px] text-muted">{label}</span>}
+      </div>
+      {onPause && (
+        <button
+          type="button"
+          onClick={onPause}
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-subtle px-4 text-[14px] font-medium text-ink transition-colors duration-150 ease-out hover:bg-line"
+        >
+          <Pause className="h-3.5 w-3.5" aria-hidden /> Pause
+        </button>
+      )}
+    </header>
   );
 }
 
-function SessionShell({
-  children,
-  onPause,
-  showPause,
-  ladderId,
-}: {
-  children: React.ReactNode;
-  onPause: () => void;
-  showPause: boolean;
-  ladderId: string;
-}) {
+/** A heavily blurred look at what's coming. It never sharpens here. */
+function BlurredPreview({ src, className = "" }: { src: string; className?: string }) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex h-16 items-center justify-between px-4 sm:px-8">
-        <Link href={`/ladder/${ladderId}`} className="flex items-center gap-2 text-muted hover:text-ink" aria-label="Back to the ladder">
-          <LadderMark className="h-5 w-5 text-primary" />
-          <span className="font-display text-[17px]">Fear Ladder</span>
-        </Link>
-        {showPause && (
-          <button
-            type="button"
-            onClick={onPause}
-            className="flex min-h-11 items-center gap-2 rounded-full border border-line px-4 text-[15px] text-ink hover:border-primary"
-          >
-            <Pause className="h-4 w-4" aria-hidden /> Pause
-          </button>
-        )}
-      </header>
-      <main className="flex flex-1 flex-col">{children}</main>
+    <div className={`develop relative aspect-square overflow-hidden rounded-2xl bg-subtle ${className}`}>
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        className="pointer-events-none h-full w-full select-none object-cover"
+        style={{ filter: "blur(40px) saturate(0.6) brightness(0.75)", transform: "scale(1.2)" }}
+      />
+      <AiLabel className="absolute bottom-3 left-3" />
+    </div>
+  );
+}
+
+function Centered({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center px-4 pb-16 text-center">
+      <div className="flex w-full max-w-md flex-col items-center">{children}</div>
     </div>
   );
 }
 
 export default function SessionPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const ladder = useLadder(id);
   const live = useHealth();
   const reduce = useReducedMotion();
 
-  const [phase, setPhase] = useState<Phase>("welcome");
+  const [phase, setPhase] = useState<Phase>("start");
   const [paused, setPaused] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [history, setHistory] = useState<Session[]>([]);
   const [rungId, setRungId] = useState<string | null>(null);
-  const [startChoice, setStartChoice] = useState<string | null>(null);
 
-  // predict
-  const [predChips, setPredChips] = useState<string[]>([]);
-  const [predText, setPredText] = useState("");
-  const [likelihood, setLikelihood] = useState(50);
-  const [expectedSuds, setExpectedSuds] = useState(50);
+  // guess
+  const [guess, setGuess] = useState(50);
 
-  // expose
+  // look
   const [suds, setSuds] = useState(50);
   const [lookMs, setLookMs] = useState(0);
   const [pulse, setPulse] = useState(false);
@@ -107,33 +114,31 @@ export default function SessionPage() {
   const everVisible = useRef(false);
   const releasesRef = useRef(0);
   const samplesRef = useRef<{ t: number; suds: number }[]>([]);
-  const startedAtRef = useRef<number>(0);
+  const startedAtRef = useRef(0);
   const sudsRef = useRef(50);
+  const lastSampleAt = useRef(0);
 
-  // reflect
-  const [endSuds, setEndSuds] = useState(30);
-  const [happened, setHappened] = useState<Exposure["happened"] | null>(null);
-  const [surprise, setSurprise] = useState(50);
-  const [feelings, setFeelings] = useState<string[]>([]);
-  const [learned, setLearned] = useState("");
-
-  // next
+  // after
+  const [pending, setPending] = useState<Omit<Exposure, "happened"> | null>(null);
   const [last, setLast] = useState<{ exposure: Exposure; step: NextStep } | null>(null);
-  const [drawing, setDrawing] = useState<null | "halfstep" | "variation">(null);
-  const [drawError, setDrawError] = useState<string | null>(null);
+  const answered = useRef(false);
+
+  // smaller step
+  const [drawing, setDrawing] = useState(false);
+  const [drawFailed, setDrawFailed] = useState(false);
   const [newRungId, setNewRungId] = useState<string | null>(null);
 
   useEffect(() => {
     listSessions(id).then(setHistory);
   }, [id]);
 
-  const rung: Rung | undefined = useMemo(() => ladder?.rungs.find((r) => r.id === rungId), [ladder, rungId]);
+  const rung = useMemo(() => ladder?.rungs.find((r) => r.id === rungId), [ladder, rungId]);
   const suggested = useMemo(() => (ladder ? suggestedStart(ladder, history) : undefined), [ladder, history]);
   const readyMain = useMemo(() => (ladder ? mainRungs(ladder).filter((r) => r.status === "ready" && r.image) : []), [ladder]);
 
-  // Look timer: counts only while the image is actually visible.
+  // Look timer: counts only while the image is actually in view.
   useEffect(() => {
-    if (phase !== "expose" || paused) return;
+    if (phase !== "look" || paused) return;
     let prev = performance.now();
     const t = setInterval(() => {
       const now = performance.now();
@@ -146,29 +151,47 @@ export default function SessionPage() {
     return () => clearInterval(t);
   }, [phase, paused]);
 
-  // Gentle SUDS pulse every 30 s; record a sample each time.
+  // Every 30 s: record a sample and gently pulse the slider.
   useEffect(() => {
-    if (phase !== "expose" || paused) return;
+    if (phase !== "look" || paused) return;
+    let off: ReturnType<typeof setTimeout> | undefined;
     const t = setInterval(() => {
-      samplesRef.current.push({ t: Math.round((Date.now() - startedAtRef.current) / 1000), suds: sudsRef.current });
+      samplesRef.current.push({ t: secondsSince(startedAtRef.current), suds: sudsRef.current });
       setPulse(true);
-      setTimeout(() => setPulse(false), 5000);
+      off = setTimeout(() => setPulse(false), 5000);
     }, 30_000);
-    return () => clearInterval(t);
+    return () => {
+      clearInterval(t);
+      clearTimeout(off);
+    };
   }, [phase, paused]);
 
-  // Rotate notice prompts.
+  // One notice prompt at a time, rotating every 12 s.
   useEffect(() => {
-    if (phase !== "expose" || !rung?.noticePrompts.length) return;
-    const t = setInterval(() => setPromptIdx((i) => (i + 1) % rung.noticePrompts.length), 12_000);
+    if (phase !== "look" || !rung || rung.noticePrompts.length < 2) return;
+    const n = rung.noticePrompts.length;
+    const t = setInterval(() => setPromptIdx((i) => (i + 1) % n), 12_000);
     return () => clearInterval(t);
   }, [phase, rung]);
 
-  // Arrow keys adjust SUDS during exposure even when the slider isn't focused.
+  const changeSuds = useCallback((v: number) => {
+    setSuds(v);
+    sudsRef.current = v;
+    setPulse(false);
+    const now = Date.now();
+    const sample = { t: Math.round((now - startedAtRef.current) / 1000), suds: v };
+    const samples = samplesRef.current;
+    // Collapse a quick run of changes (dragging, key repeat) into one sample.
+    if (samples.length && now - lastSampleAt.current < 1000) samples[samples.length - 1] = sample;
+    else samples.push(sample);
+    lastSampleAt.current = now;
+  }, []);
+
+  // Arrow keys nudge the rating by 5 when the slider itself isn't focused.
   useEffect(() => {
-    if (phase !== "expose" || paused) return;
+    if (phase !== "look" || paused) return;
     const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement;
+      const t = e.target;
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement) return;
       if (e.key === "ArrowUp" || e.key === "ArrowRight") {
         e.preventDefault();
@@ -180,92 +203,88 @@ export default function SessionPage() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, paused]);
-
-  const lastSampleAt = useRef(0);
-  function changeSuds(v: number) {
-    setSuds(v);
-    sudsRef.current = v;
-    setPulse(false);
-    const now = Date.now();
-    const t = Math.round((now - startedAtRef.current) / 1000);
-    const samples = samplesRef.current;
-    if (samples.length && now - lastSampleAt.current < 1000) samples[samples.length - 1] = { t, suds: v };
-    else samples.push({ t, suds: v });
-    lastSampleAt.current = now;
-  }
+  }, [phase, paused, changeSuds]);
 
   const onVisibleChange = useCallback((v: boolean) => {
-    if (!v && visibleRef.current && everVisible.current) releasesRef.current += 1;
+    if (!v && visibleRef.current) releasesRef.current += 1;
     if (v && !everVisible.current) {
       everVisible.current = true;
-      samplesRef.current.push({ t: Math.round((Date.now() - startedAtRef.current) / 1000), suds: sudsRef.current });
+      samplesRef.current.push({ t: secondsSince(startedAtRef.current), suds: sudsRef.current });
     }
     visibleRef.current = v;
   }, []);
 
-  function beginRung(id: string) {
-    setRungId(id);
-    setPredChips([]);
-    setPredText("");
-    setLikelihood(50);
-    setExpectedSuds(50);
-    setPhase("predict");
+  function go(next: Phase) {
+    setPhase(next);
     window.scrollTo({ top: 0 });
   }
 
-  function startExposure() {
+  function beginRung(target: string) {
+    setRungId(target);
+    setGuess(50);
+    setPending(null);
+    setLast(null);
+    go("guess");
+  }
+
+  function begin(l: Ladder) {
+    const s: Session = { id: newId("s"), ladderId: l.id, startedAt: new Date().toISOString(), exposures: [] };
+    setSession(s);
+    void saveSession(s);
+    beginRung(suggested?.id ?? readyMain[0].id);
+  }
+
+  function startLook() {
     lookRef.current = 0;
-    setLookMs(0);
     releasesRef.current = 0;
     samplesRef.current = [];
     everVisible.current = false;
     visibleRef.current = false;
+    lastSampleAt.current = 0;
     startedAtRef.current = Date.now();
-    setSuds(expectedSuds);
-    sudsRef.current = expectedSuds;
+    sudsRef.current = guess;
+    setSuds(guess);
+    setLookMs(0);
+    setPulse(false);
     setPromptIdx(0);
-    setPhase("expose");
+    go("look");
   }
 
-  function finishExposure() {
+  function finishLook(r: Rung) {
     visibleRef.current = false;
-    setEndSuds(sudsRef.current);
-    setHappened(null);
-    setSurprise(50);
-    setFeelings([]);
-    setLearned("");
-    setPhase("reflect");
-  }
-
-  async function saveReflection(l: Ladder, r: Rung, s: Session) {
-    const samples = [...samplesRef.current, { t: Math.round((Date.now() - startedAtRef.current) / 1000), suds: endSuds }];
-    const peak = Math.max(...samples.map((x) => x.suds), endSuds);
-    const exposure: Exposure = {
+    const now = Date.now();
+    const end = sudsRef.current;
+    const samples = [...samplesRef.current, { t: Math.round((now - startedAtRef.current) / 1000), suds: end }];
+    setPending({
       rungId: r.id,
       startedAt: new Date(startedAtRef.current).toISOString(),
-      endedAt: new Date().toISOString(),
+      endedAt: new Date(now).toISOString(),
       lookMs: Math.round(lookRef.current),
       releases: releasesRef.current,
       samples,
-      prediction: [...predChips, predText.trim()].filter(Boolean).join("; "),
-      likelihood,
-      expectedSuds,
-      peakSuds: peak,
-      endSuds,
-      happened: happened ?? "partly",
-      surprise,
-      learned: learned.trim(),
-      feelings,
-    };
+      prediction: "",
+      likelihood: 0,
+      expectedSuds: guess,
+      peakSuds: Math.max(end, ...samples.map((x) => x.suds)),
+      endSuds: end,
+      surprise: 0,
+      learned: "",
+      feelings: [],
+    });
+    setLast(null);
+    answered.current = false;
+    go("after");
+  }
+
+  async function answer(l: Ladder, r: Rung, s: Session, happened: Happened) {
+    if (!pending || answered.current) return;
+    answered.current = true;
+    const exposure: Exposure = { ...pending, happened };
     const updated: Session = { ...s, exposures: [...s.exposures, exposure] };
     setSession(updated);
-    await saveSession(updated);
+    setPending(null);
     setLast({ exposure, step: nextStep(l, r, exposure) });
-    setNewRungId(null);
-    setDrawError(null);
-    setPhase("next");
-    window.scrollTo({ top: 0 });
+    await saveSession(updated);
   }
 
   async function endSession() {
@@ -275,485 +294,340 @@ export default function SessionPage() {
       setSession(ended);
       await saveSession(ended);
     }
-    setPhase("summary");
+    go("summary");
   }
 
   async function drawHalfStep(l: Ladder, r: Rung) {
-    setDrawing("halfstep");
-    setDrawError(null);
+    setNewRungId(null);
+    setDrawFailed(false);
+    setDrawing(true);
+    go("smaller");
     try {
       const all = [...history.flatMap((s) => s.exposures), ...(session?.exposures ?? [])];
       const model = fitFearModel(l.rungs, all);
       const main = mainRungs(l);
       const k = main.findIndex((m) => m.id === (r.kind === "variation" ? r.parentId : r.id));
+      if (k < 0) throw new Error("No step to split here.");
       const lower = main[k - 1];
       let dials;
+      // With enough ratings, the fear model picks dials it predicts will land halfway.
       if (model.n >= 3 && lower) {
         const target = (model.predict(lower.dials) + model.predict(main[k].dials)) / 2;
         dials = halfStepDials(model, lower.dials, main[k].dials, target);
       }
-      const newId = await runnerFor(l).addHalfStep(main[k].id, dials);
-      if (!newId) throw new Error("Couldn't add a step here.");
-      setNewRungId(newId);
-    } catch (e) {
-      setDrawError((e as Error).message);
+      const made = await runnerFor(l).addHalfStep(main[k].id, dials);
+      if (!made) throw new Error("No step was added.");
+      setNewRungId(made);
+    } catch {
+      setDrawFailed(true);
     } finally {
-      setDrawing(null);
+      setDrawing(false);
     }
   }
 
-  async function drawVariation(l: Ladder, r: Rung) {
-    setDrawing("variation");
-    setDrawError(null);
-    try {
-      const parent = r.kind === "variation" ? r.parentId! : r.id;
-      const vid = await runnerFor(l).addVariation(parent);
-      if (!vid) throw new Error("Couldn't add a variation here.");
-      setNewRungId(vid);
-    } catch (e) {
-      setDrawError((e as Error).message);
-    } finally {
-      setDrawing(null);
-    }
-  }
-
-  // ── Loading / empty states ──
+  // ── Loading and empty states ──
   if (ladder === undefined) {
     return (
-      <SessionShell onPause={() => {}} showPause={false} ladderId={id}>
-        <div className="flex flex-1 items-center justify-center gap-2 text-muted">
-          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden /> Getting ready…
-        </div>
-      </SessionShell>
+      <>
+        <TopBar ladderId={id} />
+        <Centered>
+          <p className="text-[15px] text-faint" role="status">
+            Getting ready…
+          </p>
+        </Centered>
+      </>
     );
   }
   if (ladder === null || readyMain.length === 0) {
     return (
-      <SessionShell onPause={() => {}} showPause={false} ladderId={id}>
-        <div className="mx-auto max-w-md flex-1 px-6 py-20 text-center">
-          <p className="font-display text-[28px]">This ladder isn&rsquo;t ready yet.</p>
-          <p className="mt-3 text-muted">Ask your therapist to finish building it first.</p>
-          <Link href={ladder ? `/ladder/${id}` : "/"} className="mt-6 inline-block min-h-11 rounded-full border border-line px-5 py-2.5 text-ink">
+      <>
+        <TopBar ladderId={id} />
+        <Centered>
+          <h1 className="text-[22px] font-semibold tracking-tight">This ladder isn&rsquo;t ready yet.</h1>
+          <LinkButton variant="secondary" href={ladder ? `/ladder/${id}` : "/"} className="mt-8">
             Back
-          </Link>
-        </div>
-      </SessionShell>
+          </LinkButton>
+        </Centered>
+      </>
     );
   }
 
+  const label = phase === "summary" ? null : stepLabel(ladder, phase === "start" ? suggested : rung);
+  const shown = last?.exposure ?? pending;
+
+  // Rung numbers shift when a half-step is inserted, so read rungs fresh from the live ladder by id.
+  const nextId = last?.step.nextRung?.id;
+  const next = nextId ? ladder.rungs.find((r) => r.id === nextId && r.status === "ready" && r.image) : undefined;
   const newRung = newRungId ? ladder.rungs.find((r) => r.id === newRungId) : undefined;
-  // Rung numbers shift when a half-step is inserted, so always read the next rung from the live ladder.
-  const nextRung = last?.step.nextRung ? ladder.rungs.find((r) => r.id === last.step.nextRung!.id) : undefined;
-  const exposuresSoFar = session?.exposures ?? [];
-  const reachedTarget = lookMs >= ladder.settings.exposureSeconds * 1000;
+  const smaller: "drawing" | "ready" | "failed" =
+    drawing
+      ? "drawing"
+      : drawFailed || (newRungId && !newRung) || newRung?.status === "error"
+        ? "failed"
+        : newRung?.status === "ready" && newRung.image
+          ? "ready"
+          : "drawing";
 
   return (
-    <SessionShell onPause={() => setPaused(true)} showPause={phase !== "welcome" && phase !== "summary"} ladderId={id}>
+    <>
+      <TopBar ladderId={id} label={label} onPause={phase === "summary" ? undefined : () => setPaused(true)} />
       {paused && <BreathePause onReturn={() => setPaused(false)} onEnd={endSession} />}
 
-      <AnimatePresence mode="wait">
-        <motion.div
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.main
           key={phase + (rungId ?? "")}
           initial={{ opacity: 0, y: reduce ? 0 : 8 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="flex flex-1 flex-col"
         >
-          {phase === "welcome" && (
-            <div className="mx-auto w-full max-w-xl flex-1 px-6 pb-16 pt-8 sm:pt-16">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Session · {ladder.alias}</p>
-              <h1 className="font-display mt-4 text-[36px] leading-tight sm:text-[44px]">Take your time.</h1>
-              <p className="mt-3 text-[18px] text-muted">You can stop whenever you want. Pause is always at the top of the screen.</p>
-
-              {ladder.preset === "needles" && (
-                <div className="mt-8 rounded-[14px] border border-accent/50 bg-surface p-5" role="note">
-                  <p className="text-[16px] text-ink">
-                    Sit down before you start. If you feel faint, use the applied-tension technique your therapist taught you.
-                  </p>
-                </div>
-              )}
-
-              <fieldset className="mt-10">
-                <legend className="text-[15px] text-ink">Where would you like to start?</legend>
-                <div className="mt-3 space-y-2">
-                  {readyMain.map((r) => {
-                    const checked = (startChoice ?? suggested?.id) === r.id;
-                    return (
-                      <label
-                        key={r.id}
-                        className={`flex min-h-12 cursor-pointer items-center gap-4 rounded-[12px] border px-4 py-2.5 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary ${
-                          checked ? "border-primary bg-primary-soft" : "border-line"
-                        }`}
-                      >
-                        <input type="radio" name="start" className="sr-only" checked={checked} onChange={() => setStartChoice(r.id)} />
-                        <span className="font-display w-7 text-[22px] text-primary">{r.index}</span>
-                        <span className="flex-1 text-[15px] text-ink">{r.title}</span>
-                        {suggested?.id === r.id && <span className="font-mono text-[11px] uppercase text-muted">suggested</span>}
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <button
-                type="button"
-                className="mt-8 min-h-12 w-full rounded-full bg-primary px-6 text-[17px] font-medium text-bg"
-                onClick={() => {
-                  const s: Session = { id: newId("s"), ladderId: ladder.id, startedAt: new Date().toISOString(), exposures: [] };
-                  setSession(s);
-                  void saveSession(s);
-                  beginRung(startChoice ?? suggested?.id ?? readyMain[0].id);
-                }}
-              >
-                Begin
-              </button>
-              <p className="mt-6 text-center text-[13px] text-muted">
-                Designed for use with a licensed therapist. Not a medical device. Not for emergencies. In crisis, call or text 988
-                (US and Canada) or your local emergency number.
-              </p>
-            </div>
-          )}
-
-          {phase === "predict" && rung && (
-            <div className="mx-auto w-full max-w-xl flex-1 px-6 pb-16 pt-6 sm:pt-12">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
-                Rung {rung.index}
-                {rung.kind === "half-step" ? " · smaller step" : rung.kind === "variation" ? " · variation" : ""}
-              </p>
-              <h1 className="font-display mt-3 text-[30px] leading-tight sm:text-[36px]">{rung.title}</h1>
-              <p className="mt-2 text-muted">Before you look, a few quick questions.</p>
-
-              <div className="mt-8">
-                <p id="pred-l" className="text-[16px] text-ink">
-                  What do you think will happen when you look?
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="pred-l">
-                  {PREDICTIONS.map((p) => (
-                    <Chip key={p} on={predChips.includes(p)} onClick={() => setPredChips((c) => (c.includes(p) ? c.filter((x) => x !== p) : [...c, p]))}>
-                      {p}
-                    </Chip>
-                  ))}
-                </div>
-                <label htmlFor="pred-text" className="sr-only">
-                  In your own words
-                </label>
-                <input
-                  id="pred-text"
-                  type="text"
-                  value={predText}
-                  onChange={(e) => setPredText(e.target.value)}
-                  placeholder="Or in your own words…"
-                  className="mt-3 w-full rounded-[12px] border border-line bg-surface px-4 py-3 text-[16px] text-ink placeholder:text-muted focus:border-primary focus:outline-none"
-                />
-              </div>
-
-              <div className="mt-8">
-                <div className="flex items-baseline justify-between">
-                  <label htmlFor="likelihood" className="text-[16px] text-ink">
-                    How likely is that to happen?
-                  </label>
-                  <span className="font-mono text-ink">{likelihood}%</span>
-                </div>
-                <Range id="likelihood" value={likelihood} min={0} max={100} step={1} onChange={setLikelihood} label="How likely is that to happen?" valueText={`${likelihood} percent`} />
-              </div>
-
-              <div className="mt-6">
-                <SudsSlider id="expected" value={expectedSuds} onChange={setExpectedSuds} label="How distressed do you expect to feel?" />
-              </div>
-
-              <button
-                type="button"
-                onClick={startExposure}
-                disabled={predChips.length === 0 && !predText.trim()}
-                className="mt-10 min-h-12 w-full rounded-full bg-primary px-6 text-[17px] font-medium text-bg disabled:opacity-40"
-              >
-                I&rsquo;m ready to look
-              </button>
-              {predChips.length === 0 && !predText.trim() && (
-                <p className="mt-2 text-center text-[13px] text-muted">Choose or write a prediction first.</p>
-              )}
-            </div>
-          )}
-
-          {phase === "expose" && rung?.image && (
-            <div className="flex flex-1 flex-col">
-              <div className="flex flex-1 flex-col items-center justify-center px-4 pt-2">
-                <HoldToView src={rung.image} alt={rung.title} mode={ladder.settings.view} active={!paused} onVisibleChange={onVisibleChange} />
-                <p className="mt-4 min-h-[3rem] max-w-lg text-center font-display text-[20px] text-ink" aria-live="polite">
-                  {rung.noticePrompts[promptIdx]}
-                </p>
-              </div>
-              <div className="mx-auto w-full max-w-2xl space-y-3 px-4 pb-6">
-                <SudsSlider value={suds} onChange={changeSuds} pulse={pulse} />
-                <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-[14px] text-muted" aria-live="off">
-                    Looked <span className="text-ink">{fmtDuration(lookMs)}</span>
-                    {reachedTarget && <span className="ml-2 font-sans text-[13px]">· Finish whenever you&rsquo;re ready.</span>}
-                  </p>
-                  <button type="button" onClick={finishExposure} className="min-h-12 rounded-full bg-primary px-7 text-[16px] font-medium text-bg">
-                    Done
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {phase === "reflect" && rung && session && (
-            <div className="mx-auto w-full max-w-xl flex-1 px-6 pb-16 pt-6 sm:pt-12">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Rung {rung.index} · after</p>
-              <h1 className="font-display mt-3 text-[30px] leading-tight sm:text-[36px]">Well done for looking.</h1>
-              <div className="mt-8">
-                <SudsSlider id="end-suds" value={endSuds} onChange={setEndSuds} label="How distressed do you feel now?" />
-              </div>
-              <div className="mt-8">
-                <p id="happened-l" className="text-[16px] text-ink">
-                  Did what you predicted happen?
-                </p>
-                {(predChips.length > 0 || predText.trim()) && (
-                  <p className="mt-1 text-[14px] text-muted">You predicted: {[...predChips, predText.trim()].filter(Boolean).join("; ")}</p>
+          {phase === "start" && (
+            <>
+              <Centered>
+                <h1 className={titleClass}>Ready when you are.</h1>
+                <p className="mt-4 text-[16px] text-muted">You choose when to look. You can stop any time.</p>
+                {ladder.preset === "needles" && (
+                  <p className="mt-2 text-[16px] text-muted">Sit down first. If you feel faint, tense your arm and leg muscles.</p>
                 )}
-                <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="happened-l">
-                  {(["yes", "partly", "no"] as const).map((h) => (
-                    <Chip key={h} on={happened === h} onClick={() => setHappened(h)}>
-                      {h === "yes" ? "Yes" : h === "partly" ? "Partly" : "No"}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8">
-                <div className="flex items-baseline justify-between">
-                  <label htmlFor="surprise" className="text-[16px] text-ink">
-                    How surprised are you?
-                  </label>
-                  <span className="font-mono text-ink">{surprise}</span>
-                </div>
-                <Range id="surprise" value={surprise} min={0} max={100} step={1} onChange={setSurprise} label="How surprised are you?" valueText={`${surprise} out of 100`} />
-                <div className="flex justify-between font-mono text-[11px] text-muted">
-                  <span>not at all</span>
-                  <span>very</span>
-                </div>
-              </div>
-              <div className="mt-8">
-                <p id="feel-l" className="text-[16px] text-ink">
-                  Any feelings to name? <span className="text-muted">(optional)</span>
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="feel-l">
-                  {FEELINGS.map((f) => (
-                    <Chip key={f} on={feelings.includes(f)} onClick={() => setFeelings((c) => (c.includes(f) ? c.filter((x) => x !== f) : [...c, f]))}>
-                      {f}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8">
-                <label htmlFor="learned" className="text-[16px] text-ink">
-                  What did you learn?
-                </label>
-                <textarea
-                  id="learned"
-                  rows={3}
-                  value={learned}
-                  onChange={(e) => setLearned(e.target.value)}
-                  placeholder="e.g. It stayed still, and the feeling faded after a minute."
-                  className="mt-3 w-full rounded-[12px] border border-line bg-surface px-4 py-3 text-[16px] text-ink placeholder:text-muted focus:border-primary focus:outline-none"
-                />
-              </div>
-              <button
-                type="button"
-                disabled={!happened}
-                onClick={() => saveReflection(ladder, rung, session)}
-                className="mt-10 min-h-12 w-full rounded-full bg-primary px-6 text-[17px] font-medium text-bg disabled:opacity-40"
-              >
-                Save and continue
-              </button>
-            </div>
-          )}
-
-          {phase === "next" && rung && last && (
-            <div className="mx-auto w-full max-w-xl flex-1 px-6 pb-16 pt-6 sm:pt-12">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
-                Rung {rung.index} · peak {last.exposure.peakSuds} → end {last.exposure.endSuds} · looked {fmtDuration(last.exposure.lookMs)}
+                <Button className="mt-10 w-full max-w-xs" onClick={() => begin(ladder)}>
+                  Begin
+                </Button>
+              </Centered>
+              <p className="px-4 pb-6 text-center text-[13px] text-faint">
+                Not a medical device. Best used with a therapist. In crisis, call or text 988.
               </p>
-              <h1 className="font-display mt-3 text-[30px] leading-tight sm:text-[36px]">What next?</h1>
-              <p className="mt-3 text-[17px] text-muted">{last.step.reason}</p>
+            </>
+          )}
 
-              {drawing && (
-                <div className="mt-8 flex items-center gap-4 rounded-[14px] border border-line bg-surface p-5" role="status" aria-live="polite">
+          {phase === "guess" && rung?.image && (
+            <div className="flex flex-1 flex-col items-center px-4 pb-8 pt-2 text-center">
+              <h1 className="max-w-md text-balance text-[24px] font-semibold leading-tight tracking-tight sm:text-[28px]">
+                {rung.title}
+              </h1>
+              <BlurredPreview src={rung.image} className="mt-6 w-[min(calc(100svh-430px),80vw,400px)] min-w-[200px]" />
+              <div className="mt-6 w-full max-w-md">
+                <SudsSlider id="guess" value={guess} onChange={setGuess} label="How anxious do you think you’ll feel?" />
+              </div>
+              <Button className="mt-6 w-full max-w-xs" onClick={startLook}>
+                Look
+              </Button>
+            </div>
+          )}
+
+          {phase === "look" && rung?.image && (
+            <div className="flex flex-1 flex-col items-center px-4 pb-6">
+              <div className="flex w-full flex-1 flex-col items-center justify-center pt-2">
+                <HoldToView
+                  key={rung.id}
+                  src={rung.image}
+                  alt={rung.title}
+                  mode={ladder.settings.view}
+                  active={!paused}
+                  onVisibleChange={onVisibleChange}
+                />
+                <div className="mt-5 flex min-h-[44px] max-w-md items-start justify-center" aria-live="polite">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.p
+                      key={promptIdx}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="text-center text-[15px] text-muted"
+                    >
+                      {rung.noticePrompts[promptIdx % Math.max(1, rung.noticePrompts.length)]}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+              </div>
+              <div className="mt-2 w-full max-w-md">
+                <SudsSlider value={suds} onChange={changeSuds} pulse={pulse} label="How do you feel right now?" />
+                <div className="mt-3 flex items-center justify-between gap-4 pl-4">
+                  <span className="tabular text-[13px] text-faint">
+                    <span className="sr-only">Looked for </span>
+                    {fmtDuration(lookMs)}
+                  </span>
+                  <Button className="min-w-32" onClick={() => finishLook(rung)}>
+                    Done
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {phase === "after" && rung && session && shown && (
+            <Centered>
+              <h1 className={`${titleClass} tabular`}>
+                {shown.peakSuds === shown.endSuds
+                  ? `It stayed at ${shown.endSuds}.`
+                  : `Peak ${shown.peakSuds}. Now ${shown.endSuds}.`}
+              </h1>
+              <AnimatePresence mode="wait" initial={false}>
+                {!last ? (
+                  <motion.div
+                    key="ask"
+                    className="flex w-full flex-col items-center"
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <p id="ask" className="mt-10 text-[17px] text-ink">
+                      Was it as bad as you expected?
+                    </p>
+                    <div className="mt-5 flex flex-wrap justify-center gap-2" role="group" aria-labelledby="ask">
+                      {ANSWERS.map((a) => (
+                        <Button key={a.happened} variant="secondary" onClick={() => answer(ladder, rung, session, a.happened)}>
+                          {a.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="next"
+                    className="flex w-full flex-col items-center"
+                    initial={{ opacity: 0, y: reduce ? 0 : 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <p className="mt-5 max-w-sm text-[15px] text-muted">{last.step.reason}</p>
+                    <NextButtons
+                      step={last.step}
+                      live={Boolean(live)}
+                      hasNext={Boolean(next)}
+                      onNext={() => next && beginRung(next.id)}
+                      onStay={() => beginRung(rung.id)}
+                      onSmaller={() => drawHalfStep(ladder, rung)}
+                      onFinish={endSession}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Centered>
+          )}
+
+          {phase === "smaller" && rung && (
+            <Centered>
+              {smaller === "drawing" && (
+                <div role="status" className="flex flex-col items-center">
                   <motion.span
-                    className="block h-10 w-10 rounded-full bg-primary-soft"
-                    animate={reduce ? { opacity: [0.5, 1, 0.5] } : { scale: [0.7, 1, 0.7] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                     aria-hidden
+                    className="block h-24 w-24 rounded-full border-[1.5px] border-ink"
+                    animate={reduce ? { opacity: [0.3, 0.9, 0.3] } : { scale: [0.8, 1.08, 0.8], opacity: [0.5, 0.9, 0.5] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                   />
-                  <div>
-                    <p className="text-ink">{drawing === "halfstep" ? "Drawing a smaller step" : "Drawing a new variation"}</p>
-                    <p className="text-[14px] text-muted">The same subject, checked for safety before you see it. Breathe slowly while you wait.</p>
-                  </div>
+                  <p className="mt-8 text-[17px] text-ink">Drawing a smaller step…</p>
                 </div>
               )}
-              {drawError && <p className="mt-6 text-[15px] text-error">{drawError}</p>}
-
-              {newRung && !drawing && (
-                <div className="mt-8 rounded-[14px] border border-primary/50 bg-surface p-5">
-                  {newRung.status === "ready" ? (
-                    <>
-                      <p className="text-ink">
-                        {newRung.kind === "half-step" ? `A smaller step is ready: rung ${newRung.index}.` : "A new variation is ready."}
-                      </p>
-                      <MiniLadder ladder={ladder} highlight={newRung.id} />
-                      <button
-                        type="button"
-                        onClick={() => beginRung(newRung.id)}
-                        className="mt-4 min-h-12 w-full rounded-full bg-primary px-6 text-[16px] font-medium text-bg"
-                      >
-                        {newRung.kind === "half-step" ? "Try the smaller step" : "Try the variation"}
-                      </button>
-                    </>
-                  ) : (
-                    <p className="text-muted">{newRung.error ?? "That step couldn't be drawn. You can repeat this rung instead."}</p>
-                  )}
-                </div>
+              {smaller === "ready" && newRung?.image && (
+                <>
+                  <BlurredPreview src={newRung.image} className="w-[min(60vw,240px)]" />
+                  <h1 className="mt-8 text-balance text-[24px] font-semibold leading-tight tracking-tight sm:text-[28px]">
+                    {newRung.title}
+                  </h1>
+                  <Button className="mt-10 w-full max-w-xs" onClick={() => beginRung(newRung.id)}>
+                    Try it
+                  </Button>
+                </>
               )}
-
-              {!drawing && (
-                <div className="mt-8 grid gap-3">
-                  {last.step.offerHalfStep && !newRung && (
-                    <NextButton
-                      primary={last.step.primary === "halfstep"}
-                      icon={Sprout}
-                      disabled={!live}
-                      onClick={() => drawHalfStep(ladder, rung)}
-                      title="Add a half-step"
-                      sub={live ? "Generate a gentler rung between this one and the one below." : "Needs live generation, which is off on this deployment."}
-                    />
-                  )}
-                  {nextRung && (
-                    <NextButton
-                      primary={last.step.primary === "climb"}
-                      icon={ArrowUp}
-                      onClick={() => beginRung(nextRung.id)}
-                      title={`Climb to rung ${nextRung.index}`}
-                      sub={nextRung.title}
-                    />
-                  )}
-                  {last.step.criterionMet && rung.kind !== "half-step" && (
-                    <NextButton
-                      primary={last.step.primary === "variation"}
-                      icon={Layers}
-                      disabled={!live}
-                      onClick={() => drawVariation(ladder, rung)}
-                      title="Try a variation"
-                      sub={live ? "Same intensity, a different individual or setting." : "Needs live generation, which is off on this deployment."}
-                    />
-                  )}
-                  <NextButton primary={last.step.primary === "repeat"} icon={Repeat} onClick={() => beginRung(rung.id)} title="Repeat this rung" sub="Look again with a fresh prediction." />
-                  <button type="button" onClick={endSession} className="mt-2 min-h-11 text-[15px] text-muted underline underline-offset-4 hover:text-ink">
-                    End the session for today
-                  </button>
-                </div>
+              {smaller === "failed" && (
+                <>
+                  <p className="text-[17px] text-ink">A smaller step couldn&rsquo;t be drawn right now.</p>
+                  <Button className="mt-10 w-full max-w-xs" onClick={() => beginRung(rung.id)}>
+                    Stay on this step
+                  </Button>
+                </>
               )}
-            </div>
+            </Centered>
           )}
 
-          {phase === "summary" && (
-            <Summary exposures={exposuresSoFar} onReport={() => router.push(`/ladder/${id}/report`)} ladderId={id} />
-          )}
-        </motion.div>
+          {phase === "summary" && <Summary exposures={session?.exposures ?? []} ladderId={id} />}
+        </motion.main>
       </AnimatePresence>
-    </SessionShell>
+    </>
   );
 }
 
-function NextButton({
-  primary,
-  icon: Icon,
-  title,
-  sub,
-  onClick,
-  disabled,
+function NextButtons({
+  step,
+  live,
+  hasNext,
+  onNext,
+  onStay,
+  onSmaller,
+  onFinish,
 }: {
-  primary: boolean;
-  icon: typeof ArrowUp;
-  title: string;
-  sub: string;
-  onClick: () => void;
-  disabled?: boolean;
+  step: NextStep;
+  live: boolean;
+  hasNext: boolean;
+  onNext: () => void;
+  onStay: () => void;
+  onSmaller: () => void;
+  onFinish: () => void;
 }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex min-h-14 items-center gap-4 rounded-[14px] border px-5 py-3.5 text-left transition-colors duration-200 disabled:opacity-45 ${
-        primary ? "border-primary bg-primary-soft" : "border-line hover:border-primary/60"
-      }`}
-    >
-      <Icon className={`h-5 w-5 shrink-0 ${primary ? "text-primary" : "text-muted"}`} aria-hidden />
-      <span>
-        <span className="block text-[16px] text-ink">
-          {title}
-          {primary && <span className="ml-2 font-mono text-[11px] uppercase tracking-wider text-primary">suggested</span>}
-        </span>
-        <span className="block text-[14px] text-muted">{sub}</span>
-      </span>
-    </button>
-  );
-}
+  const primary =
+    step.primary === "climb" && hasNext
+      ? { label: "Next step", onClick: onNext }
+      : step.primary === "halfstep"
+        ? live
+          ? { label: "Try a smaller step", onClick: onSmaller }
+          : { label: "Stay on this step", onClick: onStay }
+        : step.primary === "repeat"
+          ? { label: "Stay on this step", onClick: onStay }
+          : { label: "Finish", onClick: onFinish };
 
-function MiniLadder({ ladder, highlight }: { ladder: Ladder; highlight: string }) {
-  const reduce = useReducedMotion();
-  const main = [...mainRungs(ladder)].reverse();
   return (
-    <ol className="relative mt-4 space-y-1 border-x-2 border-line px-3 py-2" aria-label="Ladder with the new step">
-      {main.map((r) => (
-        <motion.li
-          key={r.id}
-          layout={!reduce}
-          initial={r.id === highlight && !reduce ? { opacity: 0, x: -20 } : false}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className={`flex items-center gap-3 rounded-[8px] px-2 py-1 text-[13px] ${r.id === highlight ? "bg-primary-soft text-ink" : "text-muted"}`}
-        >
-          <span className="font-display w-5 text-[16px] text-primary">{r.index}</span>
-          <span className="truncate">{r.title}</span>
-        </motion.li>
-      ))}
-    </ol>
-  );
-}
-
-function Summary({ exposures, onReport, ladderId }: { exposures: Exposure[]; onReport: () => void; ladderId: string }) {
-  const s = summarize(exposures);
-  return (
-    <div className="mx-auto w-full max-w-xl flex-1 px-6 pb-16 pt-10 text-center sm:pt-20">
-      <LadderMark className="mx-auto h-10 w-10 text-primary" />
-      <h1 className="font-display mt-6 text-[36px] leading-tight sm:text-[44px]">
-        {exposures.length ? "You did the work today." : "That's okay. Stopping is always allowed."}
-      </h1>
-      {exposures.length > 0 && (
-        <dl className="mt-10 grid grid-cols-3 gap-3 text-left">
-          {[
-            ["Rungs faced", String(s.rungs)],
-            ["Time looked", fmtDuration(s.lookMs)],
-            ["Biggest drop", `${s.biggestDrop} SUDS`],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-[14px] border border-line bg-surface p-4">
-              <dt className="text-[13px] text-muted">{k}</dt>
-              <dd className="mt-1 font-mono text-[22px] text-ink">{v}</dd>
-            </div>
-          ))}
-        </dl>
+    <div className="mt-10 flex w-full max-w-xs flex-col gap-2">
+      <Button onClick={primary.onClick}>{primary.label}</Button>
+      {hasNext && primary.label !== "Next step" && (
+        <Button variant="secondary" onClick={onNext}>
+          Next step
+        </Button>
       )}
-      <p className="mt-8 text-muted">Your therapist will see these notes in the report.</p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <button type="button" onClick={onReport} className="min-h-12 rounded-full bg-primary px-6 text-[16px] font-medium text-bg">
-          Open the report
-        </button>
-        <Link href={`/ladder/${ladderId}`} className="flex min-h-12 items-center rounded-full border border-line px-6 text-[16px] text-ink">
-          Back to the ladder
-        </Link>
-      </div>
+      {primary.label !== "Finish" && (
+        <Button variant="ghost" onClick={onFinish}>
+          Finish
+        </Button>
+      )}
     </div>
+  );
+}
+
+function Summary({ exposures, ladderId }: { exposures: Exposure[]; ladderId: string }) {
+  if (exposures.length === 0) {
+    return (
+      <Centered>
+        <h1 className={titleClass}>That&rsquo;s okay.</h1>
+        <p className="mt-4 text-[16px] text-muted">Stopping is always allowed.</p>
+        <LinkButton variant="secondary" href={`/ladder/${ladderId}`} className="mt-10 w-full max-w-xs">
+          Back to ladder
+        </LinkButton>
+      </Centered>
+    );
+  }
+  const s = summarize(exposures);
+  const stats: [string, string][] = [
+    ["Steps faced", String(s.rungs)],
+    ["Time looking", fmtDuration(s.lookMs)],
+    ["Biggest drop", String(s.biggestDrop)],
+  ];
+  return (
+    <Centered>
+      <h1 className={titleClass}>Nice work.</h1>
+      <dl className="mt-12 grid w-full grid-cols-3 gap-2">
+        {stats.map(([k, v]) => (
+          <div key={k} className="flex flex-col-reverse items-center gap-1">
+            <dt className="text-[13px] text-muted">{k}</dt>
+            <dd className="tabular text-[32px] font-semibold leading-none tracking-tight sm:text-[40px]">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-12 flex w-full max-w-xs flex-col gap-2">
+        <LinkButton href={`/ladder/${ladderId}/report`}>See report</LinkButton>
+        <LinkButton variant="secondary" href={`/ladder/${ladderId}`}>
+          Back to ladder
+        </LinkButton>
+      </div>
+    </Centered>
   );
 }

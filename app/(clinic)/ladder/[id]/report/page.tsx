@@ -1,67 +1,99 @@
 "use client";
 
-import { ArrowLeft, Printer } from "lucide-react";
-import { useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from "recharts";
 import { FearFingerprint } from "@/components/FearFingerprint";
-import { Button, Eyebrow, LinkButton } from "@/components/ui";
+import { Button, LinkButton } from "@/components/ui";
 import { SERIES_A, SERIES_B } from "@/lib/chartColors";
 import { fmtDuration } from "@/lib/format";
 import { useLadder } from "@/lib/live";
 import { fitFearModel } from "@/lib/model/fearModel";
-import { criterionMet } from "@/lib/session";
 import { listSessions } from "@/lib/store";
-import type { Exposure, Rung, Session } from "@/lib/types";
+import type { Rung, Session } from "@/lib/types";
 
-const tooltipStyle = { background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, fontSize: 13 };
-const axisTick = { fontSize: 12, fill: "var(--muted)" };
+const GRID = "#f0f0f1";
+const AXIS_TEXT = "#71717a";
+const CURSOR = "#f4f4f5";
+const tick = { fontSize: 12, fill: AXIS_TEXT };
 
-function Section({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
-  return (
-    <section className="print-break border-t border-line pt-6">
-      <h2 className="font-display text-[24px] leading-tight">{title}</h2>
-      {sub && <p className="mt-1 text-[14px] text-muted">{sub}</p>}
-      <div className="mt-5">{children}</div>
-    </section>
-  );
+const wrap = "mx-auto w-full max-w-[760px] px-4 pb-20 pt-6 sm:px-8 sm:pt-10 print:max-w-none print:px-0 print:pb-0 print:pt-0";
+const titleClass = "text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[48px]";
+
+type StepDatum = { id: string; label: string; title: string; note: string; peak: number; end: number };
+
+/**
+ * Step labels as a person reads the ladder: planned steps 1, 2, 3…, a smaller step between 2 and 3 is "2½",
+ * and variations of step 3 are "3b", "3c". (rung.index is renumbered when a half-step is inserted, so it
+ * cannot express "2½" on its own.)
+ */
+function stepLabels(rungs: Rung[]): Map<string, string> {
+  const out = new Map<string, string>();
+  let step = 0;
+  for (const r of rungs) {
+    if (r.kind === "planned") out.set(r.id, String((step += 1)));
+    else if (r.kind === "half-step") out.set(r.id, `${step || ""}½`);
+  }
+  const seen = new Map<string, number>();
+  for (const r of rungs) {
+    if (r.kind !== "variation") continue;
+    const parent = r.parentId ?? "";
+    const k = (seen.get(parent) ?? 0) + 1;
+    seen.set(parent, k);
+    out.set(r.id, `${out.get(parent) ?? r.index}${String.fromCharCode(97 + Math.min(k, 25))}`);
+  }
+  return out;
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function fmtDay(iso: string) {
+  const d = new Date(iso);
+  const sameYear = d.getFullYear() === new Date().getFullYear();
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", ...(sameYear ? {} : { year: "numeric" }) });
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+function Swatch({ color }: { color: string }) {
+  return <span aria-hidden className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px]" style={{ background: color }} />;
+}
+
+function StepTooltip({ active, payload }: TooltipContentProps) {
+  const d = payload?.[0]?.payload as StepDatum | undefined;
+  if (!active || !d) return null;
   return (
-    <div className="rounded-[12px] border border-line bg-surface p-4">
-      <dt className="text-[13px] text-muted">{label}</dt>
-      <dd className="mt-1 font-mono text-[22px] text-ink">{value}</dd>
+    <div className="max-w-[240px] rounded-xl bg-surface px-3 py-2.5 text-[13px] leading-snug shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
+      <p className="font-semibold text-ink">
+        Step {d.label}
+        {d.note && <span className="font-normal text-muted"> · {d.note}</span>}
+      </p>
+      <p className="mt-0.5 truncate text-muted">{d.title}</p>
+      <div className="tabular mt-2 space-y-1">
+        <p className="flex items-center gap-2">
+          <Swatch color={SERIES_A} />
+          <span className="text-muted">Peak</span>
+          <span className="ml-auto pl-4 font-medium text-ink">{d.peak}</span>
+        </p>
+        <p className="flex items-center gap-2">
+          <Swatch color={SERIES_B} />
+          <span className="text-muted">End</span>
+          <span className="ml-auto pl-4 font-medium text-ink">{d.end}</span>
+        </p>
+      </div>
     </div>
   );
 }
 
-function SudsSparkline({ e, rung, n, animate }: { e: Exposure; rung?: Rung; n: number; animate: boolean }) {
+function Section({ title, aside, children }: { title: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <figure className="rounded-[12px] border border-line bg-surface p-3">
-      <figcaption className="flex items-baseline justify-between gap-2 text-[13px]">
-        <span className="truncate text-ink">
-          #{n} · Rung {rung?.index ?? "?"}
-          {rung?.kind === "half-step" ? " (half-step)" : rung?.kind === "variation" ? " (variation)" : ""}
-        </span>
-        <span className="shrink-0 font-mono text-muted">
-          {e.peakSuds}→{e.endSuds}
-        </span>
-      </figcaption>
-      <div className="mt-2 h-28" role="img" aria-label={`SUDS over time for exposure ${n}: peak ${e.peakSuds}, end ${e.endSuds}`}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={e.samples} margin={{ top: 4, right: 6, bottom: 0, left: -28 }}>
-            <CartesianGrid stroke="var(--line)" vertical={false} />
-            <XAxis dataKey="t" type="number" domain={[0, "dataMax"]} allowDecimals={false} tick={axisTick} stroke="var(--line)" unit="s" />
-            <YAxis domain={[0, 100]} ticks={[0, 50, 100]} tick={axisTick} stroke="var(--line)" />
-            <Tooltip contentStyle={tooltipStyle} labelFormatter={(t) => `${t} s`} formatter={(v) => [v, "SUDS"]} />
-            <Line type="monotone" dataKey="suds" stroke={SERIES_A} strokeWidth={2} dot={{ r: 3 }} isAnimationActive={animate} />
-          </LineChart>
-        </ResponsiveContainer>
+    <section className="print-break mt-16 sm:mt-20 print:mt-10">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="text-[22px] font-semibold tracking-tight">{title}</h2>
+        {aside}
       </div>
-    </figure>
+      <div className="mt-6">{children}</div>
+    </section>
   );
 }
 
@@ -76,234 +108,199 @@ export default function ReportPage() {
   }, [id]);
 
   const exposures = useMemo(() => sessions?.flatMap((s) => s.exposures) ?? [], [sessions]);
-  const byId = useMemo(() => new Map(ladder?.rungs.map((r) => [r.id, r]) ?? []), [ladder]);
   const model = useMemo(() => (ladder ? fitFearModel(ladder.rungs, exposures) : null), [ladder, exposures]);
 
+  const steps = useMemo<StepDatum[]>(() => {
+    if (!ladder) return [];
+    const labels = stepLabels(ladder.rungs);
+    return ladder.rungs.flatMap((r) => {
+      const es = exposures.filter((e) => e.rungId === r.id);
+      const last = es[es.length - 1];
+      if (!last) return [];
+      return [
+        {
+          id: r.id,
+          label: labels.get(r.id) ?? String(r.index),
+          title: r.title,
+          note: r.kind === "half-step" ? "smaller step" : r.kind === "variation" ? "variation" : "",
+          peak: last.peakSuds,
+          end: last.endSuds,
+        },
+      ];
+    });
+  }, [ladder, exposures]);
+
   if (ladder === undefined || sessions === null) {
-    return <div className="mx-auto max-w-5xl px-5 py-24 text-muted sm:px-8">Loading report…</div>;
+    return (
+      <div className={wrap} aria-busy="true">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.3, ease: "easeOut" }}
+          className="pt-10 text-[15px] text-muted"
+        >
+          Loading…
+        </motion.p>
+      </div>
+    );
   }
+
   if (ladder === null) {
     return (
-      <div className="mx-auto max-w-5xl px-5 py-24 sm:px-8">
-        <h1 className="font-display text-[32px]">Ladder not found.</h1>
-        <LinkButton href="/ladders" variant="secondary" className="mt-6">
-          My ladders
+      <div className={wrap}>
+        <h1 className={`${titleClass} mt-10`}>Ladder not found.</h1>
+        <LinkButton href="/ladders" variant="secondary" className="mt-8">
+          Your ladders
         </LinkButton>
       </div>
     );
   }
 
-  const rungLabel = (e: Exposure) => `R${byId.get(e.rungId)?.index ?? "?"}`;
+  const fear = ladder.fear || ladder.subject.name || "Your";
+  const hasLooks = exposures.length > 0;
+
   const lookMs = exposures.reduce((t, e) => t + e.lookMs, 0);
-  const releases = exposures.reduce((t, e) => t + e.releases, 0);
-  const halfSteps = ladder.rungs.filter((r) => r.kind === "half-step").length;
-  const variations = ladder.rungs.filter((r) => r.kind === "variation").length;
-  const met = exposures.filter((e) => criterionMet(e, ladder.settings.mode)).length;
+  const stepsFaced = new Set(exposures.map((e) => e.rungId)).size;
+  const biggestDrop = Math.max(0, ...exposures.map((e) => e.peakSuds - e.endSuds));
+  const sessionCount = sessions.filter((s) => s.exposures.length > 0).length;
+  const latest = exposures.reduce((m, e) => {
+    const at = e.endedAt ?? e.startedAt;
+    return at > m ? at : m;
+  }, "");
 
-  // Peak vs end per rung (latest exposure of each rung, in ladder order).
-  const perRung = ladder.rungs
-    .filter((r) => exposures.some((e) => e.rungId === r.id))
-    .map((r) => {
-      const es = exposures.filter((e) => e.rungId === r.id);
-      const lastE = es[es.length - 1];
-      return {
-        rung: `R${r.index}${r.kind === "half-step" ? "½" : r.kind === "variation" ? "v" : ""}`,
-        title: r.title,
-        peak: lastE.peakSuds,
-        end: lastE.endSuds,
-        lookMs: es.reduce((t, e) => t + e.lookMs, 0),
-        releases: es.reduce((t, e) => t + e.releases, 0),
-        count: es.length,
-      };
-    });
-
-  const expectancy = exposures.map((e, i) => ({
-    name: `#${i + 1} ${rungLabel(e)}`,
-    before: e.likelihood,
-    after: e.happened === "yes" ? 100 : e.happened === "partly" ? 50 : 0,
-    surprise: e.surprise,
-    prediction: e.prediction,
-    happened: e.happened,
-  }));
-
-  const notes = exposures.filter((e) => e.learned);
+  const stats = [
+    { label: "Steps faced", value: String(stepsFaced) },
+    { label: "Time looking", value: fmtDuration(lookMs) },
+    { label: "Biggest drop", value: String(biggestDrop), unit: "pts" },
+  ];
 
   return (
-    <div className="mx-auto max-w-5xl px-5 pb-10 pt-10 sm:px-8 sm:pt-14">
-      <div className="no-print mb-8 flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/ladder/${ladder.id}`} className="flex min-h-11 items-center gap-2 text-[15px] text-muted hover:text-ink">
-          <ArrowLeft className="h-4 w-4" aria-hidden /> Back to the ladder
+    <div className={wrap}>
+      <div className="flex min-h-11 items-center justify-between gap-4">
+        <Link
+          href={`/ladder/${ladder.id}`}
+          className="no-print -ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[15px] text-muted transition-colors duration-150 hover:text-ink"
+        >
+          <span aria-hidden>←</span> {fear} ladder
         </Link>
-        <Button onClick={() => window.print()}>
-          <Printer className="h-4 w-4" aria-hidden /> Print or save as PDF
-        </Button>
+        <p className="hidden text-[13px] text-muted print:block">{fear} ladder</p>
+        {hasLooks && (
+          <Button variant="ghost" onClick={() => window.print()} className="no-print -mr-3 px-3!">
+            Print
+          </Button>
+        )}
       </div>
 
-      <Eyebrow>Clinician report · {ladder.source === "demo" ? "demo ladder" : "live ladder"}</Eyebrow>
-      <h1 className="font-display mt-3 text-[36px] leading-tight sm:text-[46px]">
-        Patient {ladder.alias} · {ladder.subject.name || ladder.fear}
-      </h1>
-      <p className="mt-2 text-[15px] text-muted">
-        {sessions.length} session{sessions.length === 1 ? "" : "s"} · {exposures.length} exposure{exposures.length === 1 ? "" : "s"} ·{" "}
-        {ladder.settings.mode} mode · {ladder.settings.view === "hold" ? "hold-to-view" : "steady view"} · generated{" "}
-        {new Date().toLocaleDateString()}
-      </p>
+      <h1 className={`${titleClass} mt-8 sm:mt-10`}>Report</h1>
 
-      {exposures.length === 0 ? (
-        <div className="mt-10 rounded-[12px] border border-line bg-surface p-6">
-          <p className="text-ink">No exposures recorded yet.</p>
-          <p className="mt-1 text-[15px] text-muted">Run a session on this ladder and the report fills in here.</p>
-          <LinkButton href={`/ladder/${ladder.id}/session`} className="mt-4">
+      {!hasLooks ? (
+        <div className="mt-10">
+          <p className="text-[17px] text-ink">No looks yet.</p>
+          <LinkButton href={`/ladder/${ladder.id}/session`} className="mt-6">
             Start a session
           </LinkButton>
         </div>
       ) : (
-        <div className="mt-10 space-y-12">
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            <Stat label="Exposures" value={String(exposures.length)} />
-            <Stat label="Time looked" value={fmtDuration(lookMs)} />
-            <Stat label="Releases" value={String(releases)} />
-            <Stat label="Criterion met" value={`${met}/${exposures.length}`} />
-            <Stat label="Half-steps added" value={String(halfSteps)} />
-            <Stat label="Variations added" value={String(variations)} />
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
+          <p className="tabular mt-3 text-[15px] text-muted">
+            {plural(exposures.length, "look")} over {plural(sessionCount, "session")}
+            {latest && ` · ${fmtDay(latest)}`}
+          </p>
+
+          <dl className="mt-12 grid grid-cols-3 gap-4 sm:mt-14 sm:gap-10">
+            {stats.map((s) => (
+              <div key={s.label} className="flex min-w-0 flex-col-reverse">
+                <dt className="mt-2 text-[14px] text-muted">{s.label}</dt>
+                <dd className="tabular whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.03em] text-ink">
+                  {s.value}
+                  {s.unit && <span className="ml-1 text-[15px] font-medium tracking-normal text-muted">{s.unit}</span>}
+                </dd>
+              </div>
+            ))}
           </dl>
 
-          <Section title="SUDS over time" sub="One panel per exposure, in order. Seconds since the exposure began.">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {exposures.map((e, i) => (
-                <SudsSparkline key={i} e={e} rung={byId.get(e.rungId)} n={i + 1} animate={!reduce} />
-              ))}
-            </div>
-          </Section>
-
-          <div className="grid gap-12 lg:grid-cols-2">
-            <Section title="Peak vs end, per rung" sub="Latest exposure on each rung.">
-              <div className="h-64" role="img" aria-label="Paired bars of peak and end SUDS per rung">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={perRung} margin={{ top: 4, right: 8, bottom: 0, left: -20 }} barGap={2}>
-                    <CartesianGrid stroke="var(--line)" vertical={false} />
-                    <XAxis dataKey="rung" tick={axisTick} stroke="var(--line)" />
-                    <YAxis domain={[0, 100]} tick={axisTick} stroke="var(--line)" />
-                    <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--primary-soft)" }} />
-                    <Legend wrapperStyle={{ fontSize: 13 }} />
-                    <Bar dataKey="peak" name="Peak SUDS" fill={SERIES_B} radius={[4, 4, 0, 0]} isAnimationActive={!reduce} />
-                    <Bar dataKey="end" name="End SUDS" fill={SERIES_A} radius={[4, 4, 0, 0]} isAnimationActive={!reduce} />
-                  </BarChart>
-                </ResponsiveContainer>
+          <Section
+            title="Distress per step"
+            aside={
+              <div className="flex shrink-0 items-center gap-4 text-[13px] text-muted">
+                <span className="flex items-center gap-1.5">
+                  <Swatch color={SERIES_A} /> Peak
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Swatch color={SERIES_B} /> End
+                </span>
               </div>
-            </Section>
-
-            <Section title="Expectancy, before vs after" sub="Predicted likelihood vs whether it happened (no = 0, so no green bar · partly = 50 · yes = 100).">
-              <div className="h-64" role="img" aria-label="Paired bars of predicted likelihood and outcome per exposure">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={expectancy} margin={{ top: 4, right: 8, bottom: 0, left: -20 }} barGap={2}>
-                    <CartesianGrid stroke="var(--line)" vertical={false} />
-                    <XAxis dataKey="name" tick={axisTick} stroke="var(--line)" />
-                    <YAxis domain={[0, 100]} tick={axisTick} stroke="var(--line)" />
-                    <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--primary-soft)" }} />
-                    <Legend wrapperStyle={{ fontSize: 13 }} />
-                    <Bar dataKey="before" name="Predicted likelihood %" fill={SERIES_B} radius={[4, 4, 0, 0]} isAnimationActive={!reduce} />
-                    <Bar dataKey="after" name="Happened" fill={SERIES_A} radius={[4, 4, 0, 0]} isAnimationActive={!reduce} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Section>
-          </div>
-
-          <Section title="Looking time and releases" sub="Releases are moments the patient let go in hold-to-view: an avoidance signal to discuss.">
-            <div className="overflow-x-auto rounded-[12px] border border-line bg-surface">
-              <table className="w-full text-left text-[14px]">
-                <thead className="font-mono text-[12px] uppercase tracking-wider text-muted">
-                  <tr className="border-b border-line">
-                    <th className="px-4 py-2.5 font-normal">Rung</th>
-                    <th className="px-4 py-2.5 font-normal">Title</th>
-                    <th className="px-4 py-2.5 font-normal">Exposures</th>
-                    <th className="px-4 py-2.5 font-normal">Looked</th>
-                    <th className="px-4 py-2.5 font-normal">Releases</th>
-                    <th className="px-4 py-2.5 font-normal">Peak → end</th>
+            }
+          >
+            <figure
+              aria-label="Bar chart of peak and end distress, 0 to 100, for each step faced"
+              className="-ml-1 h-[260px] print:[&_.recharts-wrapper]:max-w-full print:[&_svg]:h-auto print:[&_svg]:max-w-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={steps} margin={{ top: 8, right: 0, bottom: 0, left: 0 }} barGap={4} barCategoryGap="22%">
+                  <CartesianGrid stroke={GRID} vertical={false} />
+                  <XAxis dataKey="label" tick={tick} axisLine={false} tickLine={false} tickMargin={10} interval={0} />
+                  <YAxis domain={[0, 100]} ticks={[0, 50, 100]} tick={tick} axisLine={false} tickLine={false} tickMargin={4} width={30} />
+                  <Tooltip content={StepTooltip} cursor={{ fill: CURSOR }} isAnimationActive={false} />
+                  <Bar
+                    dataKey="peak"
+                    name="Peak"
+                    fill={SERIES_A}
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={28}
+                    isAnimationActive={!reduce}
+                    animationDuration={600}
+                    animationEasing="ease-out"
+                  />
+                  <Bar
+                    dataKey="end"
+                    name="End"
+                    fill={SERIES_B}
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={28}
+                    isAnimationActive={!reduce}
+                    animationDuration={600}
+                    animationEasing="ease-out"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </figure>
+            <table className="sr-only">
+              <caption>Distress per step, 0 to 100, from the latest look at each step</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Step</th>
+                  <th scope="col">Peak</th>
+                  <th scope="col">End</th>
+                </tr>
+              </thead>
+              <tbody>
+                {steps.map((d) => (
+                  <tr key={d.id}>
+                    <th scope="row">
+                      {d.label}: {d.title}
+                      {d.note && ` (${d.note})`}
+                    </th>
+                    <td>{d.peak}</td>
+                    <td>{d.end}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {perRung.map((r) => (
-                    <tr key={r.rung} className="border-b border-line last:border-0">
-                      <td className="px-4 py-2.5 font-mono">{r.rung}</td>
-                      <td className="px-4 py-2.5">{r.title}</td>
-                      <td className="px-4 py-2.5 font-mono">{r.count}</td>
-                      <td className="px-4 py-2.5 font-mono">{fmtDuration(r.lookMs)}</td>
-                      <td className="px-4 py-2.5 font-mono">{r.releases}</td>
-                      <td className="px-4 py-2.5 font-mono">
-                        {r.peak} → {r.end}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </Section>
 
-          <div className="grid gap-12 lg:grid-cols-2">
-            <Section title="Fear fingerprint" sub="Which visual dials drive this patient's distress, learned from their own ratings.">
-              {model && <FearFingerprint model={model} />}
+          {model && (
+            <Section title="What drives the fear">
+              <FearFingerprint model={model} />
             </Section>
+          )}
 
-            <Section title="What the patient learned" sub="In their own words, after each exposure.">
-              {notes.length ? (
-                <ul className="space-y-3">
-                  {notes.map((e, i) => (
-                    <li key={i} className="border-l-2 border-primary/50 pl-4">
-                      <p className="text-[16px] leading-relaxed text-ink">&ldquo;{e.learned}&rdquo;</p>
-                      <p className="mt-1 font-mono text-[12px] text-muted">
-                        {rungLabel(e)} · predicted &ldquo;{e.prediction || "—"}&rdquo; ({e.likelihood}%) · happened: {e.happened} · surprise{" "}
-                        {e.surprise}
-                        {e.feelings.length ? ` · felt ${e.feelings.join(", ")}` : ""}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">No notes yet.</p>
-              )}
-            </Section>
-          </div>
-
-          <Section title="All exposures" sub="Table view of every exposure.">
-            <div className="overflow-x-auto rounded-[12px] border border-line bg-surface">
-              <table className="w-full text-left text-[13px]">
-                <thead className="font-mono text-[11px] uppercase tracking-wider text-muted">
-                  <tr className="border-b border-line">
-                    {["#", "Rung", "Date", "Expected", "Peak", "End", "Likelihood", "Happened", "Surprise", "Looked", "Releases"].map((h) => (
-                      <th key={h} className="px-3 py-2.5 font-normal">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="font-mono">
-                  {exposures.map((e, i) => (
-                    <tr key={i} className="border-b border-line last:border-0">
-                      <td className="px-3 py-2">{i + 1}</td>
-                      <td className="px-3 py-2">{rungLabel(e)}</td>
-                      <td className="px-3 py-2">{new Date(e.startedAt).toLocaleDateString()}</td>
-                      <td className="px-3 py-2">{e.expectedSuds}</td>
-                      <td className="px-3 py-2">{e.peakSuds}</td>
-                      <td className="px-3 py-2">{e.endSuds}</td>
-                      <td className="px-3 py-2">{e.likelihood}%</td>
-                      <td className="px-3 py-2">{e.happened}</td>
-                      <td className="px-3 py-2">{e.surprise}</td>
-                      <td className="px-3 py-2">{fmtDuration(e.lookMs)}</td>
-                      <td className="px-3 py-2">{e.releases}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Section>
-
-          <p className="text-[13px] text-muted">
-            Designed for use with a licensed therapist. Not a medical device. The fear fingerprint is an exploratory linear model
-            fitted to this patient&rsquo;s ratings and should be read alongside clinical judgement.
-          </p>
-        </div>
+          <p className="mt-16 text-[12px] text-faint sm:mt-20">Exploratory, not a diagnosis. Best reviewed with a therapist.</p>
+        </motion.div>
       )}
     </div>
   );

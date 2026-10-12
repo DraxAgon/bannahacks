@@ -1,109 +1,187 @@
 "use client";
 
-import { AlertCircle, ChevronRight, Layers, Sprout } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { pct, rampColor } from "@/lib/format";
+import { useEffect, useState } from "react";
 import { mainRungs, variationsOf } from "@/lib/pipeline/buildLadder";
 import type { Ladder as LadderT, Rung } from "@/lib/types";
 import { RungImage } from "./RungImage";
 
-export function SudsChip({ label, value, className = "" }: { label: string; value: number; className?: string }) {
+const EASE = [0.22, 1, 0.36, 1] as const;
+// Inline so the global :focus-visible radius doesn't square off the tile's focus ring.
+const TILE_RADIUS = { borderRadius: 18 };
+
+function motionFor(i: number, reduce: boolean | null) {
+  if (reduce) {
+    return {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0, transition: { duration: 0.15 } },
+      transition: { duration: 0.2 },
+    };
+  }
+  return {
+    layout: true,
+    initial: { opacity: 0, scale: 0.96, y: 8 },
+    animate: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.96, transition: { duration: 0.2, ease: EASE } },
+    transition: {
+      duration: 0.5,
+      ease: EASE,
+      delay: Math.min(i, 12) * 0.03,
+      layout: { duration: 0.55, ease: EASE },
+    },
+  };
+}
+
+function Tile({
+  rung,
+  variations,
+  live,
+  tapped,
+  onTap,
+  onOpen,
+  onRetry,
+}: {
+  rung: Rung;
+  variations: number;
+  live: boolean;
+  tapped: boolean;
+  onTap: () => void;
+  onOpen: () => void;
+  onRetry: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const errored = rung.status === "error";
+  const lookable = Boolean(rung.image) && !errored;
+  const shown = hover || tapped;
+
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-ink ${className}`}
+    <div
+      data-tile={rung.id}
+      className="relative"
+      onPointerEnter={(e) => e.pointerType !== "touch" && setHover(true)}
+      onPointerLeave={(e) => e.pointerType !== "touch" && setHover(false)}
     >
-      <span className="h-2 w-2 rounded-full" style={{ background: rampColor(value) }} aria-hidden />
-      {label} {Math.round(value)}
-    </span>
-  );
-}
-
-export function CriticBadges({ rung }: { rung: Rung }) {
-  const c = rung.critique;
-  if (!c) return null;
-  const idLow = c.identityMatch < 0.6 && rung.dials.realism >= 0.125;
-  return (
-    <>
-      <span
-        className="inline-flex items-center rounded-full border border-line px-2.5 py-0.5 font-mono text-[12px] text-muted"
-        title="Vision critic: identity match with the anchor"
-      >
-        {idLow ? "△ " : "✓ "}identity {pct(c.identityMatch)}
-      </span>
-      <SudsChip label="est." value={c.intensity} className="text-muted" />
-    </>
-  );
-}
-
-function RungCard({ rung, variations, onOpen }: { rung: Rung; variations: number; onOpen: () => void }) {
-  return (
-    <div className="relative grid grid-cols-[2.25rem_minmax(0,88px)_1fr] items-center gap-3 rounded-[12px] border border-line bg-surface p-3 shadow-[var(--shadow)] sm:grid-cols-[3.25rem_120px_1fr_auto] sm:gap-5 sm:p-4">
-      <span className="font-display text-center text-[34px] leading-none text-primary sm:text-[48px]" aria-hidden>
-        {rung.index}
-      </span>
-      <div className="relative z-10 w-full">
-        <RungImage rung={rung} size="sm" />
-      </div>
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-1.5">
+      <button type="button" onClick={onOpen} className="block w-full text-left" style={TILE_RADIUS}>
+        {errored ? (
+          <div className="aspect-square w-full rounded-2xl bg-subtle" />
+        ) : (
+          <RungImage rung={rung} revealed={shown} hint={lookable ? "Tap to look" : undefined} />
+        )}
+        <span className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-faint">
+          <span className="tabular">Step {rung.index}</span>
           {rung.kind === "half-step" && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[12px] text-primary">
-              <Sprout className="h-3 w-3" aria-hidden /> Half-step
-            </span>
+            <span className="rounded-full bg-subtle px-2 py-px text-[12px] font-medium text-muted">Smaller step</span>
           )}
           {variations > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[12px] text-primary">
-              <Layers className="h-3 w-3" aria-hidden /> +{variations} variation{variations > 1 ? "s" : ""}
+            <span className="tabular">
+              +{variations} variation{variations > 1 ? "s" : ""}
             </span>
           )}
-        </div>
+        </span>
+        <span className="mt-0.5 block truncate text-[15px] font-medium tracking-[-0.01em] text-ink">{rung.title}</span>
+        <span className="mt-2.5 block h-[2px] w-full overflow-hidden rounded-full bg-subtle" aria-hidden>
+          <span
+            className="block h-full rounded-full bg-ink/30 transition-[width] duration-500 ease-out"
+            style={{ width: `${Math.max(2, Math.min(100, rung.targetSuds))}%` }}
+          />
+        </span>
+        <span className="sr-only">Planned intensity {rung.targetSuds} out of 100.</span>
+      </button>
+
+      {lookable && (
+        // Covers the image while it is blurred. Once revealed it lets clicks through to open the step.
         <button
           type="button"
-          onClick={onOpen}
-          className="mt-1 block text-left text-[16px] font-medium leading-snug text-ink after:absolute after:inset-0 after:content-[''] hover:text-primary sm:text-[17px]"
-        >
-          <span className="sr-only">Rung {rung.index}: </span>
-          {rung.title}
-        </button>
-        <div className="relative z-10 mt-2 flex flex-wrap items-center gap-1.5 pointer-events-none">
-          <SudsChip label="target" value={rung.targetSuds} />
-          <CriticBadges rung={rung} />
+          onClick={onTap}
+          aria-pressed={shown}
+          aria-label={shown ? `Hide step ${rung.index}` : `Look at step ${rung.index}`}
+          className={`absolute inset-x-0 top-0 aspect-square w-full ${shown ? "pointer-events-none" : "cursor-pointer"}`}
+          style={TILE_RADIUS}
+        />
+      )}
+
+      {errored && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 grid aspect-square w-full place-items-center p-3 text-center">
+          <div>
+            <p className="text-[13px] text-muted">Couldn&rsquo;t draw this one</p>
+            {live && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="pointer-events-auto mt-2.5 h-9 rounded-full bg-bg px-4 text-[13px] font-medium text-ink transition-colors duration-150 hover:bg-line"
+              >
+                Retry
+              </button>
+            )}
+          </div>
         </div>
-        {rung.status === "error" && (
-          <p className="mt-2 flex items-start gap-1.5 text-[13px] text-error">
-            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /> {rung.error}
-          </p>
-        )}
-      </div>
-      <ChevronRight className="hidden h-5 w-5 text-muted sm:block" aria-hidden />
+      )}
     </div>
   );
 }
 
-/** Two thin rails with rung cards between them, rung 1 at the bottom. */
-export function Ladder({ ladder, onOpen }: { ladder: LadderT; onOpen: (id: string) => void }) {
+/** The steps as a calm grid, gentlest first. New steps (a live half-step) slide into place. */
+export function Ladder({
+  ladder,
+  live,
+  placeholders = 0,
+  onOpen,
+  onRetry,
+}: {
+  ladder: LadderT;
+  live: boolean;
+  /** Skeleton tiles to show while the plan is still being written. */
+  placeholders?: number;
+  onOpen: (id: string) => void;
+  onRetry: (id: string) => void;
+}) {
   const reduce = useReducedMotion();
-  const rungs = [...mainRungs(ladder)].reverse();
+  const rungs = mainRungs(ladder);
+  const [tapped, setTapped] = useState<string | null>(null);
+
+  // A tap reveals one step at a time; tapping anywhere else blurs it again.
+  useEffect(() => {
+    if (!tapped) return;
+    const onDown = (e: PointerEvent) => {
+      const tile = e.target instanceof Element ? e.target.closest("[data-tile]") : null;
+      if (tile?.getAttribute("data-tile") !== tapped) setTapped(null);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [tapped]);
+
   return (
-    <div className="relative px-3 sm:px-6">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[3px] rounded-full bg-line sm:left-1" aria-hidden />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[3px] rounded-full bg-line sm:right-1" aria-hidden />
-      <ol className="space-y-3 py-3" aria-label="Exposure ladder, top rung first">
-        <AnimatePresence initial={false}>
-          {rungs.map((r) => (
-            <motion.li
-              key={r.id}
-              layout={!reduce}
-              initial={reduce ? { opacity: 0 } : { opacity: 0, x: -28, height: 0 }}
-              animate={reduce ? { opacity: 1 } : { opacity: 1, x: 0, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <RungCard rung={r} variations={variationsOf(ladder, r.id).length} onOpen={() => onOpen(r.id)} />
-            </motion.li>
-          ))}
-        </AnimatePresence>
-      </ol>
-    </div>
+    <ol
+      className="relative grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-8 lg:grid-cols-3"
+      aria-label="Steps, gentlest first"
+    >
+      <AnimatePresence mode="popLayout">
+        {rungs.length === 0
+          ? Array.from({ length: placeholders }, (_, i) => (
+              <motion.li key={`placeholder-${i}`} {...motionFor(i, reduce)} aria-hidden>
+                <div className="loading-sheen aspect-square w-full rounded-2xl" />
+                <div className="mt-3 h-3 w-12 rounded-full bg-subtle" />
+                <div className="mt-2 h-3.5 w-3/4 rounded-full bg-subtle" />
+              </motion.li>
+            ))
+          : rungs.map((r, i) => (
+              <motion.li key={r.id} {...motionFor(i, reduce)}>
+                <Tile
+                  rung={r}
+                  variations={variationsOf(ladder, r.id).length}
+                  live={live}
+                  tapped={tapped === r.id}
+                  onTap={() => setTapped((cur) => (cur === r.id ? null : r.id))}
+                  onOpen={() => {
+                    setTapped(null);
+                    onOpen(r.id);
+                  }}
+                  onRetry={() => onRetry(r.id)}
+                />
+              </motion.li>
+            ))}
+      </AnimatePresence>
+    </ol>
   );
 }

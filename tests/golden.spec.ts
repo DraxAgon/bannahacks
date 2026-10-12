@@ -1,51 +1,46 @@
 import { expect, test, type Page } from "@playwright/test";
 
-/** One rung, keyboard-first: predict, hold Space to look, rate with arrows, reflect. */
-async function rateRung(page: Page, n: number) {
-  await expect(page.getByRole("heading", { name: /./ }).first()).toBeVisible();
-  await page.getByRole("button", { name: "I'll panic" }).click();
-  await page.getByRole("button", { name: "I’m ready to look" }).click();
+/** One step, keyboard-first: guess, hold Space to look (twice), nudge the rating with arrows, answer. */
+async function faceStep(page: Page) {
+  await page.getByRole("button", { name: "Look", exact: true }).click();
+  await expect(page.getByText("Hold to look")).toBeVisible();
 
-  // Hold Space to look (hold-to-view), release, look again.
-  await page.locator("body").focus();
+  // Hold Space to look, let go (the image blurs again), then look once more.
   await page.keyboard.down("Space");
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(1000);
   await page.keyboard.up("Space");
   await page.keyboard.down("Space");
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1000);
   await page.keyboard.up("Space");
-  // Rate distress with the arrow keys.
-  for (let i = 0; i < n + 2; i++) await page.keyboard.press("ArrowUp");
-  await page.getByRole("button", { name: "Done" }).click();
 
-  await page.getByRole("button", { name: "No", exact: true }).click();
-  await page.getByLabel("What did you learn?").fill(`It stayed still on rung ${n}.`);
-  await page.getByRole("button", { name: "Save and continue" }).click();
-  await expect(page.getByRole("heading", { name: "What next?" })).toBeVisible();
+  // Rate with the arrow keys while the slider isn't focused (5 points per press).
+  for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowUp");
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+
+  await expect(page.getByText("Was it as bad as you expected?")).toBeVisible();
+  await page.getByRole("button", { name: "Easier", exact: true }).click();
 }
 
 test("golden path on the demo spider ladder", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Try the demo ladder" }).click();
+  await page.getByRole("link", { name: /Try the demo/ }).first().click();
   await expect(page).toHaveURL(/\/ladder\/demo-spiders$/);
-  await expect(page.getByText("Demo ladder", { exact: false }).first()).toBeVisible();
 
-  await page.getByRole("link", { name: /Start session/ }).click();
-  await expect(page.getByRole("heading", { name: "Take your time." })).toBeVisible();
-  await page.getByRole("button", { name: "Begin" }).click();
+  await page.getByRole("link", { name: /^Start\b/ }).first().click();
+  await expect(page.getByRole("heading", { name: "Ready when you are." })).toBeVisible();
+  await page.getByRole("button", { name: "Begin", exact: true }).click();
 
-  await rateRung(page, 1);
-  await page.getByRole("button", { name: /Climb to rung 2/ }).click();
-  await rateRung(page, 2);
-  await page.getByRole("button", { name: /Climb to rung 3/ }).click();
-  await rateRung(page, 3);
+  for (let step = 1; step <= 3; step++) {
+    await expect(page.getByText(`Step ${step} of 9`)).toBeVisible();
+    await faceStep(page);
+    if (step < 3) await page.getByRole("button", { name: "Next step", exact: true }).click();
+  }
 
-  await page.getByRole("button", { name: "End the session for today" }).click();
-  await expect(page.getByRole("heading", { name: "You did the work today." })).toBeVisible();
-  await page.getByRole("button", { name: "Open the report" }).click();
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Nice work." })).toBeVisible();
+  await page.getByRole("link", { name: "See report", exact: true }).click();
 
   await expect(page).toHaveURL(/\/report$/);
-  await expect(page.getByText("3 exposures")).toBeVisible();
-  await expect(page.getByText("“It stayed still on rung 3.”")).toBeVisible();
-  await expect(page.getByText(/Exploratory: based on 3 ratings/)).toBeVisible();
+  await expect(page.getByText(/Based on 3 ratings/).first()).toBeVisible();
+  await expect(page.getByText("Steps faced").first()).toBeVisible();
 });

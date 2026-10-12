@@ -1,13 +1,13 @@
 "use client";
 
-import { Eye, Hand } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ViewMode } from "@/lib/types";
+import { AiLabel, Button } from "./ui";
 
 /**
- * The reveal. Hold-to-view: the image sharpens only while the patient presses (or holds Space)
- * and fades back to blur within 300 ms on release — a "dead man's brake".
- * Steady view: the patient chooses when to reveal, and it stays.
+ * The reveal. Hold to look: the image sharpens only while the person presses it (or holds Space)
+ * and blurs again within 300 ms of letting go.
+ * Steady: the person chooses when to reveal, and it stays until they blur it again.
  */
 export function HoldToView({
   src,
@@ -24,7 +24,6 @@ export function HoldToView({
 }) {
   const [visible, setVisible] = useState(false);
   const visRef = useRef(false);
-  const holding = useRef(false);
 
   const set = useCallback(
     (v: boolean) => {
@@ -36,7 +35,7 @@ export function HoldToView({
     [onVisibleChange],
   );
 
-  // Space to hold (hold mode). Captured so a focused button isn't activated by the same key.
+  // Hold Space to look. Captured so a focused button isn't pressed by the same key.
   useEffect(() => {
     if (!active || mode !== "hold") return;
     const isTextField = (t: EventTarget | null) =>
@@ -45,100 +44,87 @@ export function HoldToView({
       if (e.code !== "Space" || isTextField(e.target)) return;
       e.preventDefault();
       e.stopPropagation();
-      if (!e.repeat) {
-        holding.current = true;
-        set(true);
-      }
+      if (!e.repeat) set(true);
     };
     const up = (e: KeyboardEvent) => {
       if (e.code !== "Space" || isTextField(e.target)) return;
       e.preventDefault();
       e.stopPropagation();
-      holding.current = false;
       set(false);
     };
-    const blur = () => {
-      holding.current = false;
-      set(false);
-    };
+    const release = () => set(false);
     window.addEventListener("keydown", down, true);
     window.addEventListener("keyup", up, true);
-    window.addEventListener("blur", blur);
+    window.addEventListener("blur", release);
     return () => {
       window.removeEventListener("keydown", down, true);
       window.removeEventListener("keyup", up, true);
-      window.removeEventListener("blur", blur);
+      window.removeEventListener("blur", release);
     };
   }, [active, mode, set]);
 
-  // Hide when the exposure is paused or ended.
+  // Blur whenever the exposure is paused or ended.
   useEffect(() => {
     if (!active) set(false);
   }, [active, set]);
 
-  const pointerHandlers =
-    mode === "hold"
-      ? {
-          onPointerDown: (e: React.PointerEvent) => {
-            if (!active) return;
-            (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-            set(true);
-          },
-          onPointerUp: () => set(false),
-          onPointerCancel: () => set(false),
-          onLostPointerCapture: () => set(false),
-        }
-      : {};
+  const hold = mode === "hold";
+  const pointerHandlers = hold
+    ? {
+        onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+          if (!active) return;
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+          set(true);
+        },
+        onPointerUp: () => set(false),
+        onPointerCancel: () => set(false),
+        onLostPointerCapture: () => set(false),
+      }
+    : {};
 
   return (
     <div className="flex flex-col items-center">
       <div
         {...pointerHandlers}
         onContextMenu={(e) => e.preventDefault()}
-        className="relative aspect-square w-[min(calc(100svh-330px),88vw,620px)] min-w-[220px] cursor-pointer touch-none select-none overflow-hidden rounded-[16px] bg-[#1B211E] [-webkit-touch-callout:none]"
-        role={mode === "hold" ? "button" : undefined}
-        aria-label={mode === "hold" ? `${alt}. Press and hold, or hold the Space bar, to look.` : undefined}
-        aria-pressed={mode === "hold" ? visible : undefined}
+        tabIndex={hold ? 0 : undefined}
+        role={hold ? "button" : undefined}
+        aria-label={hold ? `${alt}. Press and hold, or hold Space, to look.` : undefined}
+        aria-pressed={hold ? visible : undefined}
+        className={`develop relative aspect-square w-[min(calc(100svh-370px),88vw,560px)] min-w-[220px] touch-none select-none overflow-hidden rounded-2xl bg-subtle [-webkit-touch-callout:none] ${
+          hold ? "cursor-pointer" : ""
+        }`}
       >
         <img
           src={src}
           alt={visible ? alt : ""}
           draggable={false}
-          className="h-full w-full object-cover"
+          className="pointer-events-none h-full w-full object-cover"
           style={{
-            filter: visible ? "none" : "blur(30px) saturate(0.5) brightness(0.7)",
-            transform: visible ? "scale(1)" : "scale(1.1)",
-            transition: "filter 280ms ease-out, transform 280ms ease-out",
+            filter: visible ? "none" : "blur(32px) saturate(0.6) brightness(0.75)",
+            transform: visible ? "scale(1)" : "scale(1.12)",
+            transition: "filter 260ms ease-out, transform 260ms ease-out",
           }}
         />
-        {!visible && (
-          <div className="pointer-events-none absolute inset-0 grid place-items-center">
-            <span className="flex items-center gap-2 rounded-full bg-[#121614]/75 px-4 py-2 text-[15px] text-[#EDE7DA]">
-              {mode === "hold" ? (
-                <>
-                  <Hand className="h-4 w-4" aria-hidden /> Press and hold to look
-                  <span className="hidden font-mono text-[12px] text-[#9A9384] sm:inline">· or hold Space</span>
-                </>
-              ) : (
-                <>
-                  <Eye className="h-4 w-4" aria-hidden /> Blurred until you choose
-                </>
-              )}
-            </span>
-          </div>
-        )}
-        <span className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-full bg-[#121614]/70 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#EDE7DA]">
-          AI-generated
-        </span>
-      </div>
-      {mode === "steady" && active && (
-        <button
-          type="button"
-          onClick={() => set(!visible)}
-          className="mt-4 min-h-11 rounded-full border border-line px-5 text-[15px] text-ink hover:border-primary"
+        <div
+          className={`pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-200 ease-out ${
+            visible ? "opacity-0" : "opacity-100"
+          }`}
+          aria-hidden
         >
+          <span className="inline-flex h-9 items-center gap-1.5 rounded-full bg-black/45 px-4 text-[14px] font-medium text-white backdrop-blur-md">
+            {hold ? "Hold to look" : "Blurred until you choose"}
+            {hold && (
+              <span className="hidden font-normal text-white/60 [@media(pointer:fine)]:inline">or hold Space</span>
+            )}
+          </span>
+        </div>
+        <AiLabel className="absolute bottom-3 left-3" />
+      </div>
+      {!hold && active && (
+        <Button variant="secondary" className="mt-4" onClick={() => set(!visible)}>
           {visible ? "Blur it again" : "Show the image"}
-        </button>
+        </Button>
       )}
     </div>
   );

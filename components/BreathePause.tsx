@@ -2,8 +2,9 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
+import { Button } from "./ui";
 
-/** Pause overlay: a slowly expanding circle, 4 seconds in, 6 out. Pausing never counts as failure. */
+/** Pause: a thin ring that grows for 4 seconds and settles for 6. Pausing never counts against anyone. */
 export function BreathePause({ onReturn, onEnd }: { onReturn: () => void; onEnd: () => void }) {
   const reduce = useReducedMotion();
   const [phase, setPhase] = useState<"in" | "out">("in");
@@ -24,48 +25,42 @@ export function BreathePause({ onReturn, onEnd }: { onReturn: () => void; onEnd:
     return () => window.removeEventListener("keydown", onKey);
   }, [onReturn]);
 
+  const inhale = phase === "in";
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#121614]/97 px-6 text-center"
+    <motion.div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-bg px-4 text-center text-ink"
       role="dialog"
       aria-modal="true"
-      aria-label="Paused. Breathe."
+      aria-label="Paused"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <div className="relative grid h-64 w-64 place-items-center">
+      <div className="relative grid h-[min(64vw,260px)] w-[min(64vw,260px)] place-items-center">
         <motion.div
-          className="absolute inset-0 rounded-full border border-[#8DB9A7]/40 bg-[#22302A]"
+          aria-hidden
+          className="absolute inset-0 rounded-full border-[1.5px] border-ink"
+          initial={reduce ? { opacity: 0.35 } : { scale: 0.62, opacity: 0.55 }}
           animate={
             reduce
-              ? { opacity: phase === "in" ? 1 : 0.5 }
-              : { scale: phase === "in" ? 1 : 0.55, opacity: phase === "in" ? 1 : 0.7 }
+              ? { opacity: inhale ? 0.9 : 0.35 }
+              : { scale: inhale ? 1 : 0.62, opacity: inhale ? 0.9 : 0.55 }
           }
-          initial={reduce ? { opacity: 0.5 } : { scale: 0.55, opacity: 0.7 }}
-          transition={{ duration: phase === "in" ? 4 : 6, ease: "easeInOut" }}
+          transition={{ duration: inhale ? 4 : 6, ease: "easeInOut" }}
         />
-        <p className="relative font-display text-[28px] text-[#EDE7DA]" aria-live="polite">
-          {phase === "in" ? "Breathe in" : "Breathe out"}
+        <p className="relative text-[22px] font-medium tracking-tight" aria-live="polite">
+          {inhale ? "Breathe in" : "Breathe out"}
         </p>
       </div>
-      <p className="mt-8 max-w-sm text-[16px] text-[#9A9384]">
-        Pausing is part of the work, not a failure. Take as long as you need.
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <button
-          type="button"
-          autoFocus
-          onClick={onReturn}
-          className="min-h-12 rounded-full bg-[#8DB9A7] px-6 text-[16px] font-medium text-[#121614]"
-        >
-          Return when ready
-        </button>
-        <button
-          type="button"
-          onClick={onEnd}
-          className="min-h-12 rounded-full border border-[#2A332F] px-6 text-[16px] text-[#EDE7DA] hover:border-[#8DB9A7]"
-        >
+      <div className="mt-14 flex w-full max-w-xs flex-col gap-2">
+        <Button autoFocus onClick={onReturn}>
+          I&rsquo;m ready
+        </Button>
+        <Button variant="ghost" onClick={onEnd}>
           End session
-        </button>
+        </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }

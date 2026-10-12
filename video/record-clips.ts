@@ -96,189 +96,197 @@ async function smoothScroll(page: Page, dy: number, ms: number) {
   }
 }
 
+/** Mark earlier steps as done so a session opens on a chosen step (recording setup only). */
+async function primeSessions(page: Page, doneSteps: number) {
+  await page.goto(`${BASE}/ladder/demo-spiders`, { waitUntil: "load" });
+  await page.locator("img").first().waitFor();
+  await page.waitForTimeout(800);
+  await page.evaluate(async (n) => {
+    const open = (name: string) =>
+      new Promise<IDBDatabase>((res, rej) => {
+        const r = indexedDB.open(name);
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+    const ladders = await open("fear-ladder");
+    const ladder = await new Promise<{ rungs: { id: string; kind: string }[] }>((res) => {
+      const g = ladders.transaction("ladders").objectStore("ladders").get("demo-spiders");
+      g.onsuccess = () => res(g.result);
+    });
+    const main = ladder.rungs.filter((r) => r.kind !== "variation").slice(0, n);
+    const now = new Date(Date.now() - 86400000).toISOString();
+    const session = {
+      id: "s-prime",
+      ladderId: "demo-spiders",
+      startedAt: now,
+      endedAt: now,
+      exposures: main.map((r, i) => ({
+        rungId: r.id, startedAt: now, endedAt: now, lookMs: 60000, releases: 1,
+        samples: [{ t: 0, suds: 30 + i * 6 }, { t: 60, suds: 15 + i * 4 }],
+        prediction: "", likelihood: 0, expectedSuds: 40 + i * 5, peakSuds: 30 + i * 6, endSuds: 15 + i * 4,
+        happened: "no", surprise: 0, learned: "", feelings: [],
+      })),
+    };
+    const sessions = await open("fear-ladder-sessions");
+    await new Promise<void>((res) => {
+      const tx = sessions.transaction("sessions", "readwrite");
+      tx.objectStore("sessions").put(session, session.id);
+      tx.oncomplete = () => res();
+    });
+  }, doneSteps);
+}
+
+async function dragSlider(page: Page, sel: string, from: number, to: number, steps = 22) {
+  const b = await page.locator(sel).first().boundingBox();
+  if (!b) return;
+  await page.mouse.move(b.x + b.width * from, b.y + b.height / 2, { steps: 8 });
+  await page.mouse.down();
+  await page.mouse.move(b.x + b.width * to, b.y + b.height / 2, { steps });
+  await page.mouse.up();
+}
+
 const CLIPS: Record<string, (b: Browser) => Promise<void>> = {
-  // Patient session: predict, then hold-to-view reveal on the open-palm rung.
-  hold: (b) =>
-    record(b, "hold", async (page, mark) => {
-      await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
-      await page.getByText("Calm Contact on an Open Hand").waitFor();
-      await page.waitForTimeout(600);
-      await tap(page, page.getByText("Calm Contact on an Open Hand"));
-      await page.waitForTimeout(300);
-      await tap(page, page.getByRole("button", { name: "Begin" }));
-      await page.getByRole("button", { name: "I'll panic" }).waitFor();
-      mark("predict");
-      await page.waitForTimeout(500);
-      await tap(page, page.getByRole("button", { name: "I'll panic" }));
-      await page.waitForTimeout(400);
-      // drag likelihood slider to ~80%
-      const sl = await page.locator("#likelihood").boundingBox();
-      if (sl) {
-        await page.mouse.move(sl.x + sl.width * 0.5, sl.y + sl.height / 2, { steps: 6 });
-        await page.mouse.down();
-        await page.mouse.move(sl.x + sl.width * 0.8, sl.y + sl.height / 2, { steps: 14 });
-        await page.mouse.up();
-      }
-      await page.waitForTimeout(400);
-      await tap(page, page.getByRole("button", { name: "I’m ready to look" }));
-      await page.waitForTimeout(900);
-      mark("expose");
-      const img = page.locator("[aria-label*='Press and hold']");
-      const box = (await img.boundingBox())!;
-      const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-      await page.waitForTimeout(900);
-      await page.mouse.move(cx, cy, { steps: 10 });
-      mark("hold1");
-      await page.mouse.down();
-      await page.waitForTimeout(2600);
-      await page.mouse.up();
-      mark("release1");
-      await page.waitForTimeout(1200);
-      await page.mouse.down();
-      mark("hold2");
-      await page.waitForTimeout(1500);
-      // nudge SUDS down with keys while still holding
-      await page.mouse.up();
-      mark("release2");
-      const suds = await page.locator("#suds").boundingBox();
-      if (suds) {
-        await page.mouse.move(suds.x + suds.width * 0.75, suds.y + suds.height / 2, { steps: 8 });
-        await page.mouse.down();
-        await page.mouse.move(suds.x + suds.width * 0.42, suds.y + suds.height / 2, { steps: 24 });
-        await page.mouse.up();
-        mark("suds");
-      }
-      await page.waitForTimeout(1500);
-    }),
-
-  // Therapist ladder view on a phone: scroll from the word card up, tapping to reveal.
-  ladder: (b) =>
-    record(b, "ladder", async (page, mark) => {
-      await page.goto(`${BASE}/ladder/demo-spiders`, { waitUntil: "load" });
-      await page.getByText("Calm Contact on an Open Hand").waitFor();
-      await page.waitForTimeout(800);
-      mark("top");
-      await smoothScroll(page, 1500, 2200);
-      await page.waitForTimeout(400);
-      mark("bottom");
-      const reveal = async (title: string) => {
-        const card = page.locator("li", { hasText: title });
-        await card.scrollIntoViewIfNeeded();
-        await tap(page, card.getByRole("button", { name: /Reveal image/ }));
-        await page.waitForTimeout(900);
-      };
-      await reveal("Written Word Card");
-      await reveal("Minimalist Line Drawing");
-      await smoothScroll(page, -330, 700);
-      await reveal("Distant Soft-Focus Photograph");
-      await smoothScroll(page, -330, 700);
-      await reveal("Closer View of Characteristic Hairiness");
-      await smoothScroll(page, -500, 900);
-      await reveal("Resting Near a Person");
-      await reveal("Calm Contact on an Open Hand");
-      mark("revealed");
-      await page.waitForTimeout(1200);
-    }),
-
-  // Builder: type the fear, generate, watch planning begin.
+  // Builder: pick a fear, type a line, build, watch the first steps appear.
   builder: (b) =>
     record(b, "builder", async (page, mark) => {
       await page.goto(`${BASE}/new`, { waitUntil: "load" });
-      await page.getByText("About a minute. Rungs appear one by one.").waitFor({ timeout: 20000 });
-      await page.waitForTimeout(500);
+      await page.getByRole("button", { name: /Build my ladder/ }).waitFor({ timeout: 20000 });
+      await page.waitForTimeout(900);
       mark("start");
       await tap(page, page.getByText("Spiders", { exact: true }));
-      await page.locator("#desc").scrollIntoViewIfNeeded();
-      await tap(page, page.locator("#desc"));
-      await page.keyboard.type("Big hairy spiders, worst when they move toward me. Tiny ones far away are fine.", { delay: 28 });
-      mark("typed");
       await page.waitForTimeout(500);
-      const gen = page.getByRole("button", { name: "Generate ladder" });
-      await gen.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(400);
-      await tap(page, gen);
+      await tap(page, page.getByRole("textbox").first());
+      await page.keyboard.type("Big hairy ones, worst when they walk toward me.", { delay: 45 });
+      mark("typed");
+      await page.waitForTimeout(700);
+      await tap(page, page.getByRole("button", { name: /Build my ladder/ }));
       mark("generate");
       await page.waitForURL(/\/ladder\//);
-      await page.waitForTimeout(5000);
+      await page.waitForTimeout(6000);
       mark("planning");
-      // Let the anchor and first rungs develop, then show the bottom of the ladder.
-      await page.getByText(/Rendering and checking rungs/).waitFor({ timeout: 60000 });
-      mark("rendering");
-      await smoothScroll(page, 1300, 1500);
-      await page.waitForTimeout(16000);
+      await page.locator("img.develop, img[src^='data:image']").first().waitFor({ timeout: 90000 }).catch(() => {});
+      mark("firstImage");
+      await page.waitForTimeout(12000);
       mark("developed");
     }),
 
-  // Report: three quick keyboard-rated exposures, then scroll the clinician report.
+  // Ladder: reveal a few steps, open one big.
+  ladder: (b) =>
+    record(b, "ladder", async (page, mark) => {
+      await page.goto(`${BASE}/ladder/demo-spiders`, { waitUntil: "load" });
+      await page.locator("img").first().waitFor();
+      await page.waitForTimeout(1200);
+      mark("start");
+      const reveals = page.getByRole("button", { name: /reveal|look/i });
+      const count = Math.min(await reveals.count(), 9);
+      for (const i of [0, 2, 4, 6, 8].filter((x) => x < count)) {
+        await tap(page, reveals.nth(i));
+        await page.waitForTimeout(1100);
+      }
+      mark("revealed");
+      await smoothScroll(page, -3000, 1200);
+      await page.waitForTimeout(600);
+      mark("end");
+    }),
+
+  // Session on the top step: guess, hold to look, let go, rate.
+  hold: (b) =>
+    record(b, "hold", async (page, mark) => {
+      await primeSessions(page, 8);
+      await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
+      await page.getByRole("button", { name: "Begin" }).waitFor();
+      await page.waitForTimeout(900);
+      await tap(page, page.getByRole("button", { name: "Begin" }));
+      await page.getByRole("button", { name: "Look" }).waitFor();
+      mark("guess");
+      await page.waitForTimeout(900);
+      await dragSlider(page, "input[type=range]", 0.5, 0.82);
+      await page.waitForTimeout(900);
+      await tap(page, page.getByRole("button", { name: "Look" }));
+      await page.waitForTimeout(800);
+      mark("look");
+      const img = page.locator("main img").first();
+      const box = (await img.boundingBox())!;
+      const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+      await page.waitForTimeout(1300);
+      await page.mouse.move(cx, cy, { steps: 12 });
+      mark("hold1");
+      await page.mouse.down();
+      await page.waitForTimeout(3200);
+      await page.mouse.up();
+      mark("release1");
+      await page.waitForTimeout(1600);
+      await page.mouse.down();
+      mark("hold2");
+      await page.waitForTimeout(2200);
+      await page.mouse.up();
+      mark("release2");
+      await page.waitForTimeout(500);
+      await dragSlider(page, "input[type=range]", 0.75, 0.4, 30);
+      await page.waitForTimeout(900);
+      await tap(page, page.getByRole("button", { name: "Done" }));
+      await page.waitForTimeout(1200);
+      mark("after");
+      await tap(page, page.getByRole("button", { name: "Easier" }));
+      await page.waitForTimeout(2000);
+      mark("end");
+    }),
+
+  // Live smaller step: distress stays high on step 3, a new step is drawn and slides in.
+  halfstep: (b) =>
+    record(b, "halfstep", async (page, mark) => {
+      await primeSessions(page, 2);
+      await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
+      await tap(page, page.getByRole("button", { name: "Begin" }));
+      await tap(page, page.getByRole("button", { name: "Look" }));
+      await page.waitForTimeout(800);
+      await page.keyboard.down("Space");
+      await page.waitForTimeout(1200);
+      for (let i = 0; i < 8; i++) await page.keyboard.press("ArrowUp");
+      await page.keyboard.up("Space");
+      await page.waitForTimeout(400);
+      await tap(page, page.getByRole("button", { name: "Done" }));
+      await page.getByRole("button", { name: "Worse" }).waitFor();
+      await page.waitForTimeout(700);
+      await tap(page, page.getByRole("button", { name: "Worse" }));
+      await page.waitForTimeout(1500);
+      mark("after");
+      await tap(page, page.getByRole("button", { name: /smaller step/i }));
+      mark("drawing");
+      await page.getByRole("button", { name: "Try it" }).waitFor({ timeout: 180000 });
+      mark("ready");
+      await page.waitForTimeout(4000);
+    }),
+
+  // Report: three real looks with the keyboard, then the report.
   report: (b) =>
     record(b, "report", async (page, mark) => {
       await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
       await page.getByRole("button", { name: "Begin" }).click();
       const peaks = [6, 8, 9];
-      const ends = [12, 18, 20];
       for (let n = 0; n < 3; n++) {
-        await page.getByRole("button", { name: "I'll panic" }).click();
-        await page.getByRole("button", { name: "I’m ready to look" }).click();
-        await page.waitForTimeout(600);
+        await page.getByRole("button", { name: "Look" }).click();
+        await page.waitForTimeout(500);
         await page.keyboard.down("Space");
-        await page.waitForTimeout(900);
+        await page.waitForTimeout(800);
         for (let i = 0; i < peaks[n]; i++) await page.keyboard.press("ArrowUp");
-        await page.waitForTimeout(400);
+        for (let i = 0; i < 5 + n * 2; i++) await page.keyboard.press("ArrowDown");
         await page.keyboard.up("Space");
         await page.getByRole("button", { name: "Done" }).click();
-        await page.locator("#end-suds").focus();
-        for (let i = 0; i < ends[n] + n * 3; i++) await page.keyboard.press("ArrowLeft");
-        await page.getByRole("button", { name: "No", exact: true }).click();
-        await page.getByLabel("What did you learn?").fill(["It stayed still. The feeling faded.", "I could keep looking longer than I thought.", "It's just a picture. My heart slowed down."][n]);
-        await page.getByRole("button", { name: "Save and continue" }).click();
-        await page.getByRole("heading", { name: "What next?" }).waitFor();
-        if (n < 2) await page.getByRole("button", { name: /Climb to rung/ }).click();
+        await page.getByRole("button", { name: "Easier" }).click();
+        if (n < 2) await page.getByRole("button", { name: "Next step" }).first().click();
       }
-      await page.getByRole("button", { name: "End the session for today" }).click();
-      await page.getByRole("button", { name: "Open the report" }).click();
-      await page.getByText(/Exploratory: based on 3 ratings/).waitFor();
+      await page.getByRole("button", { name: "Finish" }).click();
+      await page.getByRole("link", { name: "See report" }).or(page.getByRole("button", { name: "See report" })).first().click();
+      await page.getByText(/Based on 3 rating/).waitFor();
       await page.evaluate(() => window.scrollTo(0, 0));
-      await page.waitForTimeout(800);
+      await page.waitForTimeout(1500);
       mark("report");
-      await smoothScroll(page, 1450, 3200);
-      await page.waitForTimeout(600);
-      mark("charts");
-      await smoothScroll(page, 1700, 3200);
-      await page.waitForTimeout(2200);
-      mark("fingerprint");
-      await smoothScroll(page, 700, 1400);
-      await page.waitForTimeout(800);
-    }),
-
-  // Live half-step: high distress on rung 3, then a smaller step is drawn and slides in.
-  halfstep: (b) =>
-    record(b, "halfstep", async (page, mark) => {
-      await page.goto(`${BASE}/ladder/demo-spiders/session`, { waitUntil: "load" });
-      await page.getByText("Stylized Color Illustration").waitFor();
-      await tap(page, page.getByText("Stylized Color Illustration"));
-      await tap(page, page.getByRole("button", { name: "Begin" }));
-      await tap(page, page.getByRole("button", { name: "I'll panic" }));
-      await tap(page, page.getByRole("button", { name: "I’m ready to look" }));
-      await page.waitForTimeout(700);
-      await page.keyboard.down("Space");
-      await page.waitForTimeout(1200);
-      for (let i = 0; i < 8; i++) await page.keyboard.press("ArrowUp");
-      await page.keyboard.up("Space");
-      await tap(page, page.getByRole("button", { name: "Done" }));
-      await page.locator("#end-suds").focus();
-      for (let i = 0; i < 25; i++) await page.keyboard.press("ArrowLeft");
-      await tap(page, page.getByRole("button", { name: "Yes", exact: true }));
-      const save = page.getByRole("button", { name: "Save and continue" });
-      await save.scrollIntoViewIfNeeded();
-      await tap(page, save);
-      await page.getByRole("heading", { name: "What next?" }).waitFor();
-      await page.waitForTimeout(1200);
-      mark("next");
-      await tap(page, page.getByRole("button", { name: /Add a half-step/ }));
-      mark("drawing");
-      await page.getByRole("button", { name: "Try the smaller step" }).waitFor({ timeout: 180000 });
-      mark("ready");
-      await page.waitForTimeout(2800);
+      await smoothScroll(page, 900, 2600);
+      await page.waitForTimeout(1500);
+      await smoothScroll(page, 900, 2600);
+      await page.waitForTimeout(2000);
+      mark("end");
     }),
 };
 

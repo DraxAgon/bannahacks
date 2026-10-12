@@ -31,22 +31,16 @@ export function nextStep(ladder: Ladder, rung: Rung, e: Exposure): NextStep {
   if (offerHalfStep) {
     return {
       primary: "halfstep",
-      reason: `Distress peaked at ${e.peakSuds} and was still ${e.endSuds} at the end. A smaller step in between can help.`,
+      reason: "That was a lot. A smaller step in between can help.",
       criterionMet: met,
       offerHalfStep,
       nextRung,
     };
   }
   if (met) {
-    const why =
-      ladder.settings.mode === "expectancy"
-        ? e.happened === "no"
-          ? "What you predicted didn't happen."
-          : "What you predicted only partly happened."
-        : `Distress came down to ${e.endSuds}${e.endSuds <= 30 ? "" : `, half of its peak of ${e.peakSuds}`}.`;
     return {
       primary: nextRung ? "climb" : "variation",
-      reason: nextRung ? `${why} If you're willing, the next rung is ready.` : `${why} You've reached the top rung.`,
+      reason: nextRung ? "Ready for the next one when you are." : "That was the top step.",
       criterionMet: met,
       offerHalfStep,
       nextRung,
@@ -54,10 +48,7 @@ export function nextStep(ladder: Ladder, rung: Rung, e: Exposure): NextStep {
   }
   return {
     primary: "repeat",
-    reason:
-      ladder.settings.mode === "expectancy"
-        ? "What you predicted happened this time. Staying on this rung a little longer helps it lose its power."
-        : "Distress hasn't come down by half yet. Another look at this rung usually helps.",
+    reason: "Another look at this step usually helps.",
     criterionMet: met,
     offerHalfStep,
     nextRung,

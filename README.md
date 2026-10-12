@@ -1,164 +1,137 @@
 # Fear Ladder
 
-**Exposure therapy, one rung at a time.** Fear Ladder turns a therapist's exposure hierarchy into a personalized ladder of AI-generated images: the same feared subject on every rung at gently rising intensity. The ladder adapts as the patient climbs.
+Pick a phobia and Fear Ladder draws the same subject nine ways, from the word on a card up to the real thing, like a tarantula sitting on an open palm. You look at one step at a time and move up when you're ready.
 
-![Fear Ladder landing page](docs/screenshots/landing-1440.png)
+![Fear Ladder home page](docs/screenshots/landing-1440.png)
 
-- **Live demo:** https://fear-ladder-beta.vercel.app (demo ladders work with no API key)
-- **Built for:** [Banana Hacks 2026](https://bananahacks.tech): generative AI and image creation
-- **Promo reel (9:16, 46 s):** [`docs/fear-ladder-reel.mp4`](docs/fear-ladder-reel.mp4), real app footage and real pipeline output, rendered by `video/render-reel.ts`
+- **Try it:** https://fear-ladder-beta.vercel.app
+- **Promo reel:** [`docs/fear-ladder-reel.mp4`](docs/fear-ladder-reel.mp4)
+- **Built for:** [Banana Hacks 2026](https://www.bananahacks.tech/), Oct 9 to 12, online
 
-> Designed for use with a licensed therapist. Not a medical device. Not for emergencies.
-> If you are in crisis, call or text 988 (US and Canada) or your local emergency number.
+> Fear Ladder is not a medical device and isn't meant for emergencies. If you're in crisis, call or text 988 (US and Canada) or your local emergency number.
 
 ## What it does
 
-1. **Describe.** The therapist writes the patient's fear in plain words, for example "big hairy spiders, worst when they move toward me".
-2. **Plan.** An LLM planner turns the description into 8 to 10 rungs with evenly spaced target SUDS (5–15 at the bottom, 85–95 at the top, no gap above 15). It expresses each rung as eight visual **dials**: realism, proximity, size, contact, count, clarity, colour and motion.
-3. **Render.** One identity anchor image locks the subject. Every rung is a reference-locked edit of that same subject, built from a deterministic prompt. **sharp** then applies exact blur, saturation and vignette.
-4. **Check.** A vision critic scores each rung for identity match, estimated intensity and safety, and repairs rungs that fail. Unsafe drafts are never shown.
-5. **Adapt.** In session, the patient predicts, looks (hold-to-view), rates distress and reflects.
-   - Stuck? A **half-step** rung is generated live and slides in between two rungs.
-   - Mastered? **Variations** show a new individual or setting at the same intensity.
-   - A per-patient ridge regression learns which dials drive this patient's fear (the **fear fingerprint**).
-6. **Report.** SUDS curves, peak vs end, expectancy change, looking time and releases, notes on what the patient learned, and the fingerprint radar. Print-ready.
+The home page has two buttons. **Try the demo** opens a ladder that's already built, and **Build your own** asks what you're afraid of (Spiders, Dogs, Snakes, Needles, Birds, Heights or Something else) and lets you describe it in a few words. Press **Build my ladder** and the nine images fill in one by one over about a minute and a half.
 
-## Screenshots
+The ladder is a grid of the nine steps, blurred until you choose to look. Tap one to see it big. From there you can redraw it, or ask for a new variation that keeps the same intensity but changes the animal or the setting. **How it was made** opens the pipeline inspector.
 
-| Ladder (therapist) | Exposure (patient) | Report |
-|---|---|---|
-| ![Ladder view](docs/screenshots/ladder-1440.png) | ![Hold-to-view exposure](docs/screenshots/session-expose-1440.png) | ![Clinician report](docs/screenshots/report-1440.png) |
+A session takes you up the ladder. Before each step you guess how anxious you'll feel. To look, you press and hold (or hold Space), and the image blurs again the moment you let go. After that you rate how you feel and say whether it was easier, the same or worse than you expected. If your distress stays high, the app draws a smaller step on the spot and slides it in between this step and the next. Pause opens a breathing screen if you need a minute.
 
-All screens at 1440px and 390px are in [`docs/screenshots/`](docs/screenshots).
+At the end, the report shows how many steps you faced, how long you looked, your biggest drop in distress, and a chart of peak vs end distress for each step. It also has a radar of what drives your fear, from a small model trained on your own ratings.
 
-## Features
+## How it works
 
-| Screen | Highlights |
-|---|---|
-| Landing `/` | Demo spider ladder strip (blurred until hover or tap), evidence with sources, how it works, strategy-to-feature table, safety |
-| Builder `/new` | Phobia presets (Spiders, Dogs, Snakes, Needles, Birds, Bees and wasps, Heights beta, Other), alias-only, worst and okay fields, reference photo upload, rung count, start-with-the-word, session settings |
-| Ladder `/ladder/[id]` | Live-filling ladder with a "developing photograph" animation, tap-to-reveal, critic badges, rung drawer with dial sliders, regenerate, variations by context, delete, export, **Under the hood** Pipeline Inspector |
-| Session `/ladder/[id]/session` | Dark, quiet patient view; prediction and likelihood; hold-to-view (press or hold Space) with fade-to-blur on release; SUDS slider with a 30 s pulse; rotating notice prompts; breathing pause (4 in, 6 out); reflection; next-step card; live half-steps; summary |
-| Report `/ladder/[id]/report` | SUDS small multiples, peak vs end, expectancy, looking time and releases, fear fingerprint, learned notes, full table, print stylesheet |
+All the AI runs on the Gemini API through the `@google/genai` Interactions API.
 
-## Pipeline
+The planner (`gemini-3.8-flash`) writes the nine steps as JSON. zod validates it, and if it fails, the planner gets one retry with the validation errors attached. Each step is a short scene plus eight visual settings: realism, distance, size, contact, count, sharpness, colour and motion.
+
+Next the app makes one anchor image that locks in the subject, so the spider on step 3 is the same spider on step 9. Every step is an edit of that anchor by `gemini-nano-banana-2.1`, with a prompt built in code from the step's settings. Then sharp applies the exact blur, saturation and vignette for that step, so a gentle step stays gentle even if the model draws it sharper than planned.
+
+A vision critic (`gemini-3.8-flash`, falling back to `gemini-3.5-flash-lite`) scores each image for identity match, estimated distress and safety. Unsafe drafts are redrawn with stricter wording and never shown. A step that drifts off the subject or lands out of order gets one redraw.
 
 ```mermaid
 flowchart LR
-  A[Therapist description] --> P["/api/plan<br/>Gemini 3.8 Flash<br/>JSON schema + zod<br/>retry with errors"]
-  P -->|subject + rungs + dials| AN["/api/anchor<br/>Nano Banana 2.1<br/>or uploaded photo"]
-  AN --> R["/api/rung ×N (concurrency 3)<br/>deterministic dial prompt<br/>reference-locked edit"]
-  R --> S["sharp post-process<br/>blur σ = (1−clarity)·14<br/>saturation = colour<br/>vignette if far"]
-  S --> C["/api/critique<br/>Gemini 3.8 Flash vision<br/>identity · intensity · safety"]
-  C -->|unsafe → regenerate with stronger safety wording, drop after 2| R
-  C -->|identity < 0.6 or out of order > 10 → repair once| R
-  C --> L[Ladder in IndexedDB]
-  L --> SE[Session ratings]
+  A["Your fear<br/>preset + optional description"] --> P["/api/plan<br/>gemini-3.8-flash<br/>9 steps as JSON<br/>zod, retry with errors"]
+  P -->|subject + 8 settings per step| AN["/api/anchor<br/>gemini-nano-banana-2.1<br/>one anchor image"]
+  AN --> R["/api/rung x9, 3 at a time<br/>prompt built in code<br/>edit of the anchor"]
+  R --> S["sharp<br/>blur σ = (1 - sharpness) × 14<br/>saturation = colour<br/>vignette when far"]
+  S --> C["/api/critique<br/>gemini-3.8-flash vision<br/>identity, distress, safety"]
+  C -->|unsafe: redraw with stricter wording, drop after 2| R
+  C -->|identity < 0.6 or out of order by > 10: redraw once| R
+  C --> L["Ladder in IndexedDB"]
+  L --> SE["Session ratings"]
   SE --> FM["Fear model<br/>ridge regression with planner prior"]
-  FM -->|half-step dials| R
+  FM -->|smaller step settings| R
 ```
 
-Every model call runs in its own server route (`runtime = "nodejs"`, `maxDuration = 60`), with 3-attempt backoff on 429 and 5xx errors and a 55 s budget. The browser orchestrates the calls, so rungs appear one by one. Each attempt is recorded (prompt, params, latency, critic JSON) and shown in the Pipeline Inspector.
+Each model call gets its own serverless route with 3 retries, backoff and a 55 second budget. The browser runs three of those calls at a time, and the ladder fills in as each step finishes.
 
-## Setup
+The smaller step comes from a ridge regression fit to one person. It maps the eight settings to that person's peak distress and starts from a prior that reproduces the planner's targets. Once it has 3 ratings, it picks the in-between settings it predicts will land halfway between the two steps.
+
+### Results on the demo ladders
+
+The three seeded demos (spiders, dogs and needles) each came out with all 9 steps in about 90 to 100 seconds. Every step of the spider ladder shows the same Chilean rose tarantula. The critic's distress estimates landed within 10 points of the target on most steps, though it tends to rate the top steps lower than planned (for spiders, 92 planned and 78 estimated). A live variation came out at the same estimated distress as its parent (52 vs 52).
+
+## Screenshots
+
+| Ladder | Looking at a step | Report |
+|---|---|---|
+| ![The nine-step ladder](docs/screenshots/ladder-1440.png) | ![Press and hold to look](docs/screenshots/session-expose-1440.png) | ![Session report](docs/screenshots/report-1440.png) |
+
+The rest are in [`docs/screenshots/`](docs/screenshots).
+
+## Run it locally
 
 ```bash
 npm install
-cp .env.example .env.local      # then paste your own GEMINI_API_KEY into .env.local
-npm run dev                      # http://localhost:3000
+cp .env.example .env.local   # then add your GEMINI_API_KEY
+npm run dev                  # http://localhost:3000
 ```
 
-| Env var | Default | Purpose |
-|---|---|---|
-| `GEMINI_API_KEY` | — | Server-side only. Without it the app runs in demo mode. |
-| `IMAGE_MODEL` | `gemini-nano-banana-2.1` | Image generation and editing |
-| `TEXT_MODEL` | `gemini-3.8-flash` | Planner and variation planner |
-| `CRITIC_MODEL` | `gemini-3.8-flash` | Vision critic |
-| `CRITIC_FALLBACK_MODEL` | `gemini-3.5-flash-lite` | Critic when rate limited |
-| `MAX_LIVE_LADDERS_PER_DAY` | `30` | Spend guard (plus 3 ladders per IP per hour) |
+The key is only read on the server. Without one, the app runs on the demo ladders. `.env.example` also lists optional model overrides and `MAX_LIVE_LADDERS_PER_DAY` (default 30), a cap on live builds.
 
 ### Seed the demo ladders
 
-The seed script drives **the same pipeline** over HTTP (plan → anchor → rungs → critic) and writes `public/demo/{spiders,dogs,needles}/` (`ladder.json`, `anchor.jpg`, `rung-N.jpg`).
+The seed script calls the same API routes the app uses and writes the results to `public/demo/{spiders,dogs,needles}/`.
 
 ```bash
-npm run build && npm start &          # with GEMINI_API_KEY in .env.local
-npm run seed                          # all three, or: npm run seed -- spiders
-# or seed against a deployment whose env holds the key (the key never touches your machine):
+npm run build && npm start &   # with GEMINI_API_KEY in .env.local
+npm run seed                   # all three, or: npm run seed -- spiders
+
+# or point it at a deployment that already has the key
 SEED_BASE_URL=https://your-app.vercel.app npm run seed
 ```
 
 ### Checks
 
 ```bash
-npm run typecheck && npm run lint && npm run build
-npm run test:e2e         # Playwright golden path on the demo spider ladder
-npm run screenshots      # docs/screenshots at 1440px and 390px (needs a running server)
+npm run typecheck
+npm run lint
+npm run build
+npm run test:e2e      # Playwright, end to end
+npm run screenshots   # regenerates docs/screenshots (needs a running server)
 ```
 
-### Deploy (Vercel)
+### Deploy on Vercel
 
-1. Import the repo in Vercel (framework: Next.js). The `sharp` routes already run on the Node runtime with `maxDuration = 60`.
-2. Add `GEMINI_API_KEY` (and optionally `MAX_LIVE_LADDERS_PER_DAY`) under **Project → Settings → Environment Variables**, then redeploy.
-3. Without the key, `/api/health` reports `live: false`, and the app offers the demo ladders everywhere live generation would be used.
+Import the repo in Vercel as a Next.js project. Add `GEMINI_API_KEY` under Project Settings, then Environment Variables, and redeploy. The routes that use sharp already run on the Node runtime with `maxDuration = 60`. If the key is missing, `/api/health` reports `live: false` and the app sticks to the demo ladders.
 
-## Safety, privacy and ethics
+## Safety and privacy
 
-- **Specific phobias only.** The planner refuses trauma or PTSD imagery, self-harm, eating-related content, sexual content and real people, and explains why in one calm sentence.
-- **Content rules enforced three times:** in the planner prompt, the rung prompt and the vision critic. No blood, injury, gore, aggression, attacks, death or children in danger. Unsafe outputs are never shown. If two drafts of a rung fail, the rung is dropped and the therapist is told.
-- **Clinician in the loop.** The builder, dials and progress settings are for the therapist. Nothing auto-advances.
-- **Consent by design.** Images start blurred. The patient chooses when to look, and Pause is always one tap away. Hold-to-view works as a "dead man's brake", and every release is counted.
-- **Needle ladders** open with: "Sit down before you start. If you feel faint, use the applied-tension technique your therapist taught you."
-- **Privacy.** No accounts; patients are identified by alias only. Ladders, images and sessions live in the browser's IndexedDB. The server stores nothing and logs no prompts or images. "Delete all local data" is in the footer.
-- **Transparency.** Every generated image carries Google's invisible SynthID watermark, and every rung image shows an "AI-generated" label.
+Fear Ladder only handles specific phobias. The planner turns down requests about trauma, self-harm, eating, sexual content or real people. The planner, the image prompt and the critic all rule out blood, injury and aggression, and an unsafe image never reaches the screen. Every image starts blurred and nothing moves forward on its own. Needle sessions open with a tip about fainting.
 
-## Built on the science
+There are no accounts. Your ladders, images and ratings stay in your browser in IndexedDB, and the server stores nothing.
 
-| Inhibitory-learning strategy ([Craske et al., 2014](https://doi.org/10.1016/j.brat.2014.04.006); [OptEx Nexus](https://doi.org/10.1016/j.brat.2022.104069)) | Feature |
-|---|---|
-| Expectancy violation | Prediction + likelihood before each exposure; "did it happen?" + surprise after |
-| Attention to the feared stimulus | 2–3 notice prompts per rung during exposure |
-| Removal of safety signals | Hold-to-view → steady view; releases reported as avoidance |
-| Stimulus variability | "New variation": different individual, same intensity |
-| Multiple contexts | Variations by setting (kitchen, garden, bathroom…) |
-| Affect labeling | Feeling chips after exposure |
-| Mental rehearsal | "What did you learn?" collected in the report |
+## Why build this
 
-Progress modes: **expectancy** (default: climb when the predicted outcome didn't happen) and **habituation** (climb when SUDS falls to half its peak or to 30 or below; see the [Therapist Aid exposure tracking log](https://www.therapistaid.com/therapy-worksheet/exposure-tracking-log)). The hierarchy rules follow the [Therapist Aid guide](https://www.therapistaid.com/therapy-guide/creating-an-exposure-hierarchy-guide).
+Specific phobias are common, and most people who have one don't get adequate treatment. NIMH estimates that [9.1% of U.S. adults](https://www.nimh.nih.gov/health/statistics/specific-phobia) had one in the past year, and only about [11% of them get minimally adequate treatment](https://www.nimh.nih.gov/sites/default/files/documents/health/statistics/prevalence/file_12.pdf). Exposure is rarely used either, and as few as [7% of therapists and patients](https://pmc.ncbi.nlm.nih.gov/articles/PMC9975163/) report using it.
 
-## Evidence
-
-- An estimated 9.1% of U.S. adults had a specific phobia in the past year, and 12.5% will at some point in their lives ([NIMH](https://www.nimh.nih.gov/health/statistics/specific-phobia)).
-- Only about 11% of people with a specific phobia receive minimally adequate treatment in a year ([NCS-R data, NIMH](https://www.nimh.nih.gov/sites/default/files/documents/health/statistics/prevalence/file_12.pdf)).
-- Exposure is highly effective but underused; as few as 7% of therapists and patients report providing or receiving it ([Kemp et al., 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC9975163/)).
-- An 8-stage online hierarchy of spider images reduced fear ([Matthews, Naran & Kirkby, 2015](https://doi.org/10.1016/j.jbtep.2014.12.003)). FEARDROP's design put user agency first with a "dead man's brake" ([Kirkby, Matthews & Scanlan](https://doi.org/10.3233/978-1-60750-561-7-73)).
-- In a 66-person randomized trial, six 30-minute sessions with the Phobys AR app reduced fear of real spiders ([University of Basel](https://www.unibas.ch/en/News-Events/News/Uni-Research/Augmented-reality-helps-tackle-fear-of-spiders.html); [Zimmer et al., 2021](https://doi.org/10.1016/j.janxdis.2021.102442)).
+[One study](https://doi.org/10.1016/j.jbtep.2014.12.003) found that an 8-stage online hierarchy of spider images reduced fear. Fear Ladder builds that kind of hierarchy for the phobia you pick in about a minute and a half. In each session you predict how anxious you'll feel before you look and compare it with how you actually felt, which follows the [inhibitory-learning approach](https://doi.org/10.1016/j.brat.2014.04.006).
 
 ## AI tools used
 
-- **Gemini API (Google):**
-  - `gemini-nano-banana-2.1` (Nano Banana 2.1) for image generation and reference-locked editing.
-  - `gemini-3.8-flash` for the planner, the variation planner and the vision critic.
-  - `gemini-3.5-flash-lite` as the critic fallback.
-  - All are called through the `@google/genai` Interactions API.
-- **Claude Code (Anthropic)** wrote this codebase with the author during the hackathon.
+- **Gemini API (Google)** through `@google/genai`. `gemini-3.8-flash` plans the ladder and the variations and runs the vision critic. `gemini-nano-banana-2.1` draws the anchor and edits every step. `gemini-3.5-flash-lite` is the critic's fallback.
+- **Claude Code (Anthropic)** wrote the code with the author during the hackathon.
 
 ## Credits
 
-| Library | Use |
+| Library or model | Used for |
 |---|---|
 | [Next.js](https://nextjs.org) 16, [React](https://react.dev) 19, [TypeScript](https://www.typescriptlang.org) | App framework |
-| [@google/genai](https://www.npmjs.com/package/@google/genai) | Gemini API SDK |
-| [zod](https://zod.dev) | Validates every model response and request |
-| [sharp](https://sharp.pixelplumbing.com) | Deterministic image post-processing |
 | [Tailwind CSS](https://tailwindcss.com) 4 | Styling |
-| [Motion](https://motion.dev) | Animation (honours reduced motion) |
-| [Recharts](https://recharts.org) | Report and inspector charts |
-| [Lucide](https://lucide.dev) | Icons |
+| [@google/genai](https://www.npmjs.com/package/@google/genai) | Gemini API SDK (Interactions API) |
+| `gemini-3.8-flash` | Planner, variation planner, vision critic |
+| `gemini-nano-banana-2.1` (Nano Banana 2.1) | Anchor image and step edits |
+| `gemini-3.5-flash-lite` | Critic fallback |
+| [zod](https://zod.dev) | Validates model output and requests |
+| [sharp](https://sharp.pixelplumbing.com) | Exact blur, saturation and vignette |
+| [Motion](https://motion.dev) | Animation |
+| [Recharts](https://recharts.org) | Report charts |
+| [Lucide](https://lucide.dev) (`lucide-react`) | Icons |
 | [idb-keyval](https://github.com/jakearchibald/idb-keyval) | IndexedDB storage |
-| [Playwright](https://playwright.dev), [tsx](https://tsx.is), [ESLint](https://eslint.org) | Testing, scripts, linting |
-| [Fraunces](https://fonts.google.com/specimen/Fraunces), [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) | Type, via `next/font/google` |
-
-## License
-
-MIT for the code. Generated images are produced by Google's models and carry SynthID.
+| [server-only](https://www.npmjs.com/package/server-only) | Keeps the API key code off the client |
+| [Playwright](https://playwright.dev) | End-to-end tests |
+| [tsx](https://tsx.is) | Seed and screenshot scripts |
+| [ESLint](https://eslint.org) | Linting |
+| [Schibsted Grotesk](https://fonts.google.com/specimen/Schibsted+Grotesk) | Typeface, via `next/font/google` |

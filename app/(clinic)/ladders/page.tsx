@@ -1,70 +1,127 @@
 "use client";
 
-import { ArrowRight, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button, Eyebrow, LinkButton, buttonClass } from "@/components/ui";
-import { DEMOS, demoId } from "@/lib/demo";
+import { AiLabel, LinkButton } from "@/components/ui";
 import { mainRungs } from "@/lib/pipeline/buildLadder";
 import { deleteLadder, listLadders } from "@/lib/store";
 import type { Ladder } from "@/lib/types";
 
+const nameOf = (l: Ladder) => {
+  const n = (l.subject.name || l.fear || "Untitled").trim();
+  return n.charAt(0).toUpperCase() + n.slice(1);
+};
+
 export default function LaddersPage() {
   const [ladders, setLadders] = useState<Ladder[] | null>(null);
+
   useEffect(() => {
-    listLadders().then(setLadders);
+    let alive = true;
+    listLadders().then((all) => {
+      if (alive) setLadders(all);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
-    <div className="mx-auto max-w-4xl px-5 pb-10 pt-12 sm:px-8 sm:pt-16">
-      <Eyebrow>Stored in this browser only</Eyebrow>
-      <h1 className="font-display mt-3 text-[38px] leading-tight sm:text-[48px]">My ladders</h1>
+    <div className="mx-auto w-full max-w-[640px] px-4 pb-16 pt-12 sm:px-8 md:pt-[88px]">
+      <h1 className="text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink sm:text-[48px]">Your ladders</h1>
 
-      <div className="mt-10 space-y-3">
-        {ladders === null && <p className="text-muted">Loading…</p>}
+      <div className="mt-10">
+        {ladders === null && (
+          <ul aria-busy className="space-y-1">
+            {[0, 1, 2].map((i) => (
+              <li key={i} className="flex items-center gap-4 py-3">
+                <div className="loading-sheen h-14 w-14 shrink-0 rounded-xl" />
+                <div className="loading-sheen h-4 w-40 rounded-full" />
+              </li>
+            ))}
+          </ul>
+        )}
+
         {ladders?.length === 0 && (
-          <div className="rounded-[12px] border border-line bg-surface p-6">
-            <p className="text-ink">No ladders yet.</p>
-            <p className="mt-1 text-[15px] text-muted">Build one for a patient, or open a demo ladder to see every screen.</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <LinkButton href="/new">Build a ladder</LinkButton>
-              {DEMOS.map((d) => (
-                <Link key={d.slug} href={`/ladder/${demoId(d.slug)}`} className={buttonClass("secondary")}>
-                  Demo: {d.label}
-                </Link>
-              ))}
-            </div>
+          <div className="flex flex-col items-start gap-5">
+            <p className="text-[15px] text-muted">Nothing here yet.</p>
+            <LinkButton href="/new">Build your own</LinkButton>
           </div>
         )}
-        {ladders?.map((l) => {
-          const main = mainRungs(l);
-          return (
-            <div key={l.id} className="flex items-center gap-4 rounded-[12px] border border-line bg-surface p-4">
-              <div className="min-w-0 flex-1">
-                <p className="font-mono text-[12px] uppercase tracking-wider text-muted">
-                  {l.source === "demo" ? "Demo" : l.alias} · {new Date(l.createdAt).toLocaleDateString()}
-                </p>
-                <Link href={`/ladder/${l.id}`} className="mt-1 block truncate text-[17px] font-medium text-ink hover:text-primary">
-                  {l.subject.name || l.fear} ladder · {main.length} rungs
-                </Link>
-              </div>
-              <Button
-                variant="ghost"
-                aria-label={`Delete ${l.subject.name || l.fear} ladder`}
-                onClick={async () => {
+
+        {ladders && ladders.length > 0 && (
+          <ul className="-mx-3 space-y-1">
+            {ladders.map((l) => (
+              <Row
+                key={l.id}
+                ladder={l}
+                onDelete={async () => {
                   await deleteLadder(l.id);
                   setLadders((cur) => cur?.filter((x) => x.id !== l.id) ?? null);
                 }}
-              >
-                <Trash2 className="h-4 w-4" aria-hidden />
-              </Button>
-              <Link href={`/ladder/${l.id}`} className={buttonClass("secondary")} aria-label="Open">
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
-            </div>
-          );
-        })}
+              />
+            ))}
+          </ul>
+        )}
       </div>
     </div>
+  );
+}
+
+function Row({ ladder, onDelete }: { ladder: Ladder; onDelete: () => Promise<void> }) {
+  const [confirm, setConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const main = mainRungs(ladder);
+  const thumb = main[0]?.image;
+  const name = nameOf(ladder);
+
+  return (
+    <li className="group flex items-center gap-2 rounded-2xl pr-2 transition-colors duration-150 ease-out hover:bg-subtle">
+      <Link href={`/ladder/${ladder.id}`} className="flex min-w-0 flex-1 items-center gap-4 rounded-2xl! py-3 pl-3">
+        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-subtle">
+          {thumb && (
+            <img
+              src={thumb}
+              alt=""
+              draggable={false}
+              className="h-full w-full scale-125 object-cover"
+              style={{ filter: "blur(8px) saturate(0.85)" }}
+            />
+          )}
+          {thumb && <AiLabel compact className="absolute bottom-1 left-1 px-1.5! text-[10px]!" />}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-[16px] font-medium text-ink">{name}</span>
+          <span className="tabular block text-[14px] text-muted">
+            {main.length} {main.length === 1 ? "step" : "steps"}
+          </span>
+        </span>
+      </Link>
+
+      {confirm ? (
+        <button
+          type="button"
+          disabled={busy}
+          autoFocus
+          onBlur={() => !busy && setConfirm(false)}
+          onClick={async () => {
+            setBusy(true);
+            await onDelete();
+          }}
+          className="h-9 shrink-0 rounded-full! px-3 text-[14px] font-medium text-error transition-opacity duration-150 ease-out hover:opacity-75 disabled:opacity-40"
+        >
+          Delete
+        </button>
+      ) : (
+        <button
+          type="button"
+          aria-label={`Delete ${name}`}
+          onClick={() => setConfirm(true)}
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full! text-faint transition-colors duration-150 ease-out hover:bg-line hover:text-ink"
+        >
+          <Trash2 className="h-4 w-4" aria-hidden />
+        </button>
+      )}
+    </li>
   );
 }

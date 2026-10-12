@@ -1,16 +1,15 @@
 import Link from "next/link";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "quiet";
+type Variant = "primary" | "secondary" | "ghost";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-[15px] font-medium transition-colors duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 select-none";
+  "inline-flex h-11 items-center justify-center gap-2 rounded-full px-5 text-[15px] font-medium transition-[background-color,color,opacity] duration-150 ease-out disabled:pointer-events-none disabled:opacity-40 select-none whitespace-nowrap";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-surface hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]",
-  secondary: "border border-line bg-surface text-ink hover:border-primary hover:text-primary",
-  ghost: "text-ink hover:bg-primary-soft",
-  quiet: "text-muted hover:text-ink underline-offset-4 hover:underline px-2",
+  primary: "bg-primary text-on-primary hover:opacity-85",
+  secondary: "bg-subtle text-ink hover:bg-line",
+  ghost: "text-muted hover:text-ink",
 };
 
 export function buttonClass(variant: Variant = "primary", extra = "") {
@@ -33,37 +32,14 @@ export function LinkButton({
   return <Link className={buttonClass(variant, className)} {...props} />;
 }
 
-export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <p className={`font-mono text-[12px] uppercase tracking-[0.14em] text-muted ${className}`}>{children}</p>
-  );
-}
-
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`rounded-[12px] border border-line bg-surface shadow-[var(--shadow)] ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-export function Pill({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-muted ${className}`}
-    >
-      {children}
-    </span>
-  );
-}
-
+/** Small, honest label on every generated image. */
 export function AiLabel({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   return (
     <span
       title="AI-generated image"
-      className={`pointer-events-none whitespace-nowrap rounded-full bg-[rgb(18_22_20/0.62)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#EDE7DA] ${className}`}
+      className={`pointer-events-none whitespace-nowrap rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm ${className}`}
     >
-      {compact ? "AI" : "AI-generated"}
+      {compact ? "AI" : "AI image"}
       {compact && <span className="sr-only">-generated</span>}
     </span>
   );

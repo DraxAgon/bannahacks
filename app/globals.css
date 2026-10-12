@@ -1,35 +1,31 @@
 @import "tailwindcss";
 
-/* ── Design tokens ─────────────────────────────────────────────
-   Light theme for therapist screens; .theme-session for the patient view. */
+/* Fear Ladder — monochrome. The images carry the color; the UI stays out of the way. */
 :root {
-  --bg: #f6f1e7;
-  --surface: #fffdf8;
-  --ink: #1e2a28;
-  --muted: #6b6458;
-  --line: #e3daca;
-  --primary: #3e6656;
-  --primary-soft: #dce7e1;
-  --accent: #d9963a;
-  --error: #a4472f;
-  --mist: #c9d6d1;
-  --sage: #8db9a7;
-  --amber: #d9963a;
-  --shadow: 0 1px 2px rgb(30 42 40 / 0.04), 0 8px 24px -12px rgb(30 42 40 / 0.18);
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --subtle: #f4f4f5;
+  --ink: #0a0a0a;
+  --muted: #62626b;
+  --faint: #7a7a83;
+  --line: #e4e4e7;
+  --primary: #0a0a0a;
+  --on-primary: #ffffff;
+  --error: #b42318;
   color-scheme: light;
 }
 
-.theme-session {
-  --bg: #121614;
-  --surface: #1b211e;
-  --ink: #ede7da;
-  --muted: #9a9384;
-  --line: #2a332f;
-  --primary: #8db9a7;
-  --primary-soft: #22302a;
-  --accent: #e6ae5c;
-  --error: #d07a62;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+.theme-dark {
+  --bg: #000000;
+  --surface: #0e0e0f;
+  --subtle: #18181b;
+  --ink: #fafafa;
+  --muted: #a1a1a9;
+  --faint: #7d7d85;
+  --line: #27272a;
+  --primary: #fafafa;
+  --on-primary: #0a0a0a;
+  --error: #f97066;
   color-scheme: dark;
   background: var(--bg);
   color: var(--ink);
@@ -38,128 +34,113 @@
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-line: var(--line);
   --color-primary: var(--primary);
-  --color-primary-soft: var(--primary-soft);
-  --color-accent: var(--accent);
+  --color-on-primary: var(--on-primary);
   --color-error: var(--error);
-  --color-mist: var(--mist);
-  --color-sage: var(--sage);
-  --color-amber: var(--amber);
-  --font-display: var(--font-fraunces);
-  --font-sans: var(--font-instrument);
-  --font-mono: var(--font-plex-mono);
-  --radius-card: 12px;
-  --shadow-soft: var(--shadow);
+  --font-sans: var(--font-app);
+  --font-display: var(--font-app);
+  --font-mono: var(--font-app);
 }
 
 html {
   background: var(--bg);
 }
 
+html:has(.theme-dark) {
+  background: #000;
+  color-scheme: dark;
+}
+
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
+  font-family: var(--font-app), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
 }
 
-/* Paper grain: inline SVG noise at ~3.5% opacity on light screens. */
-.paper {
-  background-color: var(--bg);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.16 0 0 0 0 0.15 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
-.font-display {
-  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
-  font-optical-sizing: auto;
-  font-variation-settings: "SOFT" 60, "WONK" 0;
-}
-
-.prose-measure {
-  max-width: 68ch;
-}
-
-.hairline {
-  border-color: var(--line);
-}
-
-/* Focus rings: visible, calm. */
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 3px;
-  border-radius: 6px;
+/* Outlines follow each element's own radius, so pills stay pills. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
 }
 
 ::selection {
-  background: var(--primary-soft);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
 }
 
-/* Range inputs styled once for the whole app. */
+/* Range input: thin track, solid thumb. */
 input[type="range"].range {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 28px;
+  height: 32px;
   background: transparent;
   cursor: pointer;
 }
 input[type="range"].range::-webkit-slider-runnable-track {
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
-  background: linear-gradient(to right, var(--primary) var(--fill, 50%), var(--line) var(--fill, 50%));
+  background: linear-gradient(to right, var(--ink) var(--fill, 50%), var(--line) var(--fill, 50%));
 }
 input[type="range"].range::-moz-range-track {
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
   background: var(--line);
 }
 input[type="range"].range::-moz-range-progress {
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--ink);
 }
 input[type="range"].range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  margin-top: -9px;
+  margin-top: -10px;
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 2px solid var(--primary);
-  box-shadow: var(--shadow);
+  background: var(--ink);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--ink);
 }
 input[type="range"].range::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 2px solid var(--primary);
+  background: var(--ink);
+  border: 3px solid var(--bg);
 }
 
-/* Developing photograph: sepia + blur resolving to colour. */
+/* A new image comes into focus: blur and grayscale resolve to a sharp photo. */
 @keyframes develop {
   0% {
-    filter: sepia(0.9) blur(14px) saturate(0.6) brightness(1.08);
-    opacity: 0.35;
-  }
-  60% {
-    filter: sepia(0.35) blur(4px) saturate(0.85);
-    opacity: 0.9;
+    filter: blur(16px) grayscale(1);
+    opacity: 0.4;
+    transform: scale(1.04);
   }
   100% {
     filter: none;
     opacity: 1;
+    transform: scale(1);
   }
 }
 .develop {
-  animation: develop 900ms ease-out both;
+  animation: develop 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes shimmer {
@@ -171,22 +152,17 @@ input[type="range"].range::-moz-range-thumb {
   }
 }
 .loading-sheen {
-  background: linear-gradient(
-    100deg,
-    var(--primary-soft) 20%,
-    color-mix(in srgb, var(--primary-soft) 55%, var(--surface)) 40%,
-    var(--primary-soft) 60%
-  );
+  background: linear-gradient(100deg, var(--subtle) 30%, color-mix(in srgb, var(--subtle) 40%, var(--bg)) 50%, var(--subtle) 70%);
   background-size: 200% 100%;
-  animation: shimmer 2.4s ease-in-out infinite;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 35%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 14px transparent;
+    box-shadow: 0 0 0 12px transparent;
   }
 }
 .pulse-ring {
@@ -202,34 +178,25 @@ input[type="range"].range::-moz-range-thumb {
     transition-duration: 120ms !important;
     scroll-behavior: auto !important;
   }
-  .develop {
-    animation: none;
-  }
+  .develop,
   .loading-sheen {
     animation: none;
   }
 }
 
-/* ── Print (clinician report) ─────────────────────────────── */
 @media print {
   @page {
     margin: 14mm;
   }
   html,
-  body,
-  .paper {
+  body {
     background: #fff !important;
     color: #000;
-    font-size: 11pt;
   }
   .no-print {
     display: none !important;
   }
   .print-break {
     break-inside: avoid;
-  }
-  a {
-    color: inherit;
-    text-decoration: none;
   }
 }

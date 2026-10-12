@@ -1,65 +1,78 @@
 "use client";
 
-import { ArrowRight, Cpu, Download, FileBarChart, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
-import { Segmented } from "@/components/controls";
+import { useCallback, useState } from "react";
 import { Ladder } from "@/components/Ladder";
 import { PipelineInspector } from "@/components/PipelineInspector";
 import { RungDrawer } from "@/components/RungDrawer";
 import { Sheet } from "@/components/Sheet";
-import { Button, Eyebrow, LinkButton, buttonClass } from "@/components/ui";
+import { Button, LinkButton } from "@/components/ui";
 import { DEMOS, demoId } from "@/lib/demo";
-import { commitLadder, runnerFor, useHealth, useLadder } from "@/lib/live";
-import { ensureDataUrl, mainRungs } from "@/lib/pipeline/buildLadder";
-import type { Dials, Ladder as LadderT } from "@/lib/types";
+import { runnerFor, useHealth, useLadder } from "@/lib/live";
+import { mainRungs, variationsOf } from "@/lib/pipeline/buildLadder";
+import type { Ladder as LadderT } from "@/lib/types";
 
-function statusLine(l: LadderT): string | null {
+const TITLE = "text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink sm:text-[48px]";
+const PAGE = "mx-auto w-full max-w-[1100px] px-4 pb-24 pt-4 sm:px-8 sm:pt-8";
+
+/** One quiet line and a progress fraction while the ladder is being built. */
+function buildProgress(l: LadderT): { label: string; value: number } | null {
   const main = mainRungs(l);
-  const ready = main.filter((r) => r.status === "ready").length;
   switch (l.status) {
     case "planning":
-      return "Planning the ladder: choosing one subject and spacing the rungs evenly…";
+      return { label: "Planning your ladder…", value: 0.06 };
     case "anchoring":
-      return "Creating the identity anchor so every rung shows the same subject…";
-    case "rendering":
-      return `Rendering and checking rungs · ${ready} of ${main.length} ready`;
+      return { label: "Setting up the subject…", value: 0.14 };
+    case "rendering": {
+      const total = main.length || 1;
+      const done = main.filter((r) => r.status === "ready" || r.status === "error").length;
+      return { label: `Drawing step ${Math.min(done + 1, total)} of ${total}…`, value: 0.18 + 0.82 * (done / total) };
+    }
     default:
       return null;
   }
 }
 
-async function exportLadder(l: LadderT) {
-  const withImages: LadderT = {
-    ...l,
-    anchorImage: await ensureDataUrl(l.anchorImage, {}),
-    rungs: await Promise.all(l.rungs.map(async (r) => ({ ...r, image: await ensureDataUrl(r.image, {}) }))),
-  };
-  const blob = new Blob([JSON.stringify(withImages, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `fear-ladder-${l.alias.replace(/\W+/g, "") || "patient"}-${l.id}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+function BackLink() {
+  return (
+    <Link
+      href="/"
+      className="-ml-1 inline-flex h-10 items-center gap-1.5 px-1 text-[15px] text-muted transition-colors duration-150 hover:text-ink"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden />
+      Home
+    </Link>
+  );
 }
 
 export default function LadderPage() {
   const { id } = useParams<{ id: string }>();
   const ladder = useLadder(id);
-  const live = useHealth();
+  const live = useHealth() === true;
   const [openId, setOpenId] = useState<string | null>(null);
+  // Keeps the lightbox content in place while it animates closed.
+  const [shownId, setShownId] = useState<string | null>(null);
   const [inspector, setInspector] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const open = useCallback((rid: string) => {
+    setOpenId(rid);
+    setShownId(rid);
+  }, []);
   const close = useCallback(() => setOpenId(null), []);
   const closeInspector = useCallback(() => setInspector(false), []);
 
-  const openRung = useMemo(() => ladder?.rungs.find((r) => r.id === openId), [ladder, openId]);
-
   if (ladder === undefined) {
     return (
-      <div className="mx-auto flex max-w-6xl items-center gap-2 px-5 py-24 text-muted sm:px-8">
-        <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden /> Opening ladder…
+      <div className={PAGE} aria-busy="true">
+        <BackLink />
+        <div className="loading-sheen mt-8 h-10 w-44 rounded-xl sm:h-12" />
+        <div className="loading-sheen mt-4 h-4 w-64 max-w-full rounded-full" />
+        <div className="mt-12 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 lg:grid-cols-3">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="loading-sheen aspect-square w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -67,189 +80,138 @@ export default function LadderPage() {
   if (ladder === null) {
     const isDemo = id.startsWith("demo-");
     return (
-      <div className="mx-auto max-w-2xl px-5 py-24 sm:px-8">
-        <h1 className="font-display text-[34px]">{isDemo ? "This demo ladder isn't available yet." : "Ladder not found."}</h1>
-        <p className="mt-3 text-muted">
-          {isDemo
-            ? "The demo ladders are generated ahead of time by the same pipeline. Try another one, or build a new ladder."
-            : "Ladders live only in the browser that created them. It may have been deleted, or created on another device."}
+      <div className={PAGE}>
+        <BackLink />
+        <h1 className={`mt-8 ${TITLE}`}>{isDemo ? "This demo isn’t ready." : "This ladder isn’t here."}</h1>
+        <p className="mt-3 text-[16px] text-muted">
+          {isDemo ? "Try another one, or build your own." : "Ladders stay in the browser that made them."}
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2">
+          <LinkButton href="/new">Build your own</LinkButton>
           {DEMOS.filter((d) => demoId(d.slug) !== id).map((d) => (
-            <Link key={d.slug} href={`/ladder/${demoId(d.slug)}`} className={buttonClass("secondary")}>
-              Demo: {d.label}
-            </Link>
+            <LinkButton key={d.slug} href={`/ladder/${demoId(d.slug)}`} variant="secondary">
+              {d.label}
+            </LinkButton>
           ))}
-          <LinkButton href="/new">Build a ladder</LinkButton>
         </div>
       </div>
     );
   }
 
   const runner = () => runnerFor(ladder);
-  const busy = ["planning", "anchoring", "rendering"].includes(ladder.status ?? "");
-  const line = statusLine(ladder);
   const main = mainRungs(ladder);
-  const readyCount = main.filter((r) => r.status === "ready").length;
-  const failed = main.filter((r) => r.status === "error");
-
-  const regenerate = (rid: string, dials: Dials) => {
-    const r = runner();
-    r.patchRung(rid, { dials });
-    void r.renderRung(rid);
-  };
+  const progress = buildProgress(ladder);
+  const failed = ladder.status === "error" || ladder.status === "refused";
+  const ready = main.some((r) => r.status === "ready");
+  const steps = main.length || ladder.request?.rungCount || 9;
+  const showGrid = !failed || main.some((r) => r.image);
+  // A build that failed before any step was drawn: show only the calm error block.
+  const empty = failed && !showGrid;
+  const shownRung = shownId ? ladder.rungs.find((r) => r.id === shownId) : undefined;
+  const isOpen = Boolean(openId && shownRung);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 pb-10 pt-10 sm:px-8 sm:pt-14">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className={PAGE}>
+      <BackLink />
+
+      <div className="mt-6 flex flex-col gap-7 sm:mt-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
-          <Eyebrow>
-            {ladder.source === "demo" ? "Demo ladder" : "Live ladder"} · patient {ladder.alias}
-          </Eyebrow>
-          <h1 className="font-display mt-3 text-[36px] leading-tight sm:text-[48px]">
-            {ladder.subject.name ? `${ladder.subject.name[0].toUpperCase()}${ladder.subject.name.slice(1)}` : ladder.fear}{" "}
-            <span className="text-muted">ladder</span>
-          </h1>
-          <p className="prose-measure mt-2 text-[15px] text-muted">&ldquo;{ladder.description}&rdquo;</p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className={`min-w-0 break-words ${TITLE}`}>{ladder.fear}</h1>
+            {ladder.source === "demo" && (
+              <span className="rounded-full bg-subtle px-2.5 py-1 text-[13px] font-medium text-muted">Demo</span>
+            )}
+          </div>
+          {!empty && (
+            <p className="mt-3 text-[16px] text-muted">
+              <span className="tabular">{steps}</span> steps, from a word to the real thing.
+            </p>
+          )}
         </div>
-        <div className="no-print flex flex-wrap gap-2 lg:max-w-[520px] lg:justify-end">
-          <LinkButton href={`/ladder/${ladder.id}/session`} className={readyCount < 1 ? "pointer-events-none opacity-50" : ""} aria-disabled={readyCount < 1}>
-            Start session <ArrowRight className="h-4 w-4" aria-hidden />
-          </LinkButton>
+
+        <div className={`no-print flex flex-wrap items-center gap-2 ${empty ? "hidden" : ""}`}>
+          {ready ? (
+            <LinkButton href={`/ladder/${ladder.id}/session`}>Start</LinkButton>
+          ) : (
+            <Button disabled>Start</Button>
+          )}
           <LinkButton href={`/ladder/${ladder.id}/report`} variant="secondary">
-            <FileBarChart className="h-4 w-4" aria-hidden /> Report
+            Report
           </LinkButton>
-          <Button variant="secondary" onClick={() => setInspector(true)}>
-            <Cpu className="h-4 w-4" aria-hidden /> Under the hood
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={exporting || busy}
-            onClick={async () => {
-              setExporting(true);
-              try {
-                await exportLadder(ladder);
-              } finally {
-                setExporting(false);
-              }
-            }}
-          >
-            <Download className="h-4 w-4" aria-hidden /> {exporting ? "Exporting…" : "Export"}
+          <Button variant="ghost" onClick={() => setInspector(true)}>
+            How it was made
           </Button>
         </div>
       </div>
 
-      {line && (
-        <p className="mt-6 flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-[14px] text-ink" role="status" aria-live="polite">
-          <Loader2 className="h-4 w-4 animate-spin text-primary motion-reduce:animate-none" aria-hidden />
-          {line}
-        </p>
+      {progress && (
+        <div className="mt-10" role="status" aria-live="polite">
+          <p className="flex items-center gap-2 text-[14px] text-muted">
+            <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
+            {progress.label}
+          </p>
+          <div className="mt-3 h-[2px] w-full overflow-hidden rounded-full bg-subtle">
+            <div
+              className="h-full rounded-full bg-ink transition-[width] duration-700 ease-out"
+              style={{ width: `${Math.round(progress.value * 100)}%` }}
+            />
+          </div>
+        </div>
       )}
 
-      {(ladder.status === "error" || ladder.status === "refused") && (
-        <div className="mt-6 rounded-[12px] border border-line bg-surface p-5" role="alert">
-          <p className="font-medium text-ink">
-            {ladder.status === "refused" ? "This request is outside what Fear Ladder is for." : "The ladder couldn't be finished."}
+      {failed && (
+        <div className="mt-10 rounded-3xl bg-subtle p-6 sm:p-8" role="alert">
+          <p className="text-[17px] font-medium text-ink">
+            {ladder.status === "refused" ? "This one is outside what Fear Ladder can draw." : "We couldn’t build this ladder."}
           </p>
-          <p className="mt-1 text-[15px] text-muted">{ladder.error}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <LinkButton href="/new" variant="secondary">
-              Back to the builder
-            </LinkButton>
+          {ladder.error && <p className="mt-1.5 max-w-[60ch] text-[15px] text-muted">{ladder.error}</p>}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <LinkButton href="/new">Try again</LinkButton>
             {DEMOS.map((d) => (
-              <Link key={d.slug} href={`/ladder/${demoId(d.slug)}`} className={buttonClass("ghost")}>
-                Demo: {d.label}
-              </Link>
+              <LinkButton
+                key={d.slug}
+                href={`/ladder/${demoId(d.slug)}`}
+                variant="ghost"
+                aria-label={`Open the ${d.label.toLowerCase()} demo`}
+              >
+                {d.label} demo
+              </LinkButton>
             ))}
           </div>
         </div>
       )}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div>
-          {main.length === 0 && busy ? (
-            <div className="space-y-3 px-3 sm:px-6" aria-hidden>
-              {Array.from({ length: ladder.request?.rungCount ?? 9 }, (_, i) => (
-                <div key={i} className="loading-sheen h-[104px] rounded-[12px] sm:h-[152px]" />
-              ))}
-            </div>
-          ) : (
-            <Ladder ladder={ladder} onOpen={setOpenId} />
-          )}
-          {failed.length > 0 && !busy && live && (
-            <div className="mt-4 flex flex-wrap items-center gap-3 px-3 text-[14px] text-muted sm:px-6">
-              {failed.length} rung{failed.length > 1 ? "s" : ""} need{failed.length > 1 ? "" : "s"} another try.
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  const r = runner();
-                  failed.forEach((f) => void r.renderRung(f.id));
-                }}
-              >
-                <RefreshCw className="h-4 w-4" aria-hidden /> Regenerate failed rungs
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <aside className="no-print space-y-8 lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-[12px] border border-line bg-surface p-5">
-            <Eyebrow>Subject on every rung</Eyebrow>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink">
-              {ladder.subject.canonical || <span className="text-muted">Chosen by the planner…</span>}
-            </p>
-          </div>
-          <div className="space-y-5 rounded-[12px] border border-line bg-surface p-5">
-            <Eyebrow>Session settings</Eyebrow>
-            <Segmented
-              name="view"
-              label="Viewing"
-              value={ladder.settings.view}
-              onChange={(v) => commitLadder({ ...ladder, settings: { ...ladder.settings, view: v } })}
-              options={[
-                { value: "hold", label: "Hold" },
-                { value: "steady", label: "Steady" },
-              ]}
-            />
-            <Segmented
-              name="mode"
-              label="Progress mode"
-              value={ladder.settings.mode}
-              onChange={(v) => commitLadder({ ...ladder, settings: { ...ladder.settings, mode: v } })}
-              options={[
-                { value: "expectancy", label: "Expectancy" },
-                { value: "habituation", label: "Habituation" },
-              ]}
-            />
-            <p className="text-[13px] text-muted">
-              Exposure length: <span className="font-mono">{Math.round(ladder.settings.exposureSeconds / 60)} min</span>, shown
-              as time looked, never a countdown.
-            </p>
-          </div>
-          <p className="text-[13px] leading-relaxed text-muted">
-            Tap any image to reveal it. Open a rung to adjust its dials, regenerate it, or add a variation at the same intensity.
-          </p>
-        </aside>
-      </div>
-
-      <Sheet open={Boolean(openRung)} onClose={close} title={openRung ? `Rung ${openRung.index} · ${openRung.title}` : ""}>
-        {openRung && (
-          <RungDrawer
-            key={openRung.id + openRung.status}
+      {showGrid && (
+        <div className={progress ? "mt-8" : "mt-12"}>
+          <Ladder
             ladder={ladder}
-            rung={openRung}
-            live={Boolean(live)}
-            onRegenerate={(d) => regenerate(openRung.id, d)}
-            onVariation={(ctx) => void runner().addVariation(openRung.id, ctx)}
-            onDelete={() => {
-              runner().deleteRung(openRung.id);
-              setOpenId(null);
-            }}
+            live={live}
+            placeholders={progress ? (ladder.request?.rungCount ?? 9) : 0}
+            onOpen={open}
+            onRetry={(rid) => void runner().renderRung(rid)}
+          />
+        </div>
+      )}
+
+      <Sheet
+        open={isOpen}
+        onClose={close}
+        title={shownRung ? `Step ${shownRung.index}: ${shownRung.title}` : "Step"}
+        reserve={shownRung && variationsOf(ladder, shownRung.id).length > 0 ? 410 : 340}
+      >
+        {shownRung && (
+          <RungDrawer
+            key={shownRung.id}
+            ladder={ladder}
+            rung={shownRung}
+            live={live}
+            onRedraw={(rid) => void runner().renderRung(rid)}
+            onVariation={(pid) => void runner().addVariation(pid)}
           />
         )}
       </Sheet>
 
-      <Sheet open={inspector} onClose={closeInspector} title="Under the hood · Pipeline Inspector" wide>
+      <Sheet open={inspector} onClose={closeInspector} title="How it was made" variant="panel">
         <PipelineInspector ladder={ladder} />
       </Sheet>
     </div>

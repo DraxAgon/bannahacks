@@ -1,80 +1,147 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { fetchDemoLadder } from "@/lib/demo";
-import type { Ladder } from "@/lib/types";
+import type { Ladder, Rung } from "@/lib/types";
 import { AiLabel } from "./ui";
 
-/** Landing signature: the demo spider ladder, every rung blurred until the visitor chooses to look. */
+const STEPS = 9;
+
+// Each tile sits one --step higher than the one before it, so the row climbs to the right.
+// Mobile: a gentle climb inside a snap-scrolling strip. From 768px: nine columns climbing about one tile.
+const listClass = [
+  "[--step:5px] md:[--step:clamp(8px,1.25vw,14px)]",
+  "pt-[calc(var(--step)*8)]",
+  "-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:-mx-8 sm:scroll-px-8 sm:px-8",
+  "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+  "md:mx-auto md:grid md:max-w-[1064px] md:grid-cols-9 md:gap-2 md:overflow-visible md:px-0 md:pb-0 lg:gap-3",
+].join(" ");
+
+const tileClass = "w-[112px] shrink-0 snap-start translate-y-[calc(var(--i)*var(--step)*-1)] md:w-auto md:min-w-0";
+
+const climb = (i: number) => ({ "--i": i }) as CSSProperties;
+
+/** Landing signature: the nine demo spider images, blurred until the visitor chooses to look. */
 export function DemoStrip() {
   const [ladder, setLadder] = useState<Ladder | null | undefined>(undefined);
-  const [revealed, setRevealed] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
-    fetchDemoLadder("spiders").then((l) => alive && setLadder(l));
+    fetchDemoLadder("spiders").then((l) => {
+      if (alive) setLadder(l);
+    });
     return () => {
       alive = false;
     };
   }, []);
 
-  const rungs = ladder?.rungs.filter((r) => r.image && r.kind === "planned") ?? [];
+  const rungs = (ladder?.rungs ?? []).filter((r) => r.kind === "planned" && r.image).slice(0, STEPS);
+  const ready = rungs.length > 0;
 
   return (
-    <div className="relative">
-      <div
-        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 [scrollbar-width:thin] sm:gap-4"
-        role="list"
-        aria-label="Demo spider ladder, from the word on a card to a close photograph"
+    <div>
+      <ol
+        aria-label="Demo ladder, from a word on a card to a spider on an open hand"
+        aria-busy={!ready}
+        className={listClass}
       >
-        {ladder === undefined || rungs.length === 0
-          ? Array.from({ length: 9 }, (_, i) => (
-              <div key={i} role="listitem" className="w-[132px] shrink-0 snap-start sm:w-[150px]">
-                <div className="loading-sheen aspect-square rounded-[10px]" />
-                <p className="mt-2 font-mono text-[12px] text-muted">
-                  {ladder === null ? "Demo ladder not seeded yet" : "Loading"}
-                </p>
-              </div>
+        {ready
+          ? rungs.map((r, i) => (
+              <Step
+                key={r.id}
+                rung={r}
+                index={i}
+                open={hovered === r.id || pinned === r.id}
+                onHover={(on) => setHovered((cur) => (on ? r.id : cur === r.id ? null : cur))}
+                onTap={() => setPinned((cur) => (cur === r.id ? null : r.id))}
+              />
             ))
-          : rungs.map((r, i) => {
-              const open = revealed === r.id;
-              return (
-                <div key={r.id} role="listitem" className="w-[132px] shrink-0 snap-start sm:w-[150px]">
-                  <button
-                    type="button"
-                    aria-pressed={open}
-                    aria-label={`Rung ${i + 1}: ${r.title}. ${open ? "Showing image" : "Image blurred, press to reveal"}`}
-                    onMouseEnter={() => setRevealed(r.id)}
-                    onMouseLeave={() => setRevealed((cur) => (cur === r.id ? null : cur))}
-                    onFocus={() => setRevealed(r.id)}
-                    onBlur={() => setRevealed((cur) => (cur === r.id ? null : cur))}
-                    onClick={() => setRevealed((cur) => (cur === r.id ? null : r.id))}
-                    className="group relative block aspect-square w-full overflow-hidden rounded-[10px] border border-line bg-primary-soft"
-                  >
-                    <img
-                      src={r.image}
-                      alt=""
-                      draggable={false}
-                      className="h-full w-full object-cover transition-[filter,transform] duration-500 ease-out"
-                      style={{ filter: open ? "none" : "blur(18px) saturate(0.6)", transform: open ? "scale(1)" : "scale(1.08)" }}
-                    />
-                    {!open && (
-                      <span className="absolute inset-0 grid place-items-center">
-                        <span className="rounded-full bg-surface/85 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-ink">
-                          Hover or tap
-                        </span>
-                      </span>
-                    )}
-                    <AiLabel className="absolute bottom-1.5 left-1.5" />
-                  </button>
-                  <div className="mt-2 flex items-baseline gap-2">
-                    <span className="font-display text-[22px] leading-none text-primary">{i + 1}</span>
-                    <span className="line-clamp-2 text-[13px] leading-snug text-muted">{r.title}</span>
-                  </div>
-                </div>
-              );
-            })}
-      </div>
+          : Array.from({ length: STEPS }, (_, i) => (
+              <li key={i} aria-hidden className={tileClass} style={climb(i)}>
+                <div className="loading-sheen aspect-square rounded-2xl" />
+                <div className="mt-2 h-[18px]" />
+              </li>
+            ))}
+      </ol>
+
+      <p
+        aria-hidden={!ready}
+        className={`mt-5 text-center text-[13px] text-faint transition-opacity duration-300 ease-out ${ready ? "" : "opacity-0"}`}
+      >
+        <span className="hidden [@media(hover:hover)]:inline">Hover a step to look</span>
+        <span className="[@media(hover:hover)]:hidden">Tap a step to look</span>
+      </p>
     </div>
+  );
+}
+
+function Step({
+  rung,
+  index,
+  open,
+  onHover,
+  onTap,
+}: {
+  rung: Rung;
+  index: number;
+  open: boolean;
+  onHover: (on: boolean) => void;
+  onTap: () => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const pointer = useRef<string | null>(null);
+  const n = index + 1;
+
+  return (
+    <li className={tileClass} style={climb(index)}>
+      <button
+        type="button"
+        aria-label={`Step ${n}, ${rung.title}. ${open ? "Showing" : "Blurred"}.`}
+        className="relative block aspect-square w-full cursor-pointer overflow-hidden rounded-2xl! bg-subtle"
+        onPointerDown={(e) => {
+          pointer.current = e.pointerType;
+        }}
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") onHover(true);
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") onHover(false);
+        }}
+        onFocus={(e) => {
+          if (e.currentTarget.matches(":focus-visible")) onHover(true);
+        }}
+        onBlur={() => onHover(false)}
+        onClick={() => {
+          // Mouse users look by hovering and keyboard users by focusing; a tap toggles.
+          if (pointer.current === "touch" || pointer.current === "pen") onTap();
+          pointer.current = null;
+        }}
+      >
+        {!loaded && <span aria-hidden className="loading-sheen absolute inset-0" />}
+        <span
+          aria-hidden
+          className={`absolute inset-0 ${loaded ? "develop" : "opacity-0"}`}
+          style={{ animationDelay: `${index * 70}ms` }}
+        >
+          <img
+            src={rung.image}
+            alt=""
+            draggable={false}
+            onLoad={() => setLoaded(true)}
+            className="h-full w-full select-none object-cover transition-[filter,transform] duration-500 ease-out"
+            style={{
+              filter: open ? "none" : "blur(14px) saturate(0.85)",
+              transform: open ? "scale(1)" : "scale(1.12)",
+            }}
+          />
+        </span>
+        <AiLabel compact className="absolute bottom-1.5 left-1.5" />
+      </button>
+      <p aria-hidden className="tabular mt-2 text-[12px] leading-[18px] text-faint">
+        {n}
+      </p>
+    </li>
   );
 }

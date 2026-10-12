@@ -4,13 +4,13 @@ export const DIAL_KEYS: DialKey[] = ["realism", "proximity", "size", "contact", 
 
 export const DIAL_LABELS: Record<DialKey, { label: string; low: string; high: string }> = {
   realism: { label: "Realism", low: "Word", high: "Photo" },
-  proximity: { label: "Proximity", low: "Far", high: "Macro" },
-  size: { label: "Size in frame", low: "Tiny", high: "Fills frame" },
-  contact: { label: "Contact", low: "Contained", high: "On a hand" },
-  count: { label: "Count", low: "1", high: "6" },
-  clarity: { label: "Clarity", low: "Blurred", high: "Sharp" },
-  color: { label: "Colour", low: "Grey", high: "Full" },
-  motion: { label: "Motion", low: "Still", high: "Toward you" },
+  proximity: { label: "Closeness", low: "Far", high: "Close" },
+  size: { label: "Size", low: "Tiny", high: "Fills frame" },
+  contact: { label: "Touch", low: "Contained", high: "On a hand" },
+  count: { label: "How many", low: "1", high: "6" },
+  clarity: { label: "Sharpness", low: "Blurred", high: "Sharp" },
+  color: { label: "Color", low: "Gray", high: "Full" },
+  motion: { label: "Movement", low: "Still", high: "Toward you" },
 };
 
 /** Normalized 0..1 view of a dial (count rescaled from 1..6). */

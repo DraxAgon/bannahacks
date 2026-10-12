@@ -1,87 +1,119 @@
 "use client";
 
-import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import type { Rung } from "@/lib/types";
 import { AiLabel } from "./ui";
 
-/** A rung image that stays blurred until someone chooses to look. Develops like a photograph when it first arrives. */
+type ImageRung = Pick<Rung, "image" | "status" | "title">;
+
+/**
+ * A rung image. Blurred until `revealed`; the blur lifts smoothly when the person chooses to look.
+ * An image that arrives (or changes) after mount develops like a photograph.
+ * Purely visual: callers decide what reveals it (hover, tap, opening the lightbox).
+ */
 export function RungImage({
   rung,
-  revealedDefault = false,
-  size = "md",
+  revealed = false,
+  hint,
+  label = "compact",
+  rounded = "rounded-2xl",
+  labelClassName = "absolute bottom-2 left-2",
   className = "",
 }: {
-  rung: Pick<Rung, "image" | "status" | "title" | "error">;
-  revealedDefault?: boolean;
-  size?: "sm" | "md" | "lg";
+  rung: ImageRung;
+  revealed?: boolean;
+  /** Small pill centered on the blurred image, e.g. "Tap to look". */
+  hint?: string;
+  label?: "compact" | "full" | "none";
+  rounded?: string;
+  labelClassName?: string;
   className?: string;
 }) {
-  const [revealed, setRevealed] = useState(revealedDefault);
-  const radius = size === "lg" ? "rounded-[12px]" : "rounded-[10px]";
+  // Only images that arrive after mount get the develop animation, so opening a page doesn't replay it.
+  const [firstSrc] = useState(rung.image);
+  const busy = rung.status === "generating" || rung.status === "pending";
 
   if (!rung.image) {
-    const generating = rung.status === "generating" || rung.status === "pending";
     return (
       <div
-        className={`relative aspect-square w-full overflow-hidden ${radius} ${generating ? "loading-sheen" : "bg-primary-soft"} ${className}`}
+        className={`relative aspect-square w-full overflow-hidden ${rounded} ${busy ? "loading-sheen" : "bg-subtle"} ${className}`}
         role="img"
-        aria-label={generating ? "Image is being generated" : "No image"}
-      >
-        <div className="absolute inset-0 grid place-items-center p-2 text-center">
-          {generating ? (
-            <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-primary">
-              <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
-              {rung.status === "pending" ? "Queued" : "Drawing"}
-            </span>
-          ) : (
-            <span className="font-mono text-[11px] uppercase tracking-wider text-muted">No image</span>
-          )}
-        </div>
-      </div>
+        aria-label={busy ? `Drawing ${rung.title}` : `No image for ${rung.title}`}
+      />
     );
   }
 
   return (
+    <div
+      className={`relative isolate aspect-square w-full overflow-hidden bg-subtle [transform:translateZ(0)] ${rounded} ${className}`}
+    >
+      <div
+        className="absolute inset-0 transition-[filter,transform] duration-500 ease-out"
+        style={{
+          filter: revealed ? "none" : "blur(22px) saturate(0.85)",
+          transform: revealed ? "scale(1)" : "scale(1.14)",
+        }}
+      >
+        <img
+          key={rung.image.slice(-48)}
+          src={rung.image}
+          alt={revealed ? rung.title : ""}
+          draggable={false}
+          className={`h-full w-full select-none object-cover ${rung.image !== firstSrc ? "develop" : ""}`}
+        />
+      </div>
+
+      {busy && <div className="loading-sheen absolute inset-0 opacity-70" aria-hidden />}
+
+      {hint && (
+        <div
+          className={`pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-300 ease-out ${
+            revealed ? "opacity-0" : "opacity-100"
+          }`}
+          aria-hidden
+        >
+          <span className="rounded-full bg-bg/70 px-3 py-1 text-[13px] font-medium text-ink backdrop-blur-md">
+            {hint}
+          </span>
+        </div>
+      )}
+
+      {label !== "none" && (
+        <AiLabel compact={label === "compact"} className={labelClassName} />
+      )}
+    </div>
+  );
+}
+
+/** A self-contained image that reveals on mouse hover and toggles on tap or Enter. */
+export function RevealImage({
+  rung,
+  hint = "Tap to look",
+  label = "compact",
+  rounded,
+  className = "",
+}: {
+  rung: ImageRung;
+  hint?: string;
+  label?: "compact" | "full" | "none";
+  rounded?: string;
+  className?: string;
+}) {
+  const [hover, setHover] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const revealed = hover || pinned;
+  if (!rung.image) return <RungImage rung={rung} label={label} rounded={rounded} className={className} />;
+  return (
     <button
       type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        setRevealed((v) => !v);
-      }}
-      aria-pressed={revealed}
-      aria-label={revealed ? `Hide image: ${rung.title}` : `Reveal image: ${rung.title}`}
-      className={`group relative block aspect-square w-full overflow-hidden ${radius} bg-primary-soft ${className}`}
+      onPointerEnter={(e) => e.pointerType !== "touch" && setHover(true)}
+      onPointerLeave={(e) => e.pointerType !== "touch" && setHover(false)}
+      onClick={() => setPinned((v) => !v)}
+      aria-pressed={pinned}
+      aria-label={pinned ? `Hide ${rung.title}` : `Look at ${rung.title}`}
+      className={`block w-full rounded-2xl ${className}`}
     >
-      <img
-        key={rung.image.slice(-48)}
-        src={rung.image}
-        alt={revealed ? rung.title : ""}
-        draggable={false}
-        className="develop h-full w-full object-cover"
-      />
-      <span
-        className="absolute inset-0 transition-[backdrop-filter,background-color] duration-300 ease-out"
-        style={{
-          backdropFilter: revealed ? "none" : "blur(16px) saturate(0.6)",
-          WebkitBackdropFilter: revealed ? "none" : "blur(16px) saturate(0.6)",
-          backgroundColor: revealed ? "transparent" : "rgb(246 241 231 / 0.18)",
-        }}
-      />
-      {!revealed && (
-        <span className="absolute inset-0 grid place-items-center">
-          <span className="flex items-center gap-1.5 rounded-full bg-surface/85 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-ink">
-            <Eye className="h-3.5 w-3.5" aria-hidden />
-            {size !== "sm" && "Tap to reveal"}
-          </span>
-        </span>
-      )}
-      {revealed && size !== "sm" && (
-        <span className="absolute right-2 top-2 rounded-full bg-surface/85 p-1.5 text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          <EyeOff className="h-3.5 w-3.5" aria-hidden />
-        </span>
-      )}
-      <AiLabel compact={size === "sm"} className={size === "sm" ? "absolute bottom-1 left-1" : "absolute bottom-2 left-2"} />
+      <RungImage rung={rung} revealed={revealed} hint={hint} label={label} rounded={rounded} />
     </button>
   );
 }
