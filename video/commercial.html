@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Fear Ladder commercial</title>
+<link rel="stylesheet" href="/video/out/fonts.css" />
+<style>
+  :root { --white: #ffffff; --gray: #f4f4f5; --ink: #0a0a0a; --muted: #71717a; --faint: #a1a1aa; --black: #000000; --night-ink: #fafafa; --night-muted: #8f8f96; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--white); }
+  body { font-family: "Schibsted Grotesk", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .scene { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+  .light { background: var(--white); color: var(--ink); }
+  .dark { background: var(--black); color: var(--night-ink); }
+  .h { font-weight: 600; letter-spacing: -0.045em; line-height: 1.0; }
+  .cap { position: absolute; left: 70px; right: 70px; top: 190px; text-align: center; font-weight: 600; font-size: 92px; line-height: 1.02; letter-spacing: -0.045em; }
+  .w { display: inline-block; white-space: pre; }
+  .phone { position: absolute; left: 50%; top: 520px; width: 632px; height: 1330px; margin-left: -316px; border-radius: 78px;
+    background: #0a0a0a; padding: 16px; box-shadow: 0 60px 120px -50px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.07) inset; }
+  .phone img { width: 600px; height: 1298px; border-radius: 62px; display: block; object-fit: cover; background: #000; }
+  .tile { position: absolute; width: 300px; height: 300px; border-radius: 30px; object-fit: cover; }
+  .pill { display: inline-flex; align-items: center; padding: 20px 42px; border-radius: 999px; background: var(--gray); font-size: 38px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<section class="scene light" id="c1">
+  <div style="position:absolute;left:90px;right:90px;top:700px">
+    <div class="h" id="c1a" style="font-size:140px">1 in 11 adults</div>
+    <div class="h" id="c1b" style="font-size:140px;color:var(--muted)">has a phobia.</div>
+  </div>
+</section>
+
+<section class="scene dark" id="c2">
+  <div class="cap" id="c2a" style="top:230px">Nine small steps.</div>
+  <div id="c2tiles" style="position:absolute;left:0;right:0;top:700px;height:1100px"></div>
+</section>
+
+<section class="scene light" id="c3">
+  <div class="cap" id="c3a">Pick your fear.</div>
+  <div class="phone" id="c3p"><img id="c3i" /></div>
+</section>
+
+<section class="scene dark" id="c4">
+  <div class="cap" id="c4a">AI draws it nine ways.</div>
+  <div id="c4card" style="position:absolute;left:90px;top:560px;width:900px;height:900px;border-radius:40px;overflow:hidden">
+    <img id="c4i" style="width:100%;height:100%;object-fit:cover;display:block" />
+    <span style="position:absolute;left:24px;bottom:22px;font-size:24px;font-weight:500;padding:8px 18px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff">AI image</span>
+  </div>
+  <div style="position:absolute;left:90px;right:90px;top:1510px;display:flex;align-items:baseline;justify-content:space-between">
+    <div class="h" id="c4n" style="font-size:72px;font-variant-numeric:tabular-nums">Step 1</div>
+    <div id="c4t" style="font-size:38px;color:var(--night-muted)"></div>
+  </div>
+  <div style="position:absolute;left:90px;right:90px;top:1630px;display:flex;gap:12px" id="c4dots"></div>
+</section>
+
+<section class="scene light" id="c5">
+  <div class="cap" id="c5a">Every image is checked.</div>
+  <div class="phone" id="c5p"><img id="c5i" /></div>
+</section>
+
+<section class="scene dark" id="c6">
+  <div class="cap" id="c6a">You decide when to look.</div>
+  <div class="phone" id="c6p" style="background:#111"><img id="c6i" /></div>
+</section>
+
+<section class="scene dark" id="c7">
+  <div class="cap" id="c7a">Too much? It draws a smaller step.</div>
+  <div class="phone" id="c7p" style="background:#111"><img id="c7i" /></div>
+</section>
+
+<section class="scene light" id="c8">
+  <div class="cap" id="c8a">See what actually scares you.</div>
+  <div class="phone" id="c8p"><img id="c8i" /></div>
+</section>
+
+<section class="scene light" id="c9">
+  <div class="cap" id="c9a" style="top:230px"><span id="c9w1">Spiders.</span> <span id="c9w2">Dogs.</span> <span id="c9w3">Needles.</span></div>
+  <div id="c9rows" style="position:absolute;left:0;right:0;top:560px"></div>
+</section>
+
+<section class="scene light" id="c10">
+  <div style="position:absolute;left:0;right:0;top:620px;text-align:center">
+    <svg viewBox="0 0 24 24" width="160" height="160" fill="none" style="display:inline-block">
+      <path id="r0" d="M7 2.5v19M17 2.5v19" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+      <path id="r1" d="M7 18h10" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+      <path id="r2" d="M7 13.5h10" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+      <path id="r3" d="M7 9h10" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+      <path id="r4" d="M7 4.5h10" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div class="h" id="c10a" style="font-size:140px;margin-top:44px">Fear Ladder</div>
+    <div id="c10b" style="font-size:54px;margin-top:28px;color:var(--muted);line-height:1.25">Face your fear,<br/>one step at a time.</div>
+    <div id="c10c" style="margin-top:90px"><span class="pill">fear-ladder-beta.vercel.app</span></div>
+    <div id="c10d" style="margin-top:110px;font-size:30px;color:var(--faint);line-height:1.6">Made with Nano Banana and Gemini for Banana Hacks 2026<br/>Not a medical device</div>
+  </div>
+</section>
+
+<script>
+// Every cut sits on the music's beat grid (122.25 BPM, measured from the Lyria track).
+const FPS = 30;
+const P = 60 / 122.25;
+const BEATS = { c1: [0, 8], c2: [8, 16], c3: [16, 24], c4: [24, 36], c5: [36, 44], c6: [44, 54], c7: [54, 68], c8: [68, 76], c9: [76, 86], c10: [86, 98] };
+const S = Object.fromEntries(Object.entries(BEATS).map(([k, [a, b]]) => [k, [a * P, b * P]]));
+const DURATION = 98 * P + 0.4;
+// Voiceover line i starts at this time (seconds). The render script places the audio from this list.
+const VO = [0.25, S.c2[0] + 0.12, S.c3[0] + P, S.c4[0] + 0.2, S.c5[0] + P * 0.75, S.c6[0] + P * 0.75, S.c7[0] + P * 0.5, S.c8[0] + P * 0.75, S.c9[0] + P * 0.5, S.c10[0] + P * 1.5];
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const out = (x) => 1 - Math.pow(1 - x, 3);
+const back = (x) => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+let M;
+
+function wordify(el) {
+  const walk = (node) => {
+    [...node.childNodes].forEach((n) => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach((w) => {
+          if (!w) return;
+          if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(w)); return; }
+          const s = document.createElement("span"); s.className = "w"; s.textContent = w; frag.appendChild(s);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && !n.classList.contains("w")) walk(n);
+    });
+  };
+  walk(el);
+  return [...el.querySelectorAll(".w")];
+}
+const words = {};
+// Words pop in fast with a little overshoot.
+function pop(id, t, start, stagger = 0.06, dur = 0.32) {
+  const ws = words[id] || (words[id] = wordify($(id)));
+  ws.forEach((w, i) => {
+    const u = prog(t, start + i * stagger, start + i * stagger + dur);
+    w.style.opacity = clamp(u * 2.2);
+    w.style.transform = `translateY(${(1 - out(u)) * 36}px) scale(${0.9 + 0.1 * back(u)})`;
+  });
+}
+function show(id, t, start, dur = 0.3, dy = 24) {
+  const u = out(prog(t, start, start + dur));
+  $(id).style.opacity = u; $(id).style.transform = `translateY(${(1 - u) * dy}px)`;
+}
+// Hard cuts: a scene is fully on between its start and end, with a short punch-in on entry.
+function sceneOn(name, t) { const [a, b] = S[name]; return t >= a && t < b; }
+function punch(name, t) {
+  const u = out(prog(t, S[name][0], S[name][0] + 0.28));
+  $(name).style.transform = `scale(${1.045 - 0.045 * u})`;
+}
+function phoneIn(id, t, start) {
+  const u = out(prog(t, start, start + 0.38));
+  $(id).style.transform = `translateY(${(1 - u) * 140}px) scale(${0.96 + 0.04 * u})`;
+  $(id).style.opacity = clamp(u * 1.6);
+}
+const pending = [];
+function setSrc(img, src) {
+  if (img.getAttribute("src") !== src) { img.setAttribute("src", src); pending.push(img.decode().catch(() => {})); }
+}
+const frame = (clip, sec) => {
+  const n = clamp(Math.floor(sec * FPS) + 1, 1, M[clip].frames);
+  return `/video/out/frames/${clip}/${String(n).padStart(5, "0")}.jpg`;
+};
+function mapClip(segs, lt) {
+  for (const [a, b, s0, s1] of segs) if (lt <= b) return s0 + (s1 - s0) * prog(lt, a, b);
+  return segs[segs.length - 1][3];
+}
+const mk = (clip) => M[clip].marks;
+const STEP_TITLES = ["The word", "A line drawing", "A friendly drawing", "A blurry photo", "A clear photo", "Closer up", "Facing you", "Next to an arm", "On an open hand"];
+
+window.renderAt = async function (t) {
+  pending.length = 0;
+  for (const k of Object.keys(S)) $(k).style.opacity = sceneOn(k, t) || (k === "c10" && t >= S.c10[0]) ? 1 : 0;
+
+  if (sceneOn("c1", t)) {
+    pop("c1a", t, 0.15, 0.12, 0.36);
+    pop("c1b", t, 0.15 + 3 * 0.12 + 0.1, 0.12, 0.36);
+  }
+
+  if (sceneOn("c2", t)) {
+    const a = S.c2[0]; punch("c2", t);
+    pop("c2a", t, a + 0.05, 0.05);
+    const box = $("c2tiles");
+    if (!box.childElementCount) {
+      for (let i = 0; i < 9; i++) {
+        const im = document.createElement("img");
+        im.className = "tile"; im.src = `/public/demo/spiders/rung-${i + 1}.jpg`;
+        im.style.left = `${60 + (i % 3) * 330}px`; im.style.top = `${Math.floor(i / 3) * 330}px`;
+        box.appendChild(im); pending.push(im.decode().catch(() => {}));
+      }
+    }
+    // One tile per half beat, gentlest first.
+    [...box.children].forEach((im, i) => {
+      const st = a + P * (1 + i * 0.5);
+      const u = prog(t, st, st + 0.22);
+      im.style.opacity = clamp(u * 2);
+      im.style.transform = `scale(${0.7 + 0.3 * back(u)})`;
+      const blur = i >= 3 ? 6 + (i - 3) * 3 : 0;
+      im.style.filter = `blur(${blur}px)`;
+    });
+  }
+
+  if (sceneOn("c3", t)) {
+    const a = S.c3[0], lt = t - a, m = mk("builder"); punch("c3", t);
+    pop("c3a", t, a + 0.05);
+    phoneIn("c3p", t, a);
+    setSrc($("c3i"), frame("builder", mapClip([[0, 3.9, m.start - 0.2, m.generate + 0.6]], lt)));
+  }
+
+  if (sceneOn("c4", t)) {
+    const a = S.c4[0]; punch("c4", t);
+    pop("c4a", t, a + 0.05);
+    // Steps change on the beat: 1-3 on beats 1-3, then one per beat up to 9, then hold.
+    const beat = Math.floor((t - a) / P);
+    const k = clamp(beat - 1, 0, 8);
+    setSrc($("c4i"), `/public/demo/spiders/rung-${k + 1}.jpg`);
+    const local = t - (a + (k + 1) * P);
+    const u = out(clamp(local / 0.22));
+    $("c4i").style.transform = `scale(${1.06 - 0.06 * u})`;
+    $("c4i").style.filter = beat < 1 ? "blur(30px)" : "none";
+    const card = out(prog(t, a, a + 0.3));
+    $("c4card").style.opacity = card; $("c4card").style.transform = `translateY(${(1 - card) * 80}px)`;
+    $("c4n").textContent = `Step ${k + 1}`;
+    $("c4t").textContent = STEP_TITLES[k];
+    const dots = $("c4dots");
+    if (!dots.childElementCount) for (let i = 0; i < 9; i++) { const d = document.createElement("div"); d.style.cssText = "flex:1;height:10px;border-radius:10px;background:#27272a"; dots.appendChild(d); }
+    [...dots.children].forEach((d, i) => { d.style.background = i <= k ? "#fafafa" : "#27272a"; });
+  }
+
+  if (sceneOn("c5", t)) {
+    const a = S.c5[0], lt = t - a, m = mk("ladder"); punch("c5", t);
+    pop("c5a", t, a + 0.05);
+    phoneIn("c5p", t, a);
+    setSrc($("c5i"), frame("ladder", mapClip([[0, 3.9, m.start + 0.6, m.start + 6.6]], lt)));
+  }
+
+  if (sceneOn("c6", t)) {
+    const a = S.c6[0], lt = t - a, m = mk("hold"); punch("c6", t);
+    pop("c6a", t, a + 0.05);
+    phoneIn("c6p", t, a);
+    setSrc($("c6i"), frame("hold", mapClip([[0, 4.9, m.look + 0.6, m.release1 + 1.3]], lt)));
+  }
+
+  if (sceneOn("c7", t)) {
+    const a = S.c7[0], lt = t - a, m = mk("halfstep"); punch("c7", t);
+    pop("c7a", t, a + 0.05);
+    phoneIn("c7p", t, a);
+    setSrc($("c7i"), frame("halfstep", mapClip([[0, 2.6, m.after - 0.2, m.drawing + 1.0], [2.6, 3.8, m.drawing + 1.0, m.ready - 0.3], [3.8, 6.9, m.ready - 0.3, m.ready + 2.8]], lt)));
+  }
+
+  if (sceneOn("c8", t)) {
+    const a = S.c8[0], lt = t - a, m = mk("report"); punch("c8", t);
+    pop("c8a", t, a + 0.05);
+    phoneIn("c8p", t, a);
+    setSrc($("c8i"), frame("report", mapClip([[0, 3.9, m.report + 1.2, m.report + 10.5]], lt)));
+  }
+
+  if (sceneOn("c9", t)) {
+    const a = S.c9[0], v = VO[8]; punch("c9", t);
+    // Each word lands with the voiceover: "Spiders." "Dogs." "Needles."
+    [["c9w1", v], ["c9w2", v + 1.34], ["c9w3", v + 2.26]].forEach(([id, st]) => show(id, t, st - 0.08, 0.22, 30));
+    const rows = $("c9rows");
+    if (!rows.childElementCount) {
+      ["spiders", "dogs", "needles"].forEach((s) => {
+        const row = document.createElement("div");
+        row.style.cssText = "position:relative;height:360px;margin-bottom:40px";
+        const strip = document.createElement("div");
+        strip.className = "strip"; strip.style.cssText = "position:absolute;top:0;left:0;display:flex;gap:20px";
+        for (let i = 1; i <= 9; i++) {
+          const im = document.createElement("img");
+          im.src = `/public/demo/${s}/rung-${i}.jpg`;
+          im.style.cssText = "width:340px;height:340px;border-radius:28px;object-fit:cover";
+          strip.appendChild(im);
+        }
+        row.append(strip); rows.appendChild(row);
+        pending.push(...[...strip.querySelectorAll("img")].map((i) => i.decode().catch(() => {})));
+      });
+    }
+    const lt = t - a;
+    [...rows.children].forEach((row, r) => {
+      const strip = row.querySelector(".strip");
+      const total = 9 * 360 - 1080 + 160;
+      const p = clamp(lt / (S.c9[1] - a));
+      const x = r % 2 ? 80 - total + total * p : 80 - total * p;
+      strip.style.transform = `translateX(${x}px)`;
+      const st = [v, v + 1.34, v + 2.26][r] - 0.08;
+      const u = out(prog(t, st, st + 0.25));
+      row.style.opacity = u; row.style.transform = `translateY(${(1 - u) * 50}px)`;
+    });
+  }
+
+  if (t >= S.c10[0]) {
+    const a = S.c10[0]; punch("c10", t);
+    ["r0", "r1", "r2", "r3", "r4"].forEach((id, i) => {
+      const u = out(prog(t, a + 0.05 + i * P * 0.5, a + 0.3 + i * P * 0.5));
+      const len = id === "r0" ? 40 : 11;
+      $(id).style.strokeDasharray = len; $(id).style.strokeDashoffset = len * (1 - u);
+    });
+    pop("c10a", t, VO[9] - 0.05, 0.12, 0.34);
+    show("c10b", t, VO[9] + 1.3); show("c10c", t, a + P * 7); show("c10d", t, a + P * 8);
+  }
+
+  await Promise.all(pending);
+  await document.fonts.ready;
+};
+
+window.ready = (async () => {
+  M = await (await fetch("/video/out/manifest.json")).json();
+  await document.fonts.ready;
+  return true;
+})();
+window.DURATION = DURATION;
+window.VO = VO;
+</script>
+</body>
+</html>

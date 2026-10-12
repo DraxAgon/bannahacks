@@ -5,7 +5,8 @@ Pick a phobia and Fear Ladder draws the same subject nine ways, from the word on
 ![Fear Ladder home page](docs/screenshots/landing-1440.png)
 
 - **Try it:** https://fear-ladder-beta.vercel.app
-- **Promo reel:** [`docs/fear-ladder-reel.mp4`](docs/fear-ladder-reel.mp4)
+- **Commercial (48s, voiceover and music):** [`docs/fear-ladder-commercial.mp4`](docs/fear-ladder-commercial.mp4)
+- **Silent promo reel:** [`docs/fear-ladder-reel.mp4`](docs/fear-ladder-reel.mp4)
 - **Built for:** [Banana Hacks 2026](https://www.bananahacks.tech/), Oct 9 to 12, online
 
 > Fear Ladder is not a medical device and isn't meant for emergencies. If you're in crisis, call or text 988 (US and Canada) or your local emergency number.
@@ -112,6 +113,7 @@ Specific phobias are common, and most people who have one don't get adequate tre
 ## AI tools used
 
 - **Gemini API (Google)** through `@google/genai`. `gemini-3.8-flash` plans the ladder and the variations and runs the vision critic. `gemini-nano-banana-2.1` draws the anchor and edits every step. `gemini-3.5-flash-lite` is the critic's fallback.
+- **Gemini TTS and Lyria (Google)** made the commercial's soundtrack. `gemini-3.8-flash-tts` (voice "Despina") reads the voiceover, and `lyria-3.5` composed the music. See `video/make-audio.mjs`.
 - **Claude Code (Anthropic)** wrote the code with the author during the hackathon.
 
 ## Credits
