@@ -14,17 +14,17 @@ export async function POST(req: Request) {
   if (body instanceof Response) return body;
   const prompt = variationPrompt(body);
   const attempts: Attempt[] = [];
-  try {
-    const result = await generateJson({
+  const run = (p: string) =>
+    generateJson({
       model: MODELS.text,
       system: VARIATION_SYSTEM,
-      prompt,
+      prompt: p,
       jsonSchema: VariationJsonSchema,
       zod: VariationSchema,
       onAttempt: (i) =>
         attempts.push({
           stage: "variation",
-          prompt,
+          prompt: p,
           params: { model: MODELS.text, context: body.context ?? null },
           ms: i.ms,
           ok: i.ok,
@@ -33,7 +33,14 @@ export async function POST(req: Request) {
           at: new Date().toISOString(),
         }),
     });
-    if ("error" in result) return json({ error: "invalid", message: "Variation plan didn't validate.", attempts }, 502);
+  try {
+    let result = await run(prompt);
+    if ("error" in result) {
+      // Same pattern as the planner: retry once with the validation errors appended.
+      attempts[attempts.length - 1].error = `Validation: ${result.error}`.slice(0, 600);
+      result = await run(`${prompt}\n\nYour previous answer failed validation. Fix these problems: ${result.error}`);
+    }
+    if ("error" in result) return json({ error: "invalid", message: "Variation plan didn't validate.", detail: result.error, attempts }, 502);
     return json({ ...result.data, attempts });
   } catch (err) {
     return errorResponse(err);

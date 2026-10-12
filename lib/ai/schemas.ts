@@ -13,18 +13,24 @@ export const DialsSchema = z.object({
   motion: unit,
 });
 
+// Generous length limits: the model's prose varies, and extra notice prompts are trimmed, not rejected.
+const noticePrompts = z
+  .array(z.string().min(3).max(300))
+  .min(1)
+  .transform((a) => a.slice(0, 3));
+
 export const PlannedRungSchema = z.object({
-  title: z.string().min(2).max(90),
-  rationale: z.string().min(4).max(400),
+  title: z.string().min(2).max(140),
+  rationale: z.string().min(4).max(800),
   targetSuds: z.number().min(0).max(100),
   dials: DialsSchema,
-  scene: z.string().min(3).max(400),
-  noticePrompts: z.array(z.string().min(3).max(160)).min(2).max(3),
+  scene: z.string().min(3).max(800),
+  noticePrompts,
 });
 
 export const SubjectSchema = z.object({
   name: z.string().min(2).max(60),
-  canonical: z.string().min(10).max(500),
+  canonical: z.string().min(10).max(1000),
 });
 
 /**
@@ -55,9 +61,9 @@ export const CritiqueSchema = z.object({
 });
 
 export const VariationSchema = z.object({
-  individual: z.string().min(3).max(200),
-  scene: z.string().min(3).max(300),
-  noticePrompts: z.array(z.string().min(3).max(160)).min(2).max(3),
+  individual: z.string().min(3).max(600),
+  scene: z.string().min(3).max(800),
+  noticePrompts,
 });
 
 // ── JSON schemas sent as response_format (kept simple: the Gemini schema subset) ──
@@ -137,10 +143,10 @@ export const VariationJsonSchema = {
   properties: {
     individual: {
       type: "string",
-      description: "a different individual of the same kind: colours, markings, size differences",
+      description: "one sentence: a different individual of the same kind (colours, markings, build)",
     },
-    scene: { type: "string" },
-    noticePrompts: { type: "array", items: { type: "string" } },
+    scene: { type: "string", description: "one sentence" },
+    noticePrompts: { type: "array", items: { type: "string" }, description: "2 to 3 short prompts" },
   },
   required: ["individual", "scene", "noticePrompts"],
 };
@@ -166,12 +172,12 @@ export const AnchorRequestSchema = z.object({
 export const RungRequestSchema = z.object({
   subject: SubjectSchema,
   dials: DialsSchema,
-  scene: z.string().min(1).max(400),
+  scene: z.string().min(1).max(800),
   anchor: dataUrl.optional(),
   preset: z.string().optional(),
   safetyBoost: z.boolean().optional(),
   intensityHint: z.enum(["gentler", "stronger"]).optional(),
-  individual: z.string().max(200).optional(),
+  individual: z.string().max(600).optional(),
 });
 
 export const CritiqueRequestSchema = z.object({
@@ -187,8 +193,8 @@ export const CritiqueRequestSchema = z.object({
 export const VariationRequestSchema = z.object({
   subject: SubjectSchema,
   fear: z.string().max(200),
-  scene: z.string().max(400),
-  title: z.string().max(120),
-  avoid: z.array(z.string().max(400)).max(12).optional(),
+  scene: z.string().max(800),
+  title: z.string().max(140),
+  avoid: z.array(z.string().max(800)).max(12).optional(),
   context: z.string().max(80).optional(),
 });

@@ -416,7 +416,12 @@ export class LadderRunner {
       });
       await this.renderRung(placeholderId, { individual: v.individual });
     } catch (e) {
-      this.patchRung(placeholderId, { status: "error", error: (e as Error).message });
+      const err = e as ApiError;
+      this.patchRung(placeholderId, {
+        status: "error",
+        error: err.message,
+        attempts: (err.payload?.attempts as Attempt[]) ?? [],
+      });
     }
     return placeholderId;
   }
