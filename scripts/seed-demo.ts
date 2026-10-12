@@ -1,6 +1,7 @@
 /**
  * Builds the demo ladders through the real pipeline (plan → anchor → rungs → critic)
- * and writes them to public/demo/{slug}/: ladder.json, anchor.jpg, rung-N.jpg.
+ * and writes them to public/demo/{slug}/: ladder.json, anchor.jpg, rung-N.jpg, plus a
+ * rung-N.thumb.webp beside each image for the cards.
  *
  * The script calls the app's own API routes, so it needs a running server with a key:
  *   npm run dev            # with GEMINI_API_KEY in .env.local
@@ -15,6 +16,7 @@ import { CritiqueSchema } from "../lib/ai/schemas";
 import { DEMOS } from "../lib/demo";
 import { emptyLadder, LadderRunner } from "../lib/pipeline/buildLadder";
 import type { Ladder, PlanRequest } from "../lib/types";
+import { writeThumbs } from "./thumbs";
 
 const BASE = process.env.SEED_BASE_URL ?? "http://localhost:3000";
 const LABELS: Record<string, string> = { spiders: "Spiders", dogs: "Dogs", needles: "Needles" };
@@ -80,6 +82,7 @@ async function seed(slug: "spiders" | "dogs" | "needles", description: string) {
     return { ...r, image: `/demo/${slug}/${file}` };
   });
   writeFileSync(join(dir, "ladder.json"), JSON.stringify(out, null, 2));
+  await writeThumbs(dir);
 
   const ready = out.rungs.filter((r) => r.status === "ready").length;
   console.log(`${slug}: saved ${ready}/${out.rungs.length} rungs to ${dir} in ${Math.round((Date.now() - t0) / 1000)}s`);

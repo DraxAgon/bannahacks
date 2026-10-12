@@ -2,7 +2,9 @@
 
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { thumbOf } from "@/lib/images";
 import type { Rung } from "@/lib/types";
+import { LazyImg } from "./LazyImg";
 import { AiLabel } from "./ui";
 
 /** A rung image that stays blurred until someone chooses to look. Develops like a photograph when it first arrives. */
@@ -42,6 +44,11 @@ export function RungImage({
     );
   }
 
+  // Demo images have a small thumbnail: cards load only that, larger views show it while the original loads.
+  const thumb = thumbOf(rung.image);
+  const hasThumb = thumb !== rung.image;
+  const placeholder = size !== "sm" && hasThumb ? thumb : undefined;
+
   return (
     <button
       type="button"
@@ -53,12 +60,14 @@ export function RungImage({
       aria-label={revealed ? `Hide image: ${rung.title}` : `Reveal image: ${rung.title}`}
       className={`group relative block aspect-square w-full overflow-hidden ${radius} bg-primary-soft ${className}`}
     >
-      <img
+      <LazyImg
         key={rung.image.slice(-48)}
-        src={rung.image}
+        src={size === "sm" ? thumb : rung.image}
+        fallback={size === "sm" && hasThumb ? rung.image : undefined}
+        placeholder={placeholder}
         alt={revealed ? rung.title : ""}
-        draggable={false}
-        className="develop h-full w-full object-cover"
+        className="h-full w-full object-cover"
+        loadedClass={placeholder ? "" : "develop"}
       />
       <span
         className="absolute inset-0 transition-[backdrop-filter,background-color] duration-300 ease-out"

@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchDemoLadder } from "@/lib/demo";
+import { preloadImages, thumbOf } from "@/lib/images";
 import type { Ladder } from "@/lib/types";
+import { LazyImg } from "./LazyImg";
 import { AiLabel } from "./ui";
 
 /** Landing signature: the demo spider ladder, every rung blurred until the visitor chooses to look. */
@@ -18,7 +20,12 @@ export function DemoStrip() {
     };
   }, []);
 
-  const rungs = ladder?.rungs.filter((r) => r.image && r.kind === "planned") ?? [];
+  const rungs = useMemo(() => ladder?.rungs.filter((r) => r.image && r.kind === "planned") ?? [], [ladder]);
+
+  // The first few thumbnails load right away; fetch the rest of the strip in the background.
+  useEffect(() => {
+    preloadImages(rungs.map((r) => thumbOf(r.image!)));
+  }, [rungs]);
 
   return (
     <div className="relative">
@@ -51,11 +58,12 @@ export function DemoStrip() {
                     onClick={() => setRevealed((cur) => (cur === r.id ? null : r.id))}
                     className="group relative block aspect-square w-full overflow-hidden rounded-[10px] border border-line bg-primary-soft"
                   >
-                    <img
-                      src={r.image}
+                    <LazyImg
+                      src={thumbOf(r.image!)}
+                      fallback={r.image}
                       alt=""
-                      draggable={false}
-                      className="h-full w-full object-cover transition-[filter,transform] duration-500 ease-out"
+                      eager={i < 4}
+                      className="h-full w-full object-cover transition-[filter,transform,opacity] duration-500 ease-out"
                       style={{ filter: open ? "none" : "blur(18px) saturate(0.6)", transform: open ? "scale(1)" : "scale(1.08)" }}
                     />
                     {!open && (

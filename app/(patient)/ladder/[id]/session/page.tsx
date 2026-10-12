@@ -11,6 +11,7 @@ import { HoldToView } from "@/components/HoldToView";
 import { LadderMark } from "@/components/LadderMark";
 import { SudsSlider } from "@/components/SudsSlider";
 import { fmtDuration } from "@/lib/format";
+import { preloadImages } from "@/lib/images";
 import { runnerFor, useHealth, useLadder } from "@/lib/live";
 import { fitFearModel, halfStepDials } from "@/lib/model/fearModel";
 import { mainRungs, newId } from "@/lib/pipeline/buildLadder";
@@ -130,6 +131,11 @@ export default function SessionPage() {
   const rung: Rung | undefined = useMemo(() => ladder?.rungs.find((r) => r.id === rungId), [ladder, rungId]);
   const suggested = useMemo(() => (ladder ? suggestedStart(ladder, history) : undefined), [ladder, history]);
   const readyMain = useMemo(() => (ladder ? mainRungs(ladder).filter((r) => r.status === "ready" && r.image) : []), [ladder]);
+
+  // Have every rung's image ready before the exposure starts, without blocking this screen.
+  useEffect(() => {
+    preloadImages(readyMain.map((r) => r.image));
+  }, [readyMain]);
 
   // Look timer: counts only while the image is actually visible.
   useEffect(() => {
