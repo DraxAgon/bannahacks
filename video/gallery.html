@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Fear Ladder gallery</title>
+<link rel="stylesheet" href="/video/out/fonts.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; }
+  body { font-family: "Schibsted Grotesk", sans-serif; -webkit-font-smoothing: antialiased; position: relative; background: #fff; color: #0a0a0a; }
+  body.dark { background: #000; color: #fafafa; }
+  h1 { font-weight: 600; font-size: 72px; line-height: 1.02; letter-spacing: -0.045em; }
+  .sub { margin-top: 20px; font-size: 34px; line-height: 1.3; letter-spacing: -0.015em; color: #62626b; }
+  .dark .sub { color: #a1a1a9; }
+  .shot { position: absolute; left: 72px; right: 72px; top: 240px; height: 860px; border-radius: 28px 28px 0 0; overflow: hidden;
+    box-shadow: 0 0 0 1px #e4e4e7, 0 40px 80px -40px rgba(0,0,0,.35); }
+  .shot img { width: 100%; display: block; }
+  .phone { position: absolute; width: 352px; height: 746px; padding: 11px; border-radius: 52px; background: #161618;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset, 0 50px 90px -40px rgba(0,0,0,.6); }
+  .light .phone { background: #0a0a0a; }
+  .phone img { width: 330px; height: 724px; border-radius: 42px; display: block; object-fit: cover; object-position: top; }
+  .tile { width: 128px; height: 128px; border-radius: 18px; object-fit: cover; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .label { width: 150px; font-size: 30px; font-weight: 600; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+<script>
+// One slide per ?n=. Footage is the same real app frames used in the reel.
+const n = Number(new URLSearchParams(location.search).get("n") || 1);
+const f = (clip, sec) => `/video/out/frames/${clip}/${String(Math.max(1, Math.floor(sec * 30) + 1)).padStart(5, "0")}.jpg`;
+const head = (title, sub, style = "") =>
+  `<div style="position:absolute;left:72px;top:72px;${style}"><h1>${title}</h1>${sub ? `<p class="sub">${sub}</p>` : ""}</div>`;
+const phone = (src, left, top) => `<div class="phone" style="left:${left}px;top:${top}px"><img src="${src}"></div>`;
+const side = (title, sub) =>
+  `<div style="position:absolute;left:72px;top:0;bottom:0;width:560px;display:flex;flex-direction:column;justify-content:center"><h1>${title}</h1><p class="sub">${sub}</p></div>`;
+
+window.ready = (async () => {
+  const M = await (await fetch("/video/out/manifest.json")).json();
+  const m = (clip) => M[clip].marks;
+  let html = "";
+  if (n === 1) {
+    html = head("Pick a fear. AI draws it nine ways.", "") + `<div class="shot"><img src="/docs/screenshots/ladder-1440.png"></div>`;
+  } else if (n === 2) {
+    document.body.className = "dark";
+    html = side("You decide when to look.", "Hold to see the step. Let go and it blurs again.") +
+      phone(f("hold", m("hold").look + 0.6), 700, 127) + phone(f("hold", m("hold").hold1 + 1.6), 1076, 127);
+  } else if (n === 3) {
+    document.body.className = "dark";
+    html = side("Too much? It draws a smaller step.", "Live, mid-session, between the step you're on and the one below it.") +
+      phone(f("halfstep", m("halfstep").after + 0.2), 700, 127) + phone(f("halfstep", m("halfstep").ready + 1.2), 1076, 127);
+  } else if (n === 4) {
+    document.body.className = "light";
+    html = side("See what actually scares you.", "A small model learns from your own ratings and shows what drives the fear.") +
+      phone(f("report", m("report").report - 0.2), 700, 127) + phone(f("report", m("report").report + 10.5), 1076, 127);
+  } else if (n === 5) {
+    const rows = ["spiders", "dogs", "needles"].map((s) =>
+      `<div class="row" style="margin-bottom:44px"><div class="label">${s[0].toUpperCase() + s.slice(1)}</div>${
+        Array.from({ length: 9 }, (_, i) => `<img class="tile" src="/public/demo/${s}/rung-${i + 1}.jpg">`).join("")}</div>`).join("");
+    html = head("Same subject, every step.", "Nine edits of one AI image, from the word to the real thing.") +
+      `<div style="position:absolute;left:72px;top:330px">${rows}</div>`;
+  } else if (n === 6) {
+    html = head("Built for a quick start.", "No account. Try the demo or build your own in about a minute.") +
+      `<div class="shot"><img src="/docs/screenshots/landing-1440.png"></div>`;
+  }
+  document.body.insertAdjacentHTML("beforeend", html);
+  await document.fonts.ready;
+  await Promise.all([...document.images].map((i) => i.decode().catch(() => {})));
+  return true;
+})();
+</script>
+</body>
+</html>
